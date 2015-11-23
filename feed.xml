@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 23 Nov 2015 15:41:49 +0100</pubDate>
-    <lastBuildDate>Mon, 23 Nov 2015 15:41:49 +0100</lastBuildDate>
+    <pubDate>Mon, 23 Nov 2015 16:34:45 +0100</pubDate>
+    <lastBuildDate>Mon, 23 Nov 2015 16:34:45 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -17,19 +17,19 @@
 
 &lt;h2 id=&quot;why-make&quot;&gt;Why Make?&lt;/h2&gt;
 
-&lt;p&gt;@fogus on Twitter:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/fogus/status/526740537823735808&quot;&gt;@fogus on Twitter&lt;/a&gt;:&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Make is the worst build system ever created except for every other build system created after Make.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;@natpryce on Twitter:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/natpryce/status/556381696174874624&quot;&gt;@natpryce on Twitter&lt;/a&gt;:&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Those who don’t know Make are doomed to repeat it.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;@natpryce on Twitter:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/natpryce/status/526755049155088384&quot;&gt;@natpryce on Twitter&lt;/a&gt;:&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;@fogus treat make as a parallel, pure-functional dataflow programming language and it remains pretty manageable in my experience.&lt;/p&gt;
