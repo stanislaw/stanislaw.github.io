@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How to build a static iOS framework and distribute it as a Component using Make</title>
+  <meta name="description" content="This post is a complement to introductory post Components: taking a step back from Dependency Management about the Components: bare-bones dependency manageme...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://stanislaw.github.io/2015/11/23/how-to-build-static-framework-using-make.html">
+  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich" href="https://stanislaw.github.io/feed.xml">
+  <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70472472-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Stanislav Pankevich</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How to build a static iOS framework and distribute it as a Component using Make</h1>
+    <p class="post-meta"><time datetime="2015-11-23T10:53:34+01:00" itemprop="datePublished">Nov 23, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This post is a complement to introductory post <a href="http://lowlevelbits.org/components-management">Components: taking a step back from Dependency Management</a> about the <a href="https://github.com/AlexDenisov/Components">Components</a>: bare-bones dependency management system that was recently introduced to our iOS community by <a href="https://github.com/AlexDenisov">AlexDenisov</a>. Components go even further than Carthage by providing you with a complete control over how you manage your dependencies.</p>
+
+<p>It is strongly recommended to read that introductory post first as this post targets Components and shows how a maintainer of a static iOS framework can easily build his Framework and distribute it as a Component using Make.</p>
+
+<h2 id="why-make">Why Make?</h2>
+
+<p>@fogus on Twitter:</p>
+
+<blockquote>
+  <p>Make is the worst build system ever created except for every other build system created after Make.</p>
+</blockquote>
+
+<p>@natpryce on Twitter:</p>
+
+<blockquote>
+  <p>Those who don’t know Make are doomed to repeat it.</p>
+</blockquote>
+
+<p>@natpryce on Twitter:</p>
+
+<blockquote>
+  <p>@fogus treat make as a parallel, pure-functional dataflow programming language and it remains pretty manageable in my experience.</p>
+</blockquote>
+
+<p>According to Wikipedia initial release of Make was made in “1977, 38 years ago”. Without a doubt it is the most widespread, stable and still very simple system so actually it is not really that many of choices that we have for our bare-bones style of dependency management with Components.</p>
+
+<p>I personally have been using Bash scripts to manage my build scripts but thanks to Alex Denisov I learned about caching capabitilies of Make which shine when used inside Components infrastructure: if you already downloaded the zip file of third-party library you do not download it again as longer it is cached, if you already unzipped that file you will not unzip it again, because Make knows that it is there, if you copied that library’s final artefacts to your project you will not be copying them over and over again and all that results, to say it using marketing words, in blazing fast performance of your build scripts given Components were cached once. Aside from this caching feature, Make itself is very fast – even if you run <code class="highlighter-rouge">./components.sh install</code> the first time, it works much faster than for example <code class="highlighter-rouge">pod install</code> as those all .make files are just direct bare-bone instructions on how to fetch, compile and copy your third-party libraries in a way that those library require. This becomes especially impressive when you run your project on CI where cached Components are installed just immediately.</p>
+
+<p>Instead of crafting artifical example I have rather decided to show how I use Make to maintain my own library: <a href="https://github.com/stanislaw/CompositeOperations">CompositeOperations</a>.</p>
+
+<p>CompositeOperations is distributed as static framework so I also recommend reading the following topic on StackOverflow where Petr Korolev (https://github.com/skywinder) and I explain how to create iOS Static Framework: <a href="http://stackoverflow.com/questions/29634466/how-to-export-fat-cocoa-touch-framework-for-simulator-and-device/31270427#31270427">How to export “fat” Cocoa Touch Framework (for Simulator and Device)?</a>.</p>
+
+<h2 id="building-a-static-ios-framework">Building a static iOS framework</h2>
+
+<p>Here is working version of Makefile that I currently use to create iOS Static Framework from CompositeOperations. As it is always with build scripts they are subject to change but still this version is stable enough and works for us during latest releases of CompositeOperations: <a href="https://github.com/stanislaw/CompositeOperations/blob/2fdbbbd6216d8838092de085608f1e0a2f257f52/Makefile.iOS">CompositeOperations/Makefile.iOS</a>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># Makefile.iOS
+</span><span class="nv">NAME</span><span class="o">=</span>CompositeOperations
+<span class="nv">XCODEPROJ</span><span class="o">=</span>DevelopmentApp/DevelopmentApp.xcodeproj
+<span class="nv">CONFIGURATION</span><span class="o">=</span>Release
+<span class="nv">SCHEME</span><span class="o">=</span>CompositeOperations-iOS
+<span class="nv">SIMULATOR</span><span class="o">=</span><span class="s1">'platform=iOS Simulator,name=iPhone 6s Plus'</span>
+
+<span class="nv">FRAMEWORK_FOLDER</span><span class="o">=</span><span class="nv">$(NAME)</span>.framework
+
+<span class="c">### Paths
+</span>
+<span class="nv">BUILD_PATH</span><span class="o">=</span><span class="nv">$(PWD)</span>/Build
+<span class="nv">BUILD_PATH_SIMULATOR</span><span class="o">=</span><span class="nv">$(BUILD_PATH)</span>/<span class="nv">$(CONFIGURATION)</span>-iphonesimulator
+<span class="nv">BUILD_PATH_IPHONE</span><span class="o">=</span><span class="nv">$(BUILD_PATH)</span>/<span class="nv">$(CONFIGURATION)</span>-iphoneos
+<span class="nv">BUILD_PATH_UNIVERSAL</span><span class="o">=</span><span class="nv">$(BUILD_PATH)</span>/<span class="nv">$(CONFIGURATION)</span>-universal
+<span class="nv">BUILD_PATH_UNIVERSAL_FRAMEWORK_FOLDER</span><span class="o">=</span><span class="nv">$(BUILD_PATH_UNIVERSAL)</span>/<span class="nv">$(FRAMEWORK_FOLDER)</span>
+<span class="nv">BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY</span><span class="o">=</span><span class="nv">$(BUILD_PATH_UNIVERSAL_FRAMEWORK_FOLDER)</span>/<span class="nv">$(NAME)</span>
+
+<span class="nv">DISTRIBUTION_PATH</span><span class="o">=</span><span class="nv">$(PWD)</span>/Distribution
+<span class="nv">ZIPBALL_NAME</span><span class="o">=</span><span class="nv">$(NAME)</span>-iOS.zip
+<span class="nv">ZIPBALL_PATH</span><span class="o">=</span><span class="nv">$(DISTRIBUTION_PATH)</span>/<span class="nv">$(ZIPBALL_NAME)</span>
+
+<span class="c">### Colors
+</span>
+<span class="nv">RESET</span><span class="o">=</span><span class="se">\0</span>33[0;39m
+<span class="nv">RED</span><span class="o">=</span><span class="se">\0</span>33[0;31m
+<span class="nv">GREEN</span><span class="o">=</span><span class="se">\0</span>33[0;32m
+
+<span class="c">### Actions
+</span>
+<span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">all archive clean test build validate zip</span>
+
+<span class="nl">default</span><span class="o">:</span> <span class="nf">test</span>
+
+<span class="nl">archive</span><span class="o">:</span> <span class="nf">test build validate zip</span>
+
+<span class="nl">test</span><span class="o">:</span>
+	xcodebuild -project <span class="nv">$(XCODEPROJ)</span> <span class="se">\</span>
+                   -scheme <span class="nv">$(SCHEME)</span> <span class="se">\</span>
+                   -sdk iphonesimulator <span class="se">\</span>
+                   -destination <span class="nv">$(SIMULATOR)</span> <span class="se">\</span>
+                   clean <span class="nb">test</span>
+
+<span class="nl">build</span><span class="o">:</span>
+	xcodebuild -project <span class="nv">$(XCODEPROJ)</span> <span class="se">\</span>
+                   -scheme <span class="nv">$(SCHEME)</span> <span class="se">\</span>
+                   -sdk iphonesimulator <span class="se">\</span>
+                   -destination <span class="nv">$(SIMULATOR)</span> <span class="se">\</span>
+                   -configuration <span class="nv">$(CONFIGURATION)</span> <span class="se">\</span>
+                   <span class="nv">CONFIGURATION_BUILD_DIR</span><span class="o">=</span><span class="nv">$(BUILD_PATH_SIMULATOR)</span> <span class="se">\</span>
+                   clean build
+
+	<span class="err">xcodebuild</span> <span class="err">-project</span> <span class="err">$(XCODEPROJ)</span> <span class="err">\</span>
+                   <span class="err">-scheme</span> <span class="err">$(SCHEME)</span> <span class="err">\</span>
+                   <span class="err">-sdk</span> <span class="err">iphoneos</span> <span class="err">\</span>
+                   <span class="err">-configuration</span> <span class="err">$(CONFIGURATION)</span> <span class="err">\</span>
+                   <span class="nv">CONFIGURATION_BUILD_DIR</span><span class="o">=</span><span class="nv">$(BUILD_PATH_IPHONE)</span> <span class="se">\</span>
+                   clean build
+
+	<span class="err">rm</span> <span class="err">-rf</span> <span class="err">$(BUILD_PATH_UNIVERSAL)</span>
+	<span class="err">mkdir</span> <span class="err">-p</span> <span class="err">$(BUILD_PATH_UNIVERSAL)</span>
+
+	<span class="err">cp</span> <span class="err">-Rv</span> <span class="err">$(BUILD_PATH_IPHONE)/$(FRAMEWORK_FOLDER)</span> <span class="err">$(BUILD_PATH_UNIVERSAL)</span> 
+
+	<span class="err">lipo</span> <span class="err">$(BUILD_PATH_SIMULATOR)/$(FRAMEWORK_FOLDER)/$(NAME)</span> <span class="err">$(BUILD_PATH_IPHONE)/$(FRAMEWORK_FOLDER)/$(NAME)</span> <span class="err">-create</span> <span class="err">-output</span> <span class="err">$(BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY)</span>
+
+<span class="nl">validate</span><span class="o">:</span> <span class="nf">validate.i386 validate.x86_64 validate.armv7 validate.arm64</span>
+
+<span class="nl">validate.%</span><span class="o">:</span>
+	<span class="p">@</span><span class="nb">printf</span> <span class="s2">"Validating </span><span class="nv">$*</span><span class="s2">... "</span>
+	<span class="p">@</span>lipo -info <span class="nv">$(BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY)</span> | grep -q <span class="s1">'$*'</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$(GREEN)</span><span class="s2">Passed</span><span class="nv">$(RESET)</span><span class="s2">"</span> <span class="o">||</span> <span class="o">(</span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$(RED)</span><span class="s2">Failed</span><span class="nv">$(RESET)</span><span class="s2">"</span>; <span class="nb">exit </span>1<span class="o">)</span>
+
+<span class="nl">zip</span><span class="o">:</span>
+	mkdir -p <span class="nv">$(DISTRIBUTION_PATH)</span>
+	<span class="nb">cd</span> <span class="nv">$(BUILD_PATH_UNIVERSAL)</span> <span class="o">&amp;&amp;</span> zip -r -FS <span class="nv">$(DISTRIBUTION_PATH)</span>/<span class="nv">$(ZIPBALL_NAME)</span> <span class="nv">$(FRAMEWORK_FOLDER)</span>
+
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="nv">$(BUILD_PATH)</span>
+	rm -rf <span class="nv">$(DISTRIBUTION_PATH)</span>
+</code></pre>
+</div>
+
+<h2 id="creating-a-component">Creating a Component</h2>
+
+<p>Here is corresponding <code class="highlighter-rouge">.make</code> file that is intended to be used by a consumer of ComponentOperations as a Component: <a href="https://github.com/stanislaw/CompositeOperations/blob/2fdbbbd6216d8838092de085608f1e0a2f257f52/Components.make/CompositeOperations.make">CompositeOperations/Components.make/CompositeOperations.make</a>. Give it a look before reading further.</p>
+
+<p>If convention: <code class="highlighter-rouge">Components.make/CompositeOperations.make</code> is not clear I recommend re-reading introductory post about Components one more time: <a href="http://lowlevelbits.org/components-management">Components: taking a step back from Dependency Management</a>.</p>
+
+<p>Most of the following should be self explanatory, I will just comment on things that are relevant to Components infrastructure:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># Components.make/CompositeOperations.make
+NAME=CompositeOperations
+VERSION=0.8.5
+
+GH_REPO=stanislaw/CompositeOperations
+ZIPBALL_URL=https://github.com/$(GH_REPO)/releases/download/$(VERSION)/CompositeOperations-iOS.zip
+
+### Paths
+
+COMPONENTS_BUILD_CACHE_PATH ?= $(HOME)/Library/Caches/Components
+COMPONENTS_INSTALL_PATH ?= ./Components
+</code></pre>
+</div>
+
+<p>These two “global” variables COMPONENTS_BUILD_CACHE_PATH and COMPONENTS_INSTALL_PATH are to be inherited from parent <code class="highlighter-rouge">components.sh</code> script who <code class="highlighter-rouge">exports</code> them, but “?=” is used to still allow running this <code class="highlighter-rouge">.make</code> file in isolation from parent Components infrastructure.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nv">COMPONENT_BUILD_PATH</span><span class="o">=</span><span class="nv">$(COMPONENTS_BUILD_CACHE_PATH)</span>/<span class="nv">$(NAME)</span>
+<span class="nv">COMPONENT_SOURCE_PATH</span><span class="o">=</span><span class="nv">$(COMPONENT_BUILD_PATH)</span>/<span class="nv">$(NAME)</span>-<span class="nv">$(VERSION)</span>
+<span class="nv">COMPONENT_FRAMEWORK_PATH</span><span class="o">=</span><span class="nv">$(COMPONENT_SOURCE_PATH)</span>/<span class="nv">$(NAME)</span>.framework
+
+<span class="nv">COMPONENT_INSTALL_PATH</span><span class="o">=</span><span class="nv">$(COMPONENTS_INSTALL_PATH)</span>/<span class="nv">$(NAME)</span>
+
+<span class="nv">ZIPBALL_PATH</span><span class="o">=</span><span class="nv">$(COMPONENT_BUILD_PATH)</span>/<span class="nv">$(NAME)</span>-<span class="nv">$(VERSION)</span>.zip
+
+<span class="c">### Targets
+</span>
+<span class="nl">.PHONY</span><span class="o">:</span> <span class="nf">install update uninstall clean prepare purge</span>
+
+<span class="nl">install</span><span class="o">:</span> <span class="nf">$(COMPONENT_INSTALL_PATH)</span>
+
+<span class="nl">uninstall</span><span class="o">:</span>
+	rm -rf <span class="nv">$(COMPONENT_INSTALL_PATH)</span>
+
+<span class="nl">update</span><span class="o">:</span> <span class="nf">uninstall install</span>
+
+<span class="nl">clean</span><span class="o">:</span>
+	rm -rf <span class="nv">$(COMPONENT_SOURCE_PATH)</span>
+	rm -rf <span class="nv">$(ZIPBALL_PATH)</span>
+
+<span class="nl">purge</span><span class="o">:</span> <span class="nf">uninstall clean</span>
+
+<span class="c">### Artefacts
+</span>
+<span class="nl">$(COMPONENT_INSTALL_PATH)</span><span class="o">:</span> <span class="nf">$(COMPONENT_SOURCE_PATH)</span>
+	mkdir -p <span class="nv">$(COMPONENT_INSTALL_PATH)</span>
+	cp -Rv <span class="nv">$(COMPONENT_FRAMEWORK_PATH)</span> <span class="nv">$(COMPONENT_INSTALL_PATH)</span>
+
+<span class="nl">$(COMPONENT_SOURCE_PATH)</span><span class="o">:</span> <span class="nf">$(ZIPBALL_PATH)</span>
+	unzip <span class="nv">$(ZIPBALL_PATH)</span> -d <span class="nv">$(COMPONENT_SOURCE_PATH)</span>
+
+<span class="nl">$(ZIPBALL_PATH)</span><span class="o">:</span> <span class="nf">$(COMPONENT_BUILD_PATH)</span>
+	wget --no-use-server-timestamps <span class="nv">$(ZIPBALL_URL)</span> -O <span class="nv">$(ZIPBALL_PATH)</span>
+
+<span class="nl">$(COMPONENT_BUILD_PATH)</span><span class="o">:</span>
+	mkdir -p <span class="nv">$(COMPONENT_BUILD_PATH)</span>
+</code></pre>
+</div>
+
+<p>In the lines that follow the “### Targets” comment all targets rely on “caching capability” of Make - when we run <code class="highlighter-rouge">make install</code> targets are evaluated in reverse order like:</p>
+
+<p><code class="highlighter-rouge">COMPONENT_INSTALL_PATH (depends on) -&gt; COMPONENT_SOURCE_PATH (depends on) -&gt; ZIPBALL_PATH (depends on) -&gt; COMPONENT_BUILD_PATH</code>.</p>
+
+<p>When Make finds that a particular target’s dependency’s target’s path exists and its modification time is not greater than that target’s path modification time, it does skip that step by not performing any real action. So for example if we already downloaded CompositeOperations-iOS.zip file which corresponds to <code class="highlighter-rouge">ZIPBALL_PATH</code>, Make will not try to download it again. This is why we use <code class="highlighter-rouge">wget --no-use-server-timestamps</code> to make sure that <code class="highlighter-rouge">ZIPBALL_PATH</code> will always be newer than modification date of its dependency: <code class="highlighter-rouge">COMPONENT_BUILD_PATH</code> target which is created on preceding step. Or another example: if $(COMPONENT_INSTALL_PATH) folder already exists, then Make will not perform any action at all. This caching capability of Make allows Components.sh script from introductory article to work <strong>very fast</strong> given we have all our Components build cache in place in <code class="highlighter-rouge">~/Library/Caches/Components</code> folder.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This post is one of the very first examples of how Make can be used inside Components infrastructure. Now we are looking forward to hear back from the community if Make will work for all of us at massive scale. Try creating your own Component.make and see it in action.</p>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Stanislav Pankevich</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Stanislav Pankevich</li>
+          <li><a href="mailto:s.pankevich@gmail.com">s.pankevich@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/stanislaw"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">stanislaw</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/sbpankevich"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">sbpankevich</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

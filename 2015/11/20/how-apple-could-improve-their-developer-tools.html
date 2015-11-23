@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>How Apple could improve Their Developer Tools</title>
+  <meta name="description" content="This is the summary of numerous discussions I had with my colleague Alex Denisov about our developer experience related to Xcode and iOS development in general.">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://stanislaw.github.io/2015/11/20/how-apple-could-improve-their-developer-tools.html">
+  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich" href="https://stanislaw.github.io/feed.xml">
+  <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70472472-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Stanislav Pankevich</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How Apple could improve Their Developer Tools</h1>
+    <p class="post-meta"><time datetime="2015-11-20T20:53:34+01:00" itemprop="datePublished">Nov 20, 2015</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>This is the summary of numerous discussions I had with my colleague <a href="http://lowlevelbits.org/">Alex Denisov</a> about our developer experience related to Xcode and iOS development in general.</p>
+
+<p>I would like to share our thoughts to community because definitely there are gaps in Xcode infrastructure that have negative impact on our developer’s productivity and hence the final quality of products we produce.</p>
+
+<p>The following topics are considered:</p>
+
+<ul>
+  <li>Monoliths are always bad
+    <ul>
+      <li>Xcode</li>
+      <li>project.pbxproj</li>
+    </ul>
+  </li>
+  <li>Visual vs Semantic (“mouse-driven” vs “keyboard-driven” development)
+    <ul>
+      <li>Auto Layout</li>
+      <li>Xibs/Storyboards</li>
+      <li>Focused tests</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="monoliths-are-always-bad-so-why-are-they-still-here">Monoliths are always bad so why are they still here?</h2>
+
+<p>The problem with monoliths is that they either scale poorly or do not scale at all: <a href="https://www.thoughtworks.com/de/insights/blog/monoliths-are-bad-design-and-you-know-it">Monoliths are Bad Design… and You Know It</a>.</p>
+
+<p>We do understand that monolith is always a necessary step for some thing to emerge, grow and become mature. But at some point monolith has to be decomposed into a modular components so that each component does have <a href="https://en.wikipedia.org/wiki/Single_responsibility_principle">one single responsibility</a> and so that it can be developed in isolation without affecting the rest of the system. In that sense LLVM emerged as reaction to monolithic GCC, Carthage, “decentralized dependency manager” opposes to more “centralized” CocoaPods, modular AFNetworking 2 was a reaction to monolithic AFNetworking 1 so on and so on.</p>
+
+<p>We also have one example of how Apple fixed one of its Big Monoliths: Storyboards. It took quite a few years before from Apple we got “official” functionality to split huge Storyboard files into a smaller single-story-focused ones while Open Source libraries like RBStoryboardLink had been introduced much earlier, in 2012:  <a href="https://github.com/rob-brown/RBStoryboardLink/blob/dab792e5e3707634dd16300cd8e9874e5151805e/README.md#deprecated">RBStoryboardLink - DEPRECATED</a>.</p>
+
+<p>Aside from that positive precedent with Storyboards many of those Monoliths are still here. Let’s look at the most critical of them.</p>
+
+<h3 id="xcode">Xcode</h3>
+
+<p>Obviously the biggest monolith is Xcode itself: its main blocks are text editor and interface builder, the others are related to Build Settings management, Apple account management, Source Control integration etc (<a href="http://devcodehack.com/xcode-sucks-and-heres-why/">Xcode Sucks And Here’s Why</a>).</p>
+
+<p>We don’t see what’s the rational behind having one huge app doing all that, instead we see how in Xcode 7 switching between code- and xib- files literally can take 10+ seconds, we see simulators hanging, crashing or starting from scratch (apple on a black screen 5+ times a work day). We never use source control functionality as it is much more poor compared to what we can have by “just” using command line or specialized tools like <a href="https://www.sourcetreeapp.com/">SourceTree</a>.</p>
+
+<p>Currently more and more people switch to using AppCode which is better focused coding IDE. It doesn’t have Interface Builder and other modules that Xcode has but instead provides better code analysis and refactoring tools because, I believe, AppCode developers can concentrate on doing things well by not doing things that are not really needed (though for example <a href="https://www.jetbrains.com/objc/features/">CocoaPods support</a> is not what I would expect from a “smarter” IDE as AppCode, looks like they also sometimes tend to onboard trendy thingies just to have “everything covered”).</p>
+
+<h3 id="projectpbxproj">project.pbxproj</h3>
+
+<p>The project.pbxproj file is what we consider the second biggest monolith after Xcode.</p>
+
+<p>I bet that if you ever have a chance to look at this file from beginning to end you always have the same impression that I have: this file is not to be managed for humans and I would say is not designed for humans in mind in general.</p>
+
+<p>Apart from having poor format which has those comments describing obscure identifiers everywhere (<code class="highlighter-rouge">867CFE661BFFDC5E001F85A8</code> is a <code class="highlighter-rouge">/* ViewController.m */</code> so that you know) it does quite a lot of things that we would like to have under our complete human control i.e. would like all of the following to be readable and editable as plain text files that humans can easily understand and therefore can maintain:</p>
+
+<ul>
+  <li>Project structure</li>
+  <li>Configurations</li>
+  <li>Targets</li>
+  <li>Schemes</li>
+  <li>Build Settings</li>
+  <li>Code signing details,</li>
+  <li>Run Scripts (yo <code class="highlighter-rouge">shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";</code>)</li>
+  <li>Build Phases (yo <code class="highlighter-rouge">74E916613A2758307FB74A44 /* Embed Pods Frameworks */ = {</code>),</li>
+</ul>
+
+<p>We didn’t manage yet to play around CMake to maintain iOS project structure but I strongly believe that next replacement for .pbxproj will be some build system based on text files and inspired by mature build systems like Make, CMake, Ninja, Gradle etc and yes it will be designed <strong>for humans</strong>.</p>
+
+<p>Below we discuss some of the issues that prevent us from moving away from rigid .pbxproj structure.</p>
+
+<h4 id="groups-vs-folders">Groups vs Folders</h4>
+
+<p>We never need groups - our groups always match just real folders. We even consider it as anti-pattern if one uses different structures for groups/files and folders/files because it usually indicates the lack of understanding and care about the semantics of project structure.</p>
+
+<p>I mentioned it already: we are even very close to start replicating Xcode iOS project skeleton using CMake and start developing our apps using it by maintaining our project structure using <code class="highlighter-rouge">CMakeLists.txt</code> pretty much the same as LLVM developers do it.</p>
+
+<p>I specially asked my colleague Android developer and he confirmed that they do not have this concept of Groups so that when you add a new file your Git working tree contains only that file and nothing else and quite to the opposite: when we add file to Xcode, also the corresponding entry is added to project.pbxproj which take us to the land of merge/rebase conflicts.</p>
+
+<h4 id="xcconfig-wrapping-and-inheritance">xcconfig: wrapping and inheritance</h4>
+
+<p>Had we better xcconfig parser we could nicely abstract our build settings configuration and also manage build settings of our third-party components that we use.</p>
+
+<p><a href="http://www.cocoabuilder.com/archive/xcode/251602-xcconfig-files-line-wrap-and-inheriting.html">This question</a> was asked in 2006 and we are still there:</p>
+
+<p>Line wrapping:</p>
+
+<blockquote>
+  <blockquote>
+    <p>I have a line longer than the width of my monitor: can I break it up? The C way doesn’t work.</p>
+  </blockquote>
+</blockquote>
+
+<blockquote>
+  <p>You can turn on wrapping in the editor, but no, the very, very simple
+parser for .xcconfig files doesn’t support broken-up lines.</p>
+</blockquote>
+
+<p>The benefit from this feature would be better readability and lower risks of potential merge conflicts (example: one long string of <code class="highlighter-rouge">-Warning-flags</code> is again the monolith).</p>
+
+<p>Inheritance - <a href="http://stackoverflow.com/questions/1393987/how-to-append-values-in-xcconfig-variables">How to append values in xcconfig variables?</a>:</p>
+
+<blockquote>
+  <blockquote>
+    <p>Does anyone had success appending new values to variables in xcconfig files?</p>
+  </blockquote>
+</blockquote>
+
+<blockquote>
+  <p>For reasons stated in other answers to this question, you can’t inherit values easily.</p>
+</blockquote>
+
+<p>The recommended workaround there is to namespace corresponding variables and merge them into one final xcconfig at the last step:</p>
+
+<blockquote>
+  <p>merge.xcconfig:</p>
+</blockquote>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>OTHER_CFLAGS = $(inherited) $(APP_PLATFORM_CFLAGS) $(APP_PROJECT_CFLAGS) $(APP_TARGET_CFLAGS)
+</code></pre>
+</div>
+
+<p>As another workaround CocoaPods uses its own generator of final configuration-specific xcconfig file which merges into it all the Pods xcconfigs:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// Pods/Target\ Support\ Files/Pods/Pods.debug.xcconfig 
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AFNetworking" "${PODS_ROOT}/Headers/Public/ObjectiveSugar"
+</code></pre>
+</div>
+
+<p>We could instead have:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>// AFNetworking.xcconfig
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public/AFNetworking"
+
+// FinalConfig.xcconfig
+#include "AFNetworking.xcconfig"
+</code></pre>
+</div>
+
+<h2 id="visual-vs-semantic-mouse-driven-vs-keyboard-driven-development">Visual vs Semantic: mouse-driven vs keyboard-driven development</h2>
+
+<p>A few examples are better than a paragraph, they are in random order so guess which is which:</p>
+
+<ul>
+  <li>Pressing Command + U key to run tests instead of clicking on small green/red icon</li>
+  <li>Using mouse to set up complex auto layout in Storyboard instead of doing the same using some code DSL like <a href="https://github.com/robb/Cartography">Carthography</a> / <a href="https://github.com/SnapKit/SnapKit">SnapKit</a></li>
+  <li>Building static framework using Makefile or CMake instead using Build action in Xcode</li>
+  <li>Opening quake-like terminal using F1 key and doing Git stuff in it instead of using Xcode embedded Source Control tools.</li>
+</ul>
+
+<p>Yes, mouse can help us to come up with something simple quickly in just a few clicks but as soon as our system becomes more complex it becomes very hard to manage that complexity with a mouse or trackpad.</p>
+
+<p><em><strong>Our thesis is that Apple should invest more of its huge intellectual resources into development of semantics of its Developer Tools infrastructure (good example: Testing frameworks) rather than development of “all covered” visual studio because mouse-driven development just does not scale while semantics, eternal OOP, SOLID principles and they are all about making things scalable.</strong></em></p>
+
+<p>Currently it looks like Apple rather favours mouse-oriented developers - every time new UI feature appears we more likely first get new clickable items in Xcode but corresponding semantics on code and infrastructure level is often poor and does not help us to manage complexity and maintain good separation of concerns. Again, let’s look at some examples.</p>
+
+<h3 id="auto-layout-and-ui-in-general">Auto layout and UI in general</h3>
+
+<p>If we look at Web we’ll see that clean separation between content (HTML) and styles (CSS) was introduced at the rather early stage of its evolution. The fact that both content and styles can be managed by plain text files should have inspired Apple to introduce something based on the same principle. I am not sure if there is any specific reason why concept similar to the concept of stylesheets was not introduced yet.</p>
+
+<p>With current native tools you cannot succeed in management of complex auto layout: we neither have visual tools that would allow us to set up constraints for complex views (unless we are True Mouse Clickers) nor we have fine-grained DSLs developed by Apple officially (that’s why we sometimes have those crazy amounts of <code class="highlighter-rouge">addConstraint:</code> given we want to stay native).</p>
+
+<p><em><strong>This is why so many Open Source solutions appear to compensate that lack of native support for semantics of UI: good examples are ComponentKit and different Auto Layout DSLs like Carthography, Snapkit and Parus. It is worth mentioning that so far AFAIK nobody ever tried to create alternative to Interface Builder because nobody wants to compensate THAT mouse-driven thing.</strong></em></p>
+
+<h3 id="we-dont-need-xibs-in-our-binaries-and-there-is-no-need-in-overhead-of-loading-them-via-runtime">We don’t need Xibs in our binaries and there is no need in overhead of loading them via Runtime</h3>
+
+<p>One important thing that contributes to this gap between Interface Builder level and Objective-C/Swift code level implementations is the fact that we do not have access to intermediate representation that is produced from our Storyboards and Xibs. We only get final artefacts like View Controllers or Views in Runtime space when application is already a binary and is on the air.</p>
+
+<p>Completely alternative approach would be to generate intermediate code in a form of classes based on Factory Pattern so that for particular View Controller or View we could have access to their Factories generated from their Xib/Storyboard files. Not only it would allow developers to observe their artefacts long before compilation process even starts but would also eliminate overhead of both compilation time and runtime instantiation. Can you imagine your application binary without Xibs/Storyboards in its resources folder, can you expect better performance seen in Instruments?</p>
+
+<p>Having that direction taken eventually we would realize that those factories are now to be managed <strong>by humans</strong> and this could initiate a new cycle in our UI programming practice.</p>
+
+<h3 id="focused-tests-feature-is-missing-in-xctest">Focused tests feature is missing in XCTest</h3>
+
+<p>It have been there for years in Cedar testing framework: <a href="https://github.com/pivotal/cedar/wiki/Getting-started#focused-specs">Focused specs</a>. But using XCTest when you want to run one test or one test class in a focused mode the only way to do that is to click that small green/red icon using your mouse/trackpad which is completely counter productive as it adds additional complexity to the TDD flow which always implies fast iteration.</p>
+
+<p>We could just have conventions like <code class="highlighter-rouge">- (void)ftest...</code> or even better Clang annotations to instruct XCTest to run Command+U on only the tests that we marked as a focused group.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>To be honest we have many more of those ideas that we could share with Apple if we were sure that there actually is anybody who is ready to listen. For example, the third biggest Monolith that I didn’t write about is of course xcodebuild which is another story probably for the Part 2 of this post.</p>
+
+<p>To wrap it up: aside from examples given above we find those simple principles or heuristics very valuable in our development practice:</p>
+
+<ul>
+  <li>Stay away from monoliths. If you have one think carefully and break it into components and make them as fine-grained as you can using <a href="https://en.wikipedia.org/wiki/Coupling_(computer_programming)">“loose coupling, high cohesion”</a> principle.</li>
+  <li>Mouse-driven development doesn’t scale while plain text files with carefully designed classes or DSLs in them at least have a chance to.</li>
+</ul>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Stanislav Pankevich</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Stanislav Pankevich</li>
+          <li><a href="mailto:s.pankevich@gmail.com">s.pankevich@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/stanislaw"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">stanislaw</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/sbpankevich"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">sbpankevich</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
