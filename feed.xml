@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 23 Nov 2015 16:35:52 +0100</pubDate>
-    <lastBuildDate>Mon, 23 Nov 2015 16:35:52 +0100</lastBuildDate>
+    <pubDate>Mon, 23 Nov 2015 16:36:49 +0100</pubDate>
+    <lastBuildDate>Mon, 23 Nov 2015 16:36:49 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -41,7 +41,7 @@
 
 &lt;p&gt;Instead of crafting artifical example I have rather decided to show how I use Make to maintain my own library: &lt;a href=&quot;https://github.com/stanislaw/CompositeOperations&quot;&gt;CompositeOperations&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;CompositeOperations is distributed as static framework so I also recommend reading the following topic on StackOverflow where &lt;a href=&quot;https://github.com/skywinder&quot;&gt;Petr Korolev&lt;/a&gt; and I explain how to create iOS Static Framework: &lt;a href=&quot;http://stackoverflow.com/questions/29634466/how-to-export-fat-cocoa-touch-framework-for-simulator-and-device/31270427#31270427&quot;&gt;How to export “fat” Cocoa Touch Framework (for Simulator and Device)?&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;CompositeOperations is distributed as static framework so I also recommend reading the following topic on StackOverflow where &lt;a href=&quot;https://github.com/skywinder&quot;&gt;Petr Korolev&lt;/a&gt; and I explain how to create iOS Static Framework: &lt;a href=&quot;http://stackoverflow.com/questions/29634466/how-to-export-fat-cocoa-touch-framework-for-simulator-and-device/31270427#31270427&quot;&gt;How to export “fat” Cocoa Touch Framework (for Simulator and Device)?&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;building-a-static-ios-framework&quot;&gt;Building a static iOS framework&lt;/h2&gt;
 
