@@ -1,3 +1,0 @@
-
-require 'jekyll'
-require 'octopress'
