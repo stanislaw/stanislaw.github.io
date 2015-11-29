@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Stanislav Pankevich</title>
+    <title>Stanislav Pankevich&#39;s blog</title>
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 23 Nov 2015 16:36:49 +0100</pubDate>
-    <lastBuildDate>Mon, 23 Nov 2015 16:36:49 +0100</lastBuildDate>
+    <pubDate>Sun, 29 Nov 2015 12:45:49 +0100</pubDate>
+    <lastBuildDate>Sun, 29 Nov 2015 12:45:49 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
