@@ -5,9 +5,20 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 29 Nov 2015 13:09:20 +0100</pubDate>
-    <lastBuildDate>Sun, 29 Nov 2015 13:09:20 +0100</lastBuildDate>
+    <pubDate>Mon, 14 Dec 2015 21:16:01 +0100</pubDate>
+    <lastBuildDate>Mon, 14 Dec 2015 21:16:01 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Test Automation for iOS (written for Blacklane Tech Blog)</title>
+        <description>&lt;p&gt;This is the post I have written for the engineering blog of &lt;a href=&quot;https://www.blacklane.com&quot;&gt;Blacklane GmbH&lt;/a&gt;, the company where I currently work. See it on &lt;a href=&quot;https://tech.blacklane.com/2015/12/13/test-automation-for-ios/&quot;&gt;tech.blacklane.com&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 14 Dec 2015 20:53:28 +0100</pubDate>
+        <link>https://stanislaw.github.io/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html</link>
+        <guid isPermaLink="true">https://stanislaw.github.io/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>How to build a static iOS framework and distribute it as a Component using Make</title>
