@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 28 Feb 2016 22:07:05 +0100</pubDate>
-    <lastBuildDate>Sun, 28 Feb 2016 22:07:05 +0100</lastBuildDate>
+    <pubDate>Thu, 10 Mar 2016 22:17:35 +0100</pubDate>
+    <lastBuildDate>Thu, 10 Mar 2016 22:17:35 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -58,7 +58,6 @@ HERE_INTERMEDIATES=$(HERE_BUILD)/Intermediates
 
 // Paths 
 // the following paths are enough to redirect everything to $HERE_BUILD
-BUILD_DIR           = $(HERE_BUILD)/Products
 OBJROOT             = $(HERE_INTERMEDIATES)
 SHARED_PRECOMPS_DIR = $(HERE_INTERMEDIATES)/PrecompiledHeaders
 SYMROOT             = $(HERE_BUILD)/Products
