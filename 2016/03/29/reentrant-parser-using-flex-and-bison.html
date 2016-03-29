@@ -158,7 +158,7 @@ SPACE \x20
         free($1);
     }
     | Token_Number {
-        printf("[Parser, number]\n");
+        printf("[Parser, number] %d\n", $1);
 
         [consumer parserDidParseNumber:$1];
     }
@@ -200,7 +200,7 @@ yyparse(scanner, parserConsumer);
 [Parser, string] UNICORN
 [Consumer, string] UNICORN
 [Lexer, number] 1234
-[Parser, number]
+[Parser, number] 1234
 [Consumer: number] 1234
 [Lexer, string] UNICORN
 [Parser, string] UNICORN
