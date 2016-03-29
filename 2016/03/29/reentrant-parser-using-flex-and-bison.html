@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Reentrant parser using Flex and Bison</title>
+  <meta name="description" content="Introduction">
+
+  
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="https://stanislaw.github.io/2016/03/29/reentrant-parser-using-flex-and-bison.html">
+  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich's blog" href="https://stanislaw.github.io/feed.xml">
+  <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70472472-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Stanislav Pankevich's blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Reentrant parser using Flex and Bison</h1>
+    <p class="post-meta"><time datetime="2016-03-29T02:04:34+02:00" itemprop="datePublished">Mar 29, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <h2 id="introduction">Introduction</h2>
+
+<p>In this post I share my knowledge I gained around the process of creation of reentrant aka thread-safe parser based on Flex and Bison and integrated to Xcode project (Mac OS X system).</p>
+
+<p>The post consists of two parts:</p>
+
+<ol>
+  <li>quick introduction to Flex and Bison with example</li>
+  <li>example of reentrant parser implemented and integrated to Xcode project.</li>
+</ol>
+
+<p>Feel free to skip introduction and proceed to section <a href="#Reentrant-parser">Reentrant parser</a> or even jump straight to <a href="https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison">example project on Github</a> if you know exactly what you are looking for.</p>
+
+<h2 id="what-are-flex-and-bison">What are Flex and Bison?</h2>
+
+<p>For complete definitions you may read these projects pages: <a href="http://flex.sourceforge.net/">Flex</a> and <a href="https://www.gnu.org/software/bison/">Bison</a>, for this post the following simplified explanation will suffice:</p>
+
+<p>Flex is a program that generates “lexer” (also called “scanner” or “tokenizer”) based on grammar you specify in a special format. Given some input this generated lexer recognizes tokens (also called lexical patterns) and for each token recognized executes specific C code corresponding to that token.</p>
+
+<p>Flex can be used as standalone tool but most often it is used together with Bison: Flex delegates execution of “specific C code” corresponding to particular token to Bison, so that responsibility of Lexer is to produce tokens and responsibility of Bison is to decide what to do with those tokens, what actions to do.</p>
+
+<p>In a nutshell, imperatively, parser is a switch-of-switches-…of-switches. Flex and Bison provide developers with a higher-level abstraction to write their parsers in a declarative way while those tools generate imperative parsing machinery in C language under the hood.</p>
+
+<p>Note: in context of Flex/Bison there are two meanings of the word “parser” and both of them are used very often: parser as Bison (compared to Flex as lexer) and parser as the Flex+Bison together (which is actually lexer + parser).</p>
+
+<h3 id="use-case-examples">Use case examples</h3>
+
+<p>Flex/Bison can be useful for parsing of anything that has grammar, explicit or implicit. Non-exhaustive list includes:</p>
+
+<ul>
+  <li>Compilers</li>
+  <li>Parsers</li>
+  <li>Domain-Specific Languages</li>
+  <li>Validators / lint tools</li>
+</ul>
+
+<p>One example where I first saw Flex and Bison in action was <a href="https://github.com/AlexDenisov/Hasm">toy assembler compiler</a>. Here are examples: of its <a href="https://github.com/AlexDenisov/Hasm/blob/c90bdd2ff72523e40b143f3379e7a264d8a18760/Hasm/Tokenizer/Lexer.lm">Flex grammar</a> and <a href="https://github.com/AlexDenisov/Hasm/blob/c90bdd2ff72523e40b143f3379e7a264d8a18760/Hasm/Parser/Parser.ym">Bison grammar</a>.</p>
+
+<p>My own use case is parser of terminal input that I am writing as part of my toy terminal. Writing terminal includes dealing with numerous <a href="http://invisible-island.net/xterm/ctlseqs/ctlseqs.html">escape sequences</a> so I use Flex and Bison to deal with those details on a higher level.</p>
+
+<h3 id="simple-example">Simple example</h3>
+
+<p>Original of this simplified example is demo project I have created: <a href="https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison">Reentrant parser with Flex and Bison</a>.</p>
+
+<p>Here is fragment of its Flex’s grammar where lexer recognizes numbers and strings from input it is given:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>NUMBER [0-9]+
+STRING [A-Z]+
+SPACE \x20
+
+{NUMBER} {
+    yylval-&gt;numericValue = (int)strtoul(yytext, NULL, 10);
+    
+    printf("[Lexer, number] %s\n", yytext);
+    
+    return Token_Number;
+}
+
+{STRING} {
+    yylval-&gt;stringValue = strdup(yytext);
+    
+    printf("[Lexer, string] %s\n", yytext);
+    
+    return Token_String;
+}
+
+{SPACE} {
+    // Do nothing, just eat spaces
+}
+</code></pre>
+</div>
+
+<p>By setting <code class="highlighter-rouge">yylval-&gt;...</code> and returning specific Token Flex notifies Bison that it should take some action on it. If Flex receives space character it just ignores it without letting parser about it.</p>
+
+<p>Corresponding Parser’s grammar:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>token:
+    Token_String {
+        printf("[Parser, string] %s\n", $1);
+
+        [consumer parserDidParseString:$1];
+
+        free($1);
+    }
+    | Token_Number {
+        printf("[Parser, number]\n");
+
+        [consumer parserDidParseNumber:$1];
+    }
+</code></pre>
+</div>
+
+<p>Given our consumer (arbitrary Objective-C class, this is easy configurable by Flex/Bison) is the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="k">@implementation</span> <span class="nc">ParserConsumer</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">parserDidParseString</span><span class="p">:(</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="nv">string</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[Consumer, string] %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">string</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">parserDidParseNumber</span><span class="p">:(</span><span class="kt">int</span><span class="p">)</span><span class="nv">number</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"[Consumer: number] %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">number</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre>
+</div>
+
+<p>and given the input string is the:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>char input[] = "RAINBOW UNICORN 1234 UNICORN";
+
+yy_scan_string(input, scanner);
+
+yyparse(scanner, parserConsumer);
+</code></pre>
+</div>
+
+<p>here is the output we’ll see from Xcode:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[Lexer, string] RAINBOW
+[Parser, string] RAINBOW
+[Consumer, string] RAINBOW
+[Lexer, string] UNICORN
+[Parser, string] UNICORN
+[Consumer, string] UNICORN
+[Lexer, number] 1234
+[Parser, number]
+[Consumer: number] 1234
+[Lexer, string] UNICORN
+[Parser, string] UNICORN
+[Consumer, string] UNICORN
+&lt;&lt;EOF&gt;&gt;
+</code></pre>
+</div>
+
+<h3 id="xcode-has-flexbison-out-of-box">Xcode has Flex/Bison out of box</h3>
+
+<p>It can be surprising but Xcode supports flex/bison out of the box. If you add any Flex file with <code class="highlighter-rouge">.lm</code> extension (example: <code class="highlighter-rouge">lexer.lm</code>) and any Bison file with <code class="highlighter-rouge">.ym</code> extension (example: <code class="highlighter-rouge">parser.lm</code>), Xcode will automatically start compiling them without any other action from your side. Having those files you can import Flex+Bison parser into your project’s code:</p>
+
+<p><code class="highlighter-rouge">
+#import "y.tab.h"
+</code></p>
+
+<p>Note: file <code class="highlighter-rouge">"y.tab.h"</code> is parser file generated by default by Xcode in runtime - it doesn’t exists at first but it will be there as soon as your grammar files: <code class="highlighter-rouge">lexer.lm</code> and <code class="highlighter-rouge">parser.ym</code> are added to Xcode project and are compiled (they are in Compile Sources of your target).</p>
+
+<p><a href="https://github.com/epatel/ParserTest">A demo project showing the use of yacc and lex (bison, flex) in a Xcode project</a>.</p>
+
+<p><a href="https://github.com/AlexDenisov/Hasm">HASM: toy assembler compiler</a> is also based on this Xcode’s feature.</p>
+
+<p>However, there are two unfortunate limitations of Xcode:</p>
+
+<p>First, Bison is GNU tool from OSX that Xcode uses is very old:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ bison --version
+bison (GNU Bison) 2.3
+Written by Robert Corbett and Richard Stallman.
+
+Copyright (C) 2006 Free Software Foundation, Inc.
+</code></pre>
+</div>
+
+<p>This one is partially related to current limitation of Mac OS X itself: <a href="https://www.quora.com/What-is-the-reason-for-some-of-the-Linux-tools-on-OS-X-being-so-old-Is-this-related-to-GPL-licensing">What is the reason for some of the Linux tools on OS X being so old? Is this related to GPL licensing?</a></p>
+
+<p>Second, which is consequence of the first: it is not possible to make Flex/Bison to work as reentrant parser (I did struggle to accomplish this using Xcode’s default Flex/Bison but didn’t succeed because most of the tutorials for reentrant parsers address newer versions of Bison).</p>
+
+<p>The following describes what reentrant parser is and how to accomplish its setup in Xcode project.</p>
+
+<p><a name="Reentrant-parser"></a></p>
+
+<h2 id="reentrant-parser">Reentrant parser</h2>
+
+<p>Both Flex and Bison are not reentrant (another word is “pure”) by default. Reentrance is closely related to thread safery. Due to their legacy history both Flex and Bison use a bunch of global variables for their machinery so it is not possible to run them in multi-threaded application because different threads affect the same global state shared by instances of Flex and Bison. However they both can be switched to “pure” mode:</p>
+
+<p>Flex (from <a href="http://flex.sourceforge.net/manual/Reentrant.html">19 Reentrant C Scanners</a>):</p>
+
+<blockquote>
+  <p>flex has the ability to generate a reentrant C scanner. This is accomplished by specifying %option reentrant (‘-R’) The generated scanner is both portable, and safe to use in one or more separate threads of control. The most common use for reentrant scanners is from within multi-threaded applications. Any thread may create and execute a reentrant flex scanner without the need for synchronization with other threads.</p>
+</blockquote>
+
+<p>Bison (from <a href="http://www.gnu.org/software/bison/manual/html_node/Pure-Decl.html">3.7.10 A Pure (Reentrant) Parser</a>:</p>
+
+<blockquote>
+  <p>A reentrant program is one which does not alter in the course of execution; in other words, it consists entirely of pure (read-only) code. Reentrancy is important whenever asynchronous execution is possible; for example, a nonreentrant program may not be safe to call from a signal handler. In systems with multiple threads of control, a nonreentrant program must be called only within interlocks.</p>
+</blockquote>
+
+<blockquote>
+  <p>Normally, Bison generates a parser which is not reentrant. This is suitable for most uses, and it permits compatibility with Yacc. (The standard Yacc interfaces are inherently nonreentrant, because they use statically allocated variables for communication with yylex, including yylval and yylloc.)</p>
+</blockquote>
+
+<h3 id="why-would-one-need-reentrant-parser">Why would one need reentrant parser?</h3>
+
+<p>The use case is obvious: using multiple instances of parser to parse data in parallel (can be BIG data that you want to speed up).</p>
+
+<p>My use case is quite demostrative: my toy terminal support tabs which means it can have more than 1 connections to ttys. I don’t want the parsers of those connections to interfere so this is where reentrancy kicks in: each terminal window has corresponding thread with instance of parser based on Flex/Bison, that parses input of its own terminal, reentrancy ensures that each thread does parsing job in isolation from the other terminal threads.</p>
+
+<h3 id="setup-instructions">Setup instructions</h3>
+
+<p>The following is based on this example project: <a href="https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison">Reentrant parser with Flex and Bison</a>. Feel free to clone it and see everything in detail.</p>
+
+<p>0) Xcode project and folder Parser next to it:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>├── Makefile
+├── Parser
+│   ├── Lexer.lm
+│   ├── Parser.ym
+│   └── ParserConsumer.h
+├── Reentrant-Parser-Using-Flex-and-Bison (Xcode project)
+└── bin
+    │── bison
+    └── flex
+</code></pre>
+</div>
+
+<p>1) First of all take latest Flex and Bison: <code class="highlighter-rouge">brew install flex</code> and <code class="highlighter-rouge">brew install bison</code> and copy their binaries to local <code class="highlighter-rouge">bin</code> folder of your project (this is for convenience).</p>
+
+<p>2) As described above we need to generate our lexer and parser outside of Xcode. I do this using make:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>generate-parser: clean flex bison
+
+clean:
+    rm -rf './Parser/Generated Code'
+    mkdir -p './Parser/Generated Code'
+
+flex:
+    ./bin/flex ./Parser/Lexer.lm
+
+bison:
+    ./bin/bison -d ./Parser/Parser.ym
+</code></pre>
+</div>
+
+<p>the resulting file structure:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>├── Makefile
+├── Parser
+│   ├── Generated\ Code (this appears only with 'make generate-parser)
+│   │   ├── lexer.h
+│   │   ├── lexer.m
+│   │   ├── parser.h
+│   │   └── parser.m
+│   ├── Lexer.lm
+│   ├── Parser.ym
+│   └── ParserConsumer.h
+├── Reentrant-Parser-Using-Flex-and-Bison (Xcode project)
+</code></pre>
+</div>
+
+<p>3) In Xcode add Parser folder: make sure to <strong>exclude Lexer.lm and Parser.ym</strong> from your project’s target otherwise Xcode will try to use its out-of-the-box Flex+Bison. Make sure to include the runtime-generated lexer.m and parser.m because those are your actual Parser.</p>
+
+<p>4) Add <code class="highlighter-rouge">make</code> as a a <a href="/images/2016-03-29-reentrant-parser-using-flex-and-bison/Example-Build-phases.png">Build Phase</a>.</p>
+
+<p>5) Make some use your grammar. See how I do it with mine in example on Github: <a href="https://github.com/stanislaw/Examples/blob/5a3c8d81c3ae4bbc896915ba12dafcc262debb3e/Reentrant-Parser-Using-Flex-and-Bison/Reentrant-Parser-Using-Flex-and-Bison/main.m">Reentrant parser with Flex and Bison: main.m</a>.</p>
+
+<h3 id="gotchas">Gotchas</h3>
+
+<h4 id="it-is-extremely-convenient-to-make-flex-and-bison-explicitly-produce-1-headers-along-with-code-files-2-headers-and-code-with-good-names">It is extremely convenient to make Flex and Bison explicitly produce: 1) headers along with code files 2) headers and code with good names</h4>
+
+<p>Flex (Lexer.lm):</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>%option header-file = "./Parser/Generated Code/lexer.h"
+%option outfile     = "./Parser/Generated Code/lexer.m"
+</code></pre>
+</div>
+
+<p>Bison (Parser.ym:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>%output  "Parser/Generated Code/parser.m"
+%defines "Parser/Generated Code/parser.h"
+</code></pre>
+</div>
+
+<p>This was the only way I could resolve all import conflicts (see next).</p>
+
+<h4 id="import-order-is-important">Import order is important</h4>
+
+<p>Otherwise one can run into all sorts of conflicts that arise from a circular dependencies between Flex and Bison. The following order works for me:</p>
+
+<p>Your code:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>#import "parser.h"
+#import "lexer.h"
+</code></pre>
+</div>
+
+<p>Flex (Lexer.lm):</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>%{
+#import "parser.h"
+%}
+</code></pre>
+</div>
+
+<p>Bison (Parser.ym:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>%{
+#import "parser.h"
+#import "lexer.h"
+%}
+</code></pre>
+</div>
+
+<h2 id="other-helpful-tips-for-working-with-flex-and-bison">Other helpful tips for working with Flex and Bison</h2>
+
+<h3 id="disable-default-rule">Disable default rule</h3>
+
+<p>Taken from <a href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>, this one is must:</p>
+
+<blockquote>
+  <p>Die with an error message on unmatched characters instead of echoing them. We advise you not to rely on the default rule for sake of completeness, therefore, you should always use it to find holes in your rules.</p>
+</blockquote>
+
+<h3 id="enabling-lexers-debug-option-can-be-quite-helpful">Enabling lexer’s ‘debug’ option can be quite helpful</h3>
+
+<p>Taken from <a href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>. Author recommends avoiding printf however I still use it quite often, this probably depends on grammar:</p>
+
+<p><code class="highlighter-rouge">%option debug</code></p>
+
+<blockquote>
+  <p>Produce a scanner which can be traced. This introduce a variable, yy_flex_debug, which, when set to a non zero value, triggers tracing messages on the standard error output.</p>
+</blockquote>
+
+<blockquote>
+  <p>You are encouraged to use this option, in particular when developing your scanner, and to have some option to set yy_flex_debug. In particular, never write printf-like tracing code in your scanner: that’s an absolute waste of time.</p>
+</blockquote>
+
+<h3 id="working-with-continous-scanning-stream-like-socket">Working with continous scanning stream (like socket)</h3>
+
+<p><strong>TLDR;</strong> redefine <code class="highlighter-rouge">YY_INPUT</code> macro.</p>
+
+<p>For details see these two topics: <a href="http://stackoverflow.com/questions/36242886/how-to-detect-partial-unfinished-token-and-join-its-pieces-that-are-obtained-fro?lq=1">How to detect partial unfinished token and join its pieces that are obtained from two consequent portions of input?</a> and <a href="http://stackoverflow.com/questions/23979378/flex-continuous-scanning-stream-from-socket-did-i-miss-something-using-yywra?lq=1">Flex, continuous scanning stream (from socket). Did I miss something using yywrap()?</a>.</p>
+
+<h2 id="demo-projects">Demo projects</h2>
+
+<h3 id="non-reentrant-parsers-using-default-xcodes-flexbison">Non-reentrant parsers using default Xcode’s Flex/Bison</h3>
+
+<p><a href="https://github.com/epatel/ParserTest">A demo project showing the use of yacc and lex (bison, flex) in a Xcode project</a></p>
+
+<p><a href="https://github.com/AlexDenisov/Hasm">HASM - Assembler for http://www.nand2tetris.org</a></p>
+
+<h3 id="reentrant-parsers-normal-command-line-flexbison">Reentrant parsers, normal command-line Flex/Bison</h3>
+
+<p>Very simple example using C and make: <a href="https://github.com/blynn/symple/tree/75aaea79141a18a234c94dc8a2a7277d42fe83aa">Minimal re-entrant Flex/Bison</a></p>
+
+<p>My example for usage inside Xcode project: <a href="https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison">Reentrant parser with Flex and Bison</a>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Configuration of both Flex and Bison can be quite a challenging task. In this post I tried to collect the essentials of what I learned along the way:</p>
+
+<ul>
+  <li>Avoiding Xcode’s default magic for Flex/Bison. Instead getting the latest GNU versions and using good naming conventions for file names</li>
+  <li>Implementation of reentrancy for thread-safe parsing</li>
+</ul>
+
+<p>I hope this knowledge will help someone who might be learning the same topics as I do.</p>
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Stanislav Pankevich's blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Stanislav Pankevich's blog</li>
+          <li><a href="mailto:s.pankevich@gmail.com">s.pankevich@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/stanislaw"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">stanislaw</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/sbpankevich"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">sbpankevich</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p></p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
