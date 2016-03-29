@@ -267,7 +267,7 @@ Copyright (C) 2006 Free Software Foundation, Inc.
 
 <p>The use case is obvious: using multiple instances of parser to parse data in parallel (can be BIG data that you want to speed up).</p>
 
-<p>My use case is quite demostrative: my toy terminal support tabs which means it can have more than 1 connections to ttys. I don’t want the parsers of those connections to interfere so this is where reentrancy kicks in: each terminal window has corresponding thread with instance of parser based on Flex/Bison, that parses input of its own terminal, reentrancy ensures that each thread does parsing job in isolation from the other terminal threads.</p>
+<p>My use case is quite demostrative: my toy terminal support tabs which means it can have more than 1 connection to ttys. I don’t want the parsers for those connections to interfere with each other so this is where reentrancy kicks in: each terminal window has corresponding thread with instance of parser based on Flex/Bison, that parses input of its own terminal, reentrancy ensures that each thread does parsing job in isolation from the other terminal threads.</p>
 
 <h3 id="setup-instructions">Setup instructions</h3>
 

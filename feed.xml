@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 29 Mar 2016 02:27:19 +0200</pubDate>
-    <lastBuildDate>Tue, 29 Mar 2016 02:27:19 +0200</lastBuildDate>
+    <pubDate>Tue, 29 Mar 2016 02:33:52 +0200</pubDate>
+    <lastBuildDate>Tue, 29 Mar 2016 02:33:52 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -205,7 +205,7 @@ Copyright (C) 2006 Free Software Foundation, Inc.
 
 &lt;p&gt;The use case is obvious: using multiple instances of parser to parse data in parallel (can be BIG data that you want to speed up).&lt;/p&gt;
 
-&lt;p&gt;My use case is quite demostrative: my toy terminal support tabs which means it can have more than 1 connections to ttys. I don’t want the parsers of those connections to interfere so this is where reentrancy kicks in: each terminal window has corresponding thread with instance of parser based on Flex/Bison, that parses input of its own terminal, reentrancy ensures that each thread does parsing job in isolation from the other terminal threads.&lt;/p&gt;
+&lt;p&gt;My use case is quite demostrative: my toy terminal support tabs which means it can have more than 1 connection to ttys. I don’t want the parsers for those connections to interfere with each other so this is where reentrancy kicks in: each terminal window has corresponding thread with instance of parser based on Flex/Bison, that parses input of its own terminal, reentrancy ensures that each thread does parsing job in isolation from the other terminal threads.&lt;/p&gt;
 
 &lt;h3 id=&quot;setup-instructions&quot;&gt;Setup instructions&lt;/h3&gt;
 
