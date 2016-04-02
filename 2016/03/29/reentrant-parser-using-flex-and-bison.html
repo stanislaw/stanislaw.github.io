@@ -87,6 +87,8 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 
 <p>Feel free to skip introduction and proceed to section <a href="#Reentrant-parser">Reentrant parser</a> or even jump straight to <a href="https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison">example project on Github</a> if you know exactly what you are looking for.</p>
 
+<p>This post is complemented by another post: <a href="/2016/04/02/flex-and-bison-tips-for-beginners.html">Flex and Bison: tips for beginners</a> where I collect tips that I think might be useful for folks who only start learning Flex and Bison.</p>
+
 <h2 id="what-are-flex-and-bison">What are Flex and Bison?</h2>
 
 <p>For complete definitions you may read these projects pages: <a href="http://flex.sourceforge.net/">Flex</a> and <a href="https://www.gnu.org/software/bison/">Bison</a>, for this post the following simplified explanation will suffice:</p>
@@ -375,36 +377,6 @@ bison:
 %}
 </code></pre>
 </div>
-
-<h2 id="other-helpful-tips-for-working-with-flex-and-bison">Other helpful tips for working with Flex and Bison</h2>
-
-<h3 id="disable-default-rule">Disable default rule</h3>
-
-<p>Taken from <a href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>, this one is must:</p>
-
-<blockquote>
-  <p>Die with an error message on unmatched characters instead of echoing them. We advise you not to rely on the default rule for sake of completeness, therefore, you should always use it to find holes in your rules.</p>
-</blockquote>
-
-<h3 id="enabling-lexers-debug-option-can-be-quite-helpful">Enabling lexer’s ‘debug’ option can be quite helpful</h3>
-
-<p>Taken from <a href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>. Author recommends avoiding printf however I still use it quite often, this probably depends on grammar:</p>
-
-<p><code class="highlighter-rouge">%option debug</code></p>
-
-<blockquote>
-  <p>Produce a scanner which can be traced. This introduce a variable, yy_flex_debug, which, when set to a non zero value, triggers tracing messages on the standard error output.</p>
-</blockquote>
-
-<blockquote>
-  <p>You are encouraged to use this option, in particular when developing your scanner, and to have some option to set yy_flex_debug. In particular, never write printf-like tracing code in your scanner: that’s an absolute waste of time.</p>
-</blockquote>
-
-<h3 id="working-with-continous-scanning-stream-like-socket">Working with continous scanning stream (like socket)</h3>
-
-<p><strong>TLDR;</strong> redefine <code class="highlighter-rouge">YY_INPUT</code> macro.</p>
-
-<p>For details see these two topics: <a href="http://stackoverflow.com/questions/36242886/how-to-detect-partial-unfinished-token-and-join-its-pieces-that-are-obtained-fro?lq=1">How to detect partial unfinished token and join its pieces that are obtained from two consequent portions of input?</a> and <a href="http://stackoverflow.com/questions/23979378/flex-continuous-scanning-stream-from-socket-did-i-miss-something-using-yywra?lq=1">Flex, continuous scanning stream (from socket). Did I miss something using yywrap()?</a>.</p>
 
 <h2 id="demo-projects">Demo projects</h2>
 

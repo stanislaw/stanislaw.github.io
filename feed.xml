@@ -5,9 +5,91 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 29 Mar 2016 10:35:04 +0200</pubDate>
-    <lastBuildDate>Tue, 29 Mar 2016 10:35:04 +0200</lastBuildDate>
+    <pubDate>Sat, 02 Apr 2016 23:40:48 +0200</pubDate>
+    <lastBuildDate>Sat, 02 Apr 2016 23:40:48 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>Flex and Bison: tips for beginners</title>
+        <description>&lt;p&gt;This is unordered collection of Flex and Bison tips that might be helpful for beginners. Each problem is unique so this collection, derived from my experience with Flex and Bison, is not comprehensive, anyway I want to share these tips as something that I would like to have learned in first place when I started learning Flex and Bison myself.&lt;/p&gt;
+
+&lt;p&gt;This post complements another post: &lt;a href=&quot;/2016/03/29/reentrant-parser-using-flex-and-bison.html&quot;&gt;Reentrant parser using Flex and Bison&lt;/a&gt;. If you need reentrant Flex and Bison and especially if you use Xcode make sure to read that post as well.&lt;/p&gt;
+
+&lt;p&gt;So let’s start!&lt;/p&gt;
+
+&lt;h3 id=&quot;disable-default-rule&quot;&gt;Disable default rule&lt;/h3&gt;
+
+&lt;p&gt;Taken from &lt;a href=&quot;http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html&quot;&gt;Flex Directives&lt;/a&gt;, this one is must:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Die with an error message on unmatched characters instead of echoing them. We advise you not to rely on the default rule for sake of completeness, therefore, you should always use it to find holes in your rules.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;enabling-lexers-debug-option-can-be-quite-helpful&quot;&gt;Enabling lexer’s ‘debug’ option can be quite helpful&lt;/h3&gt;
+
+&lt;p&gt;Taken from &lt;a href=&quot;http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html&quot;&gt;Flex Directives&lt;/a&gt;. Author recommends avoiding printf however I still use it quite often, this probably depends on grammar:&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;%option debug&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Produce a scanner which can be traced. This introduce a variable, yy_flex_debug, which, when set to a non zero value, triggers tracing messages on the standard error output.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;You are encouraged to use this option, in particular when developing your scanner, and to have some option to set yy_flex_debug. In particular, never write printf-like tracing code in your scanner: that’s an absolute waste of time.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;flex-can-be-very-sensitive-to-syntax&quot;&gt;Flex can be very sensitive to syntax&lt;/h3&gt;
+
+&lt;p&gt;There are places where Flex is very strict on syntax. I now have it as a rule of thumb: if I am getting Flex errors over and over on something that should work I always double-check syntax or experiment with it.&lt;/p&gt;
+
+&lt;h4 id=&quot;comments&quot;&gt;Comments&lt;/h4&gt;
+
+&lt;p&gt;In Flex you cannot have comments starting from the beginning of line. This is vaguely described in &lt;a href=&quot;http://flex.sourceforge.net/manual/Comments-in-the-Input.html&quot;&gt;5.4 Comments in the Input&lt;/a&gt;, I now always use 2 spaces indentation.&lt;/p&gt;
+
+&lt;h4 id=&quot;start-condition-scopes&quot;&gt;Start condition scopes&lt;/h4&gt;
+
+&lt;p&gt;This aspect of Flex’s sensitivity to syntax is not documented in &lt;a href=&quot;http://flex.sourceforge.net/manual/Start-Conditions.html&quot;&gt;10 Start Conditions&lt;/a&gt;: if you want to have start condition scope, you must not have space between &lt;your_condition&gt; and opening {:&lt;/your_condition&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%x CSI_DECSET
+  //    no space!
+  //       \/
+&amp;lt;CSI_DECSET&amp;gt;{
+    &quot;\\n&quot;   return &#39;\n&#39;;
+    &quot;\\r&quot;   return &#39;\r&#39;;
+    &quot;\\f&quot;   return &#39;\f&#39;;
+    &quot;\\0&quot;   return &#39;\0&#39;;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&quot;advanced-tips&quot;&gt;Advanced tips&lt;/h2&gt;
+
+&lt;h3 id=&quot;reentrant-aka-thread-safe-parser&quot;&gt;Reentrant aka thread-safe parser&lt;/h3&gt;
+
+&lt;p&gt;I have written the whole post around this topic: &lt;a href=&quot;http://stanislaw.github.io/2016/03/29/reentrant-parser-using-flex-and-bison.html&quot;&gt;Reentrant parser using Flex and Bison&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;working-with-continous-scanning-stream-like-socket&quot;&gt;Working with continous scanning stream (like socket)&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;TLDR;&lt;/strong&gt; redefine &lt;code class=&quot;highlighter-rouge&quot;&gt;YY_INPUT&lt;/code&gt; macro.&lt;/p&gt;
+
+&lt;p&gt;For details see these two topics: &lt;a href=&quot;http://stackoverflow.com/questions/36242886/how-to-detect-partial-unfinished-token-and-join-its-pieces-that-are-obtained-fro?lq=1&quot;&gt;How to detect partial unfinished token and join its pieces that are obtained from two consequent portions of input?&lt;/a&gt; and &lt;a href=&quot;http://stackoverflow.com/questions/23979378/flex-continuous-scanning-stream-from-socket-did-i-miss-something-using-yywra?lq=1&quot;&gt;Flex, continuous scanning stream (from socket). Did I miss something using yywrap()?&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;examples&quot;&gt;Examples&lt;/h2&gt;
+
+&lt;p&gt;Examples that I found especially helpful can be found at the end of &lt;a href=&quot;http://stanislaw.github.io/2016/03/29/reentrant-parser-using-flex-and-bison.html&quot;&gt;Reentrant parser using Flex and Bison&lt;/a&gt;. There is one that I created myself.&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;I hope this knowledge will help someone who might be learning the same topics as I do.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 02 Apr 2016 22:50:21 +0200</pubDate>
+        <link>https://stanislaw.github.io/2016/04/02/flex-and-bison-tips-for-beginners.html</link>
+        <guid isPermaLink="true">https://stanislaw.github.io/2016/04/02/flex-and-bison-tips-for-beginners.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Reentrant parser using Flex and Bison</title>
@@ -23,6 +105,8 @@
 &lt;/ol&gt;
 
 &lt;p&gt;Feel free to skip introduction and proceed to section &lt;a href=&quot;#Reentrant-parser&quot;&gt;Reentrant parser&lt;/a&gt; or even jump straight to &lt;a href=&quot;https://github.com/stanislaw/Examples/tree/20160328-reentrant-parser-with-flex-and-bison&quot;&gt;example project on Github&lt;/a&gt; if you know exactly what you are looking for.&lt;/p&gt;
+
+&lt;p&gt;This post is complemented by another post: &lt;a href=&quot;/2016/04/02/flex-and-bison-tips-for-beginners.html&quot;&gt;Flex and Bison: tips for beginners&lt;/a&gt; where I collect tips that I think might be useful for folks who only start learning Flex and Bison.&lt;/p&gt;
 
 &lt;h2 id=&quot;what-are-flex-and-bison&quot;&gt;What are Flex and Bison?&lt;/h2&gt;
 
@@ -312,36 +396,6 @@ bison:
 %}
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-
-&lt;h2 id=&quot;other-helpful-tips-for-working-with-flex-and-bison&quot;&gt;Other helpful tips for working with Flex and Bison&lt;/h2&gt;
-
-&lt;h3 id=&quot;disable-default-rule&quot;&gt;Disable default rule&lt;/h3&gt;
-
-&lt;p&gt;Taken from &lt;a href=&quot;http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html&quot;&gt;Flex Directives&lt;/a&gt;, this one is must:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Die with an error message on unmatched characters instead of echoing them. We advise you not to rely on the default rule for sake of completeness, therefore, you should always use it to find holes in your rules.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;enabling-lexers-debug-option-can-be-quite-helpful&quot;&gt;Enabling lexer’s ‘debug’ option can be quite helpful&lt;/h3&gt;
-
-&lt;p&gt;Taken from &lt;a href=&quot;http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html&quot;&gt;Flex Directives&lt;/a&gt;. Author recommends avoiding printf however I still use it quite often, this probably depends on grammar:&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;%option debug&lt;/code&gt;&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Produce a scanner which can be traced. This introduce a variable, yy_flex_debug, which, when set to a non zero value, triggers tracing messages on the standard error output.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;You are encouraged to use this option, in particular when developing your scanner, and to have some option to set yy_flex_debug. In particular, never write printf-like tracing code in your scanner: that’s an absolute waste of time.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;working-with-continous-scanning-stream-like-socket&quot;&gt;Working with continous scanning stream (like socket)&lt;/h3&gt;
-
-&lt;p&gt;&lt;strong&gt;TLDR;&lt;/strong&gt; redefine &lt;code class=&quot;highlighter-rouge&quot;&gt;YY_INPUT&lt;/code&gt; macro.&lt;/p&gt;
-
-&lt;p&gt;For details see these two topics: &lt;a href=&quot;http://stackoverflow.com/questions/36242886/how-to-detect-partial-unfinished-token-and-join-its-pieces-that-are-obtained-fro?lq=1&quot;&gt;How to detect partial unfinished token and join its pieces that are obtained from two consequent portions of input?&lt;/a&gt; and &lt;a href=&quot;http://stackoverflow.com/questions/23979378/flex-continuous-scanning-stream-from-socket-did-i-miss-something-using-yywra?lq=1&quot;&gt;Flex, continuous scanning stream (from socket). Did I miss something using yywrap()?&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;demo-projects&quot;&gt;Demo projects&lt;/h2&gt;
 
