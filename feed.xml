@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 06 Apr 2016 21:24:39 +0200</pubDate>
-    <lastBuildDate>Wed, 06 Apr 2016 21:24:39 +0200</lastBuildDate>
+    <pubDate>Wed, 06 Apr 2016 21:30:58 +0200</pubDate>
+    <lastBuildDate>Wed, 06 Apr 2016 21:30:58 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -82,7 +82,7 @@
 &lt;p&gt;2) Приготовить все, что необходимо именно для вашего приложения:&lt;/p&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;Убедиться в том, что сторонние (3rd party) библиотеки, которые включены в Ваш проект, не используют private API фреймворков Apple.&lt;/li&gt;
+  &lt;li&gt;Убедиться в том, что сторонние (3rd party) библиотеки, которые включены в ваш проект, не используют private API фреймворков Apple.&lt;/li&gt;
   &lt;li&gt;Желательно убедиться в том, что сторонние библиотеки имеют правильные и подходящие лицензии:
     &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;http://ru.stackoverflow.com/questions/196446/%D0%92%D1%8B%D0%B1%D0%BE%D1%80-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9-%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8-%D0%B4%D0%BB%D1%8F-open-source-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-%D0%BD%D0%B0-objective-c-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-%D0%BD%D0%B5-%D0%B1%D1%8B%D0%BB%D0%BE/432726#432726&quot;&gt;Выбор правильной лицензии для open-source проекта на Objective-C, чтобы не было проблем с App Store?&lt;/a&gt;&lt;/li&gt;
