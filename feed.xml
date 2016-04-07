@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 06 Apr 2016 21:30:58 +0200</pubDate>
-    <lastBuildDate>Wed, 06 Apr 2016 21:30:58 +0200</lastBuildDate>
+    <pubDate>Thu, 07 Apr 2016 21:47:53 +0200</pubDate>
+    <lastBuildDate>Thu, 07 Apr 2016 21:47:53 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -426,53 +426,96 @@ Copyright (C) 2006 Free Software Foundation, Inc.
 
 &lt;p&gt;0) Xcode project and folder Parser next to it:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;├── Makefile
-├── Parser
-│   ├── Lexer.lm
-│   ├── Parser.ym
-│   └── ParserConsumer.h
-├── Reentrant-Parser-Using-Flex-and-Bison (Xcode project)
-└── bin
-    │── bison
-    └── flex
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;├── Parser
+│   ├── Makefile
+│   └── Source
+│       ├── Lexer.lm
+│       ├── Parser.ym
+│       └── ParserConsumer.h
+├── README.md
+└── Reentrant-Parser-Using-Flex-and-Bison
+    ├── Reentrant-Parser-Using-Flex-and-Bison
+    │   └── main.m
+    └── Reentrant-Parser-Using-Flex-and-Bison.xcodeproj
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;1) First of all take latest Flex and Bison: &lt;code class=&quot;highlighter-rouge&quot;&gt;brew install flex&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;brew install bison&lt;/code&gt; and copy their binaries to local &lt;code class=&quot;highlighter-rouge&quot;&gt;bin&lt;/code&gt; folder of your project (this is for convenience).&lt;/p&gt;
+&lt;p&gt;1) First of all get latest Flex and Bison:&lt;/p&gt;
 
-&lt;p&gt;2) As described above we need to generate our lexer and parser outside of Xcode. I do this using make:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# `brew link` is needed to link against these new versions instead of default Xcode because both flex and bison are keg-only
+# See http://stackoverflow.com/questions/17015285/understand-homebrew-and-keg-only-dependencies for details
+#
+$ brew install flex &amp;amp;&amp;amp; brew link flex --force
+$ brew install bison &amp;amp;&amp;amp; brew link bison --force
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;generate-parser: clean flex bison
+# Later it is important to explicitly specify full path:
+# /usr/local/bin/flex
+# /usr/local/bin/bison
+# because Xcode has its own environment with 10-year-old GNU tools enabled
+
+$ /usr/local/bin/flex --version
+flex 2.6.0
+$ /usr/local/bin/bison --version
+bison (GNU Bison) 3.0.4
+Written by Robert Corbett and Richard Stallman.
+
+Copyright (C) 2015 Free Software Foundation, Inc.
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;2) As described above we need to generate our lexer and parser outside of Xcode. I do this using Make:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;PARSER_PATH=./Source
+PARSER_FILES=$(wildcard $(PARSER_PATH)/*)
+
+OUT_PATH=./Generated-Code
+
+generate: $(OUT_PATH)
+
+versions:
+	/usr/local/bin/flex --version
+	/usr/local/bin/bison --version
 
 clean:
-    rm -rf &#39;./Parser/Generated Code&#39;
-    mkdir -p &#39;./Parser/Generated Code&#39;
+	rm -rf $(OUT_PATH)
 
-flex:
-    ./bin/flex ./Parser/Lexer.lm
+$(OUT_PATH): $(PARSER_FILES)
+	mkdir -p $(OUT_PATH)
 
-bison:
-    ./bin/bison -d ./Parser/Parser.ym
+	/usr/local/bin/flex --header-file=$(OUT_PATH)/Lexer.h --outfile=$(OUT_PATH)/Lexer.m $(PARSER_PATH)/Lexer.lm 
+	/usr/local/bin/bison --defines=$(OUT_PATH)/Parser.h --output=$(OUT_PATH)/Parser.m $(PARSER_PATH)/Parser.ym
+	touch $(OUT_PATH)
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;the resulting file structure:&lt;/p&gt;
+&lt;p&gt;To run:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;├── Makefile
-├── Parser
-│   ├── Generated\ Code (this appears only with &#39;make generate-parser)
-│   │   ├── lexer.h
-│   │   ├── lexer.m
-│   │   ├── parser.h
-│   │   └── parser.m
-│   ├── Lexer.lm
-│   ├── Parser.ym
-│   └── ParserConsumer.h
-├── Reentrant-Parser-Using-Flex-and-Bison (Xcode project)
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ cd Parser &amp;amp;&amp;amp; make
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;3) In Xcode add Parser folder: make sure to &lt;strong&gt;exclude Lexer.lm and Parser.ym&lt;/strong&gt; from your project’s target otherwise Xcode will try to use its out-of-the-box Flex+Bison. Make sure to include the runtime-generated lexer.m and parser.m because those are your actual Parser.&lt;/p&gt;
+&lt;p&gt;the resulting file structure (notice that Generated-Code folder appeared):&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;├── Parser
+│   ├── Generated-Code
+│   │   ├── Lexer.h
+│   │   ├── Lexer.m
+│   │   ├── Parser.h
+│   │   └── Parser.m
+│   ├── Makefile
+│   └── Source
+│       ├── Lexer.lm
+│       ├── Parser.ym
+│       └── ParserConsumer.h
+├── README.md
+└── Reentrant-Parser-Using-Flex-and-Bison
+    ├── Reentrant-Parser-Using-Flex-and-Bison
+    └── Reentrant-Parser-Using-Flex-and-Bison.xcodeproj
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;3) In Xcode add &lt;code class=&quot;highlighter-rouge&quot;&gt;Parser&lt;/code&gt; folder: make sure to &lt;strong&gt;exclude Lexer.lm and Parser.ym&lt;/strong&gt; from your project’s target otherwise Xcode will try to use its out-of-the-box Flex+Bison. Make sure to include the runtime-generated Lexer.m and Parser.m because those are your actual Parser.&lt;/p&gt;
 
 &lt;p&gt;4) Add &lt;code class=&quot;highlighter-rouge&quot;&gt;make&lt;/code&gt; as a a &lt;a href=&quot;/images/2016-03-29-reentrant-parser-using-flex-and-bison/Example-Build-phases.png&quot;&gt;Build Phase&lt;/a&gt;.&lt;/p&gt;
 
@@ -484,17 +527,19 @@ bison:
 
 &lt;p&gt;Flex (Lexer.lm):&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%option header-file = &quot;./Parser/Generated Code/lexer.h&quot;
-%option outfile     = &quot;./Parser/Generated Code/lexer.m&quot;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%option header-file = &quot;./Generated Code/Lexer.h&quot;
+%option outfile     = &quot;./Generated Code/Lexer.m&quot;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
-&lt;p&gt;Bison (Parser.ym:&lt;/p&gt;
+&lt;p&gt;Bison (Parser.ym):&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%output  &quot;Parser/Generated Code/parser.m&quot;
-%defines &quot;Parser/Generated Code/parser.h&quot;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%output  &quot;Generated Code/Parser.m&quot;
+%defines &quot;Generated Code/Parser.h&quot;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+
+&lt;p&gt;The same can be done via command-line arguments - see the Makefile above. Actually it makes more sense to keep these outside of Flex and Bison in Makefile because it is implementation detail of how you integrate &lt;code class=&quot;highlighter-rouge&quot;&gt;Parser&lt;/code&gt; to your project.&lt;/p&gt;
 
 &lt;p&gt;This was the only way I could resolve all import conflicts (see next).&lt;/p&gt;
 
@@ -504,15 +549,15 @@ bison:
 
 &lt;p&gt;Your code:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#import &quot;parser.h&quot;
-#import &quot;lexer.h&quot;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;#import &quot;Parser.h&quot;
+#import &quot;Lexer.h&quot;
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 
 &lt;p&gt;Flex (Lexer.lm):&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%{
-#import &quot;parser.h&quot;
+#import &quot;Parser.h&quot;
 %}
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
@@ -520,8 +565,8 @@ bison:
 &lt;p&gt;Bison (Parser.ym:&lt;/p&gt;
 
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%{
-#import &quot;parser.h&quot;
-#import &quot;lexer.h&quot;
+#import &quot;Parser.h&quot;
+#import &quot;Lexer.h&quot;
 %}
 &lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
