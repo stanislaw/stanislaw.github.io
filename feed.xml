@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 07 Apr 2016 21:47:53 +0200</pubDate>
-    <lastBuildDate>Thu, 07 Apr 2016 21:47:53 +0200</lastBuildDate>
+    <pubDate>Sun, 10 Apr 2016 12:29:53 +0200</pubDate>
+    <lastBuildDate>Sun, 10 Apr 2016 12:29:53 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -178,12 +178,13 @@
 
 &lt;h4 id=&quot;start-condition-scopes&quot;&gt;Start condition scopes&lt;/h4&gt;
 
-&lt;p&gt;This aspect of Flex’s sensitivity to syntax is not documented in &lt;a href=&quot;http://flex.sourceforge.net/manual/Start-Conditions.html&quot;&gt;10 Start Conditions&lt;/a&gt;: if you want to have start condition scope, you must not have space between &lt;your_condition&gt; and opening {:&lt;/your_condition&gt;&lt;/p&gt;
+&lt;p&gt;This aspect of Flex’s sensitivity to syntax is not documented in &lt;a href=&quot;http://flex.sourceforge.net/manual/Start-Conditions.html&quot;&gt;10 Start Conditions&lt;/a&gt;: if you want to have start condition scope, you must not have space between &lt;code class=&quot;highlighter-rouge&quot;&gt;&amp;lt;YOUR_CONDITION&amp;gt;&lt;/code&gt; and opening {:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%x CSI_DECSET
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;%x YOUR_CONDITION
+
   //    no space!
   //       \/
-&amp;lt;CSI_DECSET&amp;gt;{
+&amp;lt;YOUR_CONDITION&amp;gt;{
     &quot;\\n&quot;   return &#39;\n&#39;;
     &quot;\\r&quot;   return &#39;\r&#39;;
     &quot;\\f&quot;   return &#39;\f&#39;;

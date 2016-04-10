@@ -112,12 +112,13 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 
 <h4 id="start-condition-scopes">Start condition scopes</h4>
 
-<p>This aspect of Flex’s sensitivity to syntax is not documented in <a href="http://flex.sourceforge.net/manual/Start-Conditions.html">10 Start Conditions</a>: if you want to have start condition scope, you must not have space between <your_condition> and opening {:</your_condition></p>
+<p>This aspect of Flex’s sensitivity to syntax is not documented in <a href="http://flex.sourceforge.net/manual/Start-Conditions.html">10 Start Conditions</a>: if you want to have start condition scope, you must not have space between <code class="highlighter-rouge">&lt;YOUR_CONDITION&gt;</code> and opening {:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>%x CSI_DECSET
+<div class="highlighter-rouge"><pre class="highlight"><code>%x YOUR_CONDITION
+
   //    no space!
   //       \/
-&lt;CSI_DECSET&gt;{
+&lt;YOUR_CONDITION&gt;{
     "\\n"   return '\n';
     "\\r"   return '\r';
     "\\f"   return '\f';
