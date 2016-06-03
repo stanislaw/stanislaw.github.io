@@ -5,8 +5,8 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 10 Apr 2016 12:29:53 +0200</pubDate>
-    <lastBuildDate>Sun, 10 Apr 2016 12:29:53 +0200</lastBuildDate>
+    <pubDate>Fri, 03 Jun 2016 12:13:34 +0200</pubDate>
+    <lastBuildDate>Fri, 03 Jun 2016 12:13:34 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -648,11 +648,24 @@ xcodebuild -project MyProject.xcodeproj \
 
 &lt;p&gt;Where &lt;code class=&quot;highlighter-rouge&quot;&gt;command-line-build.xcconfig&lt;/code&gt; is:&lt;/p&gt;
 
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;HERE_BUILD=./Build-command-line
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/// This xcconfig is used to make Xcode build all of its artefacts to a
+/// custom folder. Use it for command line builds so that their caches
+/// do not interfere with the caches of normal builds from inside Xcode.
+///
+/// To make most sense of the following configuration you should also redirect
+/// path to derived data using xcodebuild parameter:
+/// xcodebuild ...-derivedDataPath $(DERIVED_DATA_DIR)...
+/// where $(DERIVED_DATA_DIR) also points to Build-command-line/DerivedData
+///
+/// Source: xcodebuild: how to really change its build path
+/// http://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html
+
+HERE_BUILD=$(SRCROOT)/Build-command-line
 HERE_INTERMEDIATES=$(HERE_BUILD)/Intermediates
 
-// Paths 
-// the following paths are enough to redirect everything to $HERE_BUILD
+/// Paths
+/// the following paths are enough to redirect everything to $HERE_BUILD
+MODULE_CACHE_DIR    = $(HERE_BUILD)/DerivedData/ModuleCache
 OBJROOT             = $(HERE_INTERMEDIATES)
 SHARED_PRECOMPS_DIR = $(HERE_INTERMEDIATES)/PrecompiledHeaders
 SYMROOT             = $(HERE_BUILD)/Products
@@ -661,7 +674,7 @@ SYMROOT             = $(HERE_BUILD)/Products
 
 &lt;p&gt;Having this setup I can now use both &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + U&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;make test&lt;/code&gt; (which is &lt;code class=&quot;highlighter-rouge&quot;&gt;make test_unit &amp;amp;&amp;amp; make test_integration &amp;amp;&amp;amp; make test_functional&lt;/code&gt; done by Make) - they are now built in two separate directories and that makes a very good speed-up in build time of both.&lt;/p&gt;
 
-&lt;p&gt;P.S. Of course &lt;code class=&quot;highlighter-rouge&quot;&gt;xcodebuild&lt;/code&gt;’s build settings are subject to change however as of &lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode Version 7.2.1 (7C1002)&lt;/code&gt; this solution works very well.&lt;/p&gt;
+&lt;p&gt;P.S. Of course &lt;code class=&quot;highlighter-rouge&quot;&gt;xcodebuild&lt;/code&gt;’s build settings are subject to change however as of &lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode Version 7.3.1 (7D1014)&lt;/code&gt; this solution works very well.&lt;/p&gt;
 
 &lt;p&gt;See also my post: &lt;a href=&quot;http://tech.blacklane.com/2015/12/13/test-automation-for-ios/&quot;&gt;Test Automation for iOS&lt;/a&gt;.&lt;/p&gt;
 </description>

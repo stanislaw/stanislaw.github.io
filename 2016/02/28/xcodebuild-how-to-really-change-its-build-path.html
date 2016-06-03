@@ -116,11 +116,24 @@ xcodebuild -project MyProject.xcodeproj \
 
 <p>Where <code class="highlighter-rouge">command-line-build.xcconfig</code> is:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>HERE_BUILD=./Build-command-line
+<div class="highlighter-rouge"><pre class="highlight"><code>/// This xcconfig is used to make Xcode build all of its artefacts to a
+/// custom folder. Use it for command line builds so that their caches
+/// do not interfere with the caches of normal builds from inside Xcode.
+///
+/// To make most sense of the following configuration you should also redirect
+/// path to derived data using xcodebuild parameter:
+/// xcodebuild ...-derivedDataPath $(DERIVED_DATA_DIR)...
+/// where $(DERIVED_DATA_DIR) also points to Build-command-line/DerivedData
+///
+/// Source: xcodebuild: how to really change its build path
+/// http://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html
+
+HERE_BUILD=$(SRCROOT)/Build-command-line
 HERE_INTERMEDIATES=$(HERE_BUILD)/Intermediates
 
-// Paths 
-// the following paths are enough to redirect everything to $HERE_BUILD
+/// Paths
+/// the following paths are enough to redirect everything to $HERE_BUILD
+MODULE_CACHE_DIR    = $(HERE_BUILD)/DerivedData/ModuleCache
 OBJROOT             = $(HERE_INTERMEDIATES)
 SHARED_PRECOMPS_DIR = $(HERE_INTERMEDIATES)/PrecompiledHeaders
 SYMROOT             = $(HERE_BUILD)/Products
@@ -129,7 +142,7 @@ SYMROOT             = $(HERE_BUILD)/Products
 
 <p>Having this setup I can now use both <code class="highlighter-rouge">Command + U</code> and <code class="highlighter-rouge">make test</code> (which is <code class="highlighter-rouge">make test_unit &amp;&amp; make test_integration &amp;&amp; make test_functional</code> done by Make) - they are now built in two separate directories and that makes a very good speed-up in build time of both.</p>
 
-<p>P.S. Of course <code class="highlighter-rouge">xcodebuild</code>’s build settings are subject to change however as of <code class="highlighter-rouge">Xcode Version 7.2.1 (7C1002)</code> this solution works very well.</p>
+<p>P.S. Of course <code class="highlighter-rouge">xcodebuild</code>’s build settings are subject to change however as of <code class="highlighter-rouge">Xcode Version 7.3.1 (7D1014)</code> this solution works very well.</p>
 
 <p>See also my post: <a href="http://tech.blacklane.com/2015/12/13/test-automation-for-ios/">Test Automation for iOS</a>.</p>
 
