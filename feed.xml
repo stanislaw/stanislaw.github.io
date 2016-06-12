@@ -5,13 +5,13 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 12 Jun 2016 23:02:24 +0200</pubDate>
-    <lastBuildDate>Sun, 12 Jun 2016 23:02:24 +0200</lastBuildDate>
+    <pubDate>Sun, 12 Jun 2016 23:04:59 +0200</pubDate>
+    <lastBuildDate>Sun, 12 Jun 2016 23:04:59 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
-        <title>System under test: GNU Make</title>
-        <description>&lt;p&gt;This post is my contribution to the series “System under Test”, read it at lowlevelbits.org: &lt;a href=&quot;http://lowlevelbits.org/system-under-test-gnu-make/&quot;&gt;System under Test: GNU Make&lt;/a&gt;.&lt;/p&gt;
+        <title>System Under Test: GNU Make</title>
+        <description>&lt;p&gt;This post is my contribution to the series “System Under Test”, read it at lowlevelbits.org: &lt;a href=&quot;http://lowlevelbits.org/system-under-test-gnu-make/&quot;&gt;System Under Test: GNU Make&lt;/a&gt;.&lt;/p&gt;
 
 </description>
         <pubDate>Sun, 12 Jun 2016 22:05:00 +0200</pubDate>
