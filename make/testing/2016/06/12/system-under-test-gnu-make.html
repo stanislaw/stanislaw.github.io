@@ -6,13 +6,28 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-">
+  <title>System Under Test: GNU Make</title>
+
+  <meta name="description" content="Overview of GNU Make testing infrastructure">
+
+  <meta name="keywords" content="make, makefile, testing">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://yourdomain.com/about/">
-  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich" href="http://yourdomain.com/feed.xml">
+  <link rel="canonical" href="https://stanislaw.github.io/make/testing/2016/06/12/system-under-test-gnu-make.html">
+  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich's blog" href="https://stanislaw.github.io/feed.xml">
+  <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70472472-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
 </head>
 
 
@@ -22,7 +37,7 @@
 
   <div class="wrapper">
 
-    <a class="site-title" href="/">Stanislav Pankevich</a>
+    <a class="site-title" href="/">Stanislav Pankevich's blog</a>
 
     <nav class="site-nav">
       <a href="#" class="menu-icon">
@@ -34,10 +49,6 @@
       </a>
 
       <div class="trigger">
-        
-          
-          <a class="page-link" href="/about/">About</a>
-          
         
           
         
@@ -55,14 +66,16 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <article class="post">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title" itemprop="name headline">System Under Test: GNU Make</h1>
+    <p class="post-meta"><time datetime="2016-06-12T22:05:00+02:00" itemprop="datePublished">Jun 12, 2016</time></p>
   </header>
 
-  <div class="post-content">
-    
+  <div class="post-content" itemprop="articleBody">
+    <p>This post is my contribution to the series “System Under Test”, read it at lowlevelbits.org: <a href="http://lowlevelbits.org/system-under-test-gnu-make/">System Under Test: GNU Make</a>.</p>
+
 
   </div>
 
@@ -75,12 +88,12 @@
 
   <div class="wrapper">
 
-    <h2 class="footer-heading">Stanislav Pankevich</h2>
+    <h2 class="footer-heading">Stanislav Pankevich's blog</h2>
 
     <div class="footer-col-wrapper">
       <div class="footer-col footer-col-1">
         <ul class="contact-list">
-          <li>Stanislav Pankevich</li>
+          <li>Stanislav Pankevich's blog</li>
           <li><a href="mailto:s.pankevich@gmail.com">s.pankevich@gmail.com</a></li>
         </ul>
       </div>
@@ -106,8 +119,7 @@
       </div>
 
       <div class="footer-col footer-col-3">
-        <p>Write an awesome description for your new site here. You can edit this line in _config.yml. It will appear in your document head meta (for Google search results) and in your feed.xml site description.
-</p>
+        <p></p>
       </div>
     </div>
 
