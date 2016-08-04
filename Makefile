@@ -1,8 +1,8 @@
 
-serve: build
+preview: build
 	bundle exec jekyll serve
 
-release: build
+deploy: build
 	bundle exec octopress deploy
 
 build:

@@ -6,15 +6,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Stanislav Pankevich's blog</title>
+  <title>How to find the slowest XCTest</title>
 
-  <meta name="description" content="">
+  <meta name="description" content="How to find the slowest XCTest">
 
-  <meta name="keywords" content="iOS Development, Apple, Developer tools, Xcode, Makefile">
-  
+  <meta name="keywords" content="xcode, xctest, testing">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="https://stanislaw.github.io/">
+  <link rel="canonical" href="https://stanislaw.github.io/2016/08/04/how-to-find-the-slowest-xctest.html">
   <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich's blog" href="https://stanislaw.github.io/feed.xml">
   <script type="text/javascript">
 var _gaq = _gaq || [];
@@ -67,113 +66,62 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">How to find the slowest XCTest</h1>
+    <p class="post-meta"><time datetime="2016-08-04T19:05:00+02:00" itemprop="datePublished">Aug 4, 2016</time></p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Aug 4, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <p>We can distinguish between performance of different kinds of tests in the context of iOS development: unit tests are expected to run very fast because they should not touch any I/O do network calls or fire timers, integration tests are slower since they involve I/O or network or interaction between multiple components including external parties, acceptance tests are the slowest since a whole system is under test. Functional or UI snapshot tests are somewhere in between [1].</p>
 
-        <h2>
-          <a class="post-link" href="/2016/08/04/how-to-find-the-slowest-xctest.html">How to find the slowest XCTest</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 28, 2016</span>
+<p>Whatever the tests you’re working on, there might be room for improvements. The following is simple but useful command based on <code class="highlighter-rouge">awk</code> that can help you to identify the slowest tests in your XCTest-based test suite.</p>
 
-        <h2>
-          <a class="post-link" href="/2016/07/28/system-under-test-xterm.html">System Under Test: XTerm</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 27, 2016</span>
+<p>First, you need to get the output log produced by your XCTest-based test target and store it to a file. You can either copy and paste the build log from Xcode, after you have run <code class="highlighter-rouge">Command + U</code>, or use the following command that runs <code class="highlighter-rouge">xcodebuild test</code>:</p>
 
-        <h2>
-          <a class="post-link" href="/2016/06/27/documentation-first-development.html">Documentation First Development</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 12, 2016</span>
+<pre>
+xcodebuild -project YourProject.xcodeproj \
+           -scheme YourProject \
+           -destination 'platform=iOS Simulator,name=iPhone 6s Plus,OS=9.3' \
+           test \
+           | tee ./xcodebuild.log
+</pre>
 
-        <h2>
-          <a class="post-link" href="/2016/06/12/system-under-test-gnu-make.html">System Under Test: GNU Make</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 4, 2016</span>
+<p>When you have <code class="highlighter-rouge">xcodebuild.log</code> in place, run:</p>
 
-        <h2>
-          <a class="post-link" href="/2016/04/04/how-to-app-store.html">Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 2, 2016</span>
+<pre>
+awk -F '[()]' '{print $2 " -&gt; " $1}' xcodebuild.log | sort -rn | head -5
+</pre>
 
-        <h2>
-          <a class="post-link" href="/2016/04/02/flex-and-bison-tips-for-beginners.html">Flex and Bison: tips for beginners</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 29, 2016</span>
+<p>The output you’ll receive will look like this (these are the 5 slowest tests in a suite):</p>
 
-        <h2>
-          <a class="post-link" href="/2016/03/29/reentrant-parser-using-flex-and-bison.html">Reentrant parser using Flex and Bison</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 28, 2016</span>
+<pre>
+1.957 seconds -&gt; Test Case 'A...' passed 
+0.279 seconds -&gt; Test Case 'B...' passed 
+0.274 seconds -&gt; Test Case 'C...' passed 
+0.248 seconds -&gt; Test Case 'D...' passed 
+0.201 seconds -&gt; Test Case 'E...' passed 
+</pre>
 
-        <h2>
-          <a class="post-link" href="/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html">xcodebuild: how to really change its build path</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 25, 2016</span>
+<p>The trick is to use <code class="highlighter-rouge">awk</code> to capture time using regular expression <code class="highlighter-rouge">[()]</code> (left or right brace) that matches round braces in an original string produced by <code class="highlighter-rouge">xcodebuild</code> like:</p>
 
-        <h2>
-          <a class="post-link" href="/2016/01/25/notes-on-test-driven-development-by-example-by-kent-beck.html">Notes on "Test-Driven Development by Example" by Kent Beck</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 14, 2015</span>
+<pre>
+Test Case 'E...' passed (0.201 seconds).
+</pre>
 
-        <h2>
-          <a class="post-link" href="/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html">Test Automation for iOS (written for Blacklane Tech Blog)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 23, 2015</span>
+<p><code class="highlighter-rouge">awk</code> puts numbers to be the first symbols in a resulting string, skips the braces, and that makes resulting string available for numeric sort, the rest is self-explanatory.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/11/23/how-to-build-static-framework-using-make.html">How to build a static iOS framework and distribute it as a Component using Make</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 20, 2015</span>
+<p>I found this command particularly useful when I was looking at how to optimize the running time of a unit test suite I was working on. I found that some of the tests were taking 300 milliseconds to run which was unacceptable for a unit test suite of several hundreds of tests.</p>
 
-        <h2>
-          <a class="post-link" href="/2015/11/20/how-apple-could-improve-their-developer-tools.html">How Apple could improve Their Developer Tools</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p>Hopefully, someone will also benefit from this simple solution. Let your tests be fast!</p>
 
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
+<p>[1] “Test Automation for iOS”, https://tech.blacklane.com/2015/12/13/test-automation-for-ios/.</p>
 
-</div>
+
+  </div>
+
+</article>
 
       </div>
     </div>
