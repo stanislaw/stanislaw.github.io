@@ -76,7 +76,7 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
   <div class="post-content" itemprop="articleBody">
     <p>We can distinguish between performance of different kinds of tests in the context of iOS development: unit tests are expected to run very fast because they should not touch any I/O do network calls or fire timers, integration tests are slower since they involve I/O or network or interaction between multiple components including external parties, acceptance tests are the slowest since a whole system is under test. Functional or UI snapshot tests are somewhere in between [1].</p>
 
-<p>Whatever the tests you’re working on, there might be room for improvements. The following is simple but useful command based on <code class="highlighter-rouge">awk</code> that can help you to identify the slowest tests in your XCTest-based test suite.</p>
+<p>Whatever the tests you’re working on, there might be room for improvements. The following is simple but useful command based on <code class="highlighter-rouge">awk</code> that can help you to identify the slowest tests in your XCTest-based test suite [2].</p>
 
 <p>First, you need to get the output log produced by your XCTest-based test target and store it to a file. You can either copy and paste the build log from Xcode, after you have run <code class="highlighter-rouge">Command + U</code>, or use the following command that runs <code class="highlighter-rouge">xcodebuild test</code>:</p>
 
@@ -116,7 +116,11 @@ Test Case 'E...' passed (0.201 seconds).
 
 <p>Hopefully, someone will also benefit from this simple solution. Let your tests be fast!</p>
 
-<p>[1] “Test Automation for iOS”, https://tech.blacklane.com/2015/12/13/test-automation-for-ios/.</p>
+<p>[1] <a href="https://tech.blacklane.com/2015/12/13/test-automation-for-ios/">Test Automation for iOS</a></p>
+
+<p>[2] Perl can also be used instead of awk:</p>
+
+<p><code class="highlighter-rouge">perl -ne '/(Test\ Case.*)\((.*)\)/ &amp;&amp; print $2 . " -&gt; " . $1 . "\n"' xcodebuild.log</code>.</p>
 
 
   </div>
