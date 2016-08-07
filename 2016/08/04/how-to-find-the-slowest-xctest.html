@@ -91,7 +91,7 @@ xcodebuild -project YourProject.xcodeproj \
 <p>When you have <code class="highlighter-rouge">xcodebuild.log</code> in place, run:</p>
 
 <pre>
-awk -F '[()]' '{print $2 " -&gt; " $1}' xcodebuild.log | sort -rn | head -5
+cat xcodebuild.log | grep 'Test\ Case.*seconds' | awk -F '[()]' '{print $2 " -&gt; " $1}' | sort -rn | head -5
 </pre>
 
 <p>The output you’ll receive will look like this (these are the 5 slowest tests in a suite):</p>
