@@ -5,18 +5,18 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 06 Dec 2016 22:08:13 +0100</pubDate>
-    <lastBuildDate>Tue, 06 Dec 2016 22:08:13 +0100</lastBuildDate>
+    <pubDate>Tue, 06 Dec 2016 22:15:27 +0100</pubDate>
+    <lastBuildDate>Tue, 06 Dec 2016 22:15:27 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
         <title>One easy way to estimate Swift vs Objective-C code ratio in iOS project</title>
         <description>&lt;p&gt;The following finding is a result of a 5 minute brainstorm we did with &lt;a href=&quot;http://lowlevelbits.org/&quot;&gt;Alex
 Denisov&lt;/a&gt;: we were thinking about the fastest way to estimate
-Swift vs Objective-C code ratio in the iOS application. Transition to Swift
+Swift vs Objective-C code ratio in an iOS application. Transition to Swift
 can be very slow in a project which has a lot of Objective-C code so we want
 to have at least a rough understanding of how much of its code has to be
-migrated
+migrated from Objective-C to Swift
 (&lt;s&gt;in case if Apple discontinues support of Objective-C as of April 2017.&lt;/s&gt;).&lt;/p&gt;
 
 &lt;p&gt;We came up with a very simple heuristic: grep through the codebase and find
