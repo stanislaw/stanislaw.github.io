@@ -190,7 +190,7 @@ parser for .xcconfig files doesn’t support broken-up lines.</p>
 
 <p>As another workaround CocoaPods uses its own generator of final configuration-specific xcconfig file which merges into it all the Pods xcconfigs:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code>// Pods/Target\ Support\ Files/Pods/Pods.debug.xcconfig 
+<div class="highlighter-rouge"><pre class="highlight"><code>// Pods/Target\ Support\ Files/Pods/Pods.debug.xcconfig
 HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AFNetworking" "${PODS_ROOT}/Headers/Public/ObjectiveSugar"
 </code></pre>
 </div>

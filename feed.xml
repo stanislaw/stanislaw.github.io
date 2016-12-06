@@ -5,9 +5,52 @@
     <description></description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 01 Sep 2016 19:31:05 +0200</pubDate>
-    <lastBuildDate>Thu, 01 Sep 2016 19:31:05 +0200</lastBuildDate>
+    <pubDate>Tue, 06 Dec 2016 22:06:36 +0100</pubDate>
+    <lastBuildDate>Tue, 06 Dec 2016 22:06:36 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>One easy way to estimate Swift vs Objective-C code ratio in iOS project</title>
+        <description>&lt;p&gt;The following finding is a result of a 5 minute brainstorm we did with &lt;a href=&quot;http://lowlevelbits.org/&quot;&gt;Alex
+Denisov&lt;/a&gt;: we were thinking about the fastest way to estimate
+Swift vs Objective-C code ratio in the iOS application. Transition to Swift
+can be very slow in a project which has a lot of Objective-C code so we want
+to have at least a rough understanding of how much of its code has to be
+migrated
+(&lt;s&gt;in case if Apple discontinues support of Objective-C as of April 2017.&lt;/s&gt;).&lt;/p&gt;
+
+&lt;p&gt;We came up with a very simple heuristic: grep through the codebase and find
+&lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;k&quot;&gt;@implementation&lt;/span&gt;&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;^class&lt;/code&gt; declarations for Objective-C and Swift
+declarations respectively and divide Swift value by Objective-C value. Of course
+this heuristic is very rough however we can make enough sense out of it in the
+context of the app we are currently working on.&lt;/p&gt;
+
+&lt;p&gt;I have split original one-liner to be a more readable .sh script:&lt;/p&gt;
+
+&lt;pre&gt;
+project=./YourProject;
+
+objc=`grep -r &quot;^@implementation &quot; $project  | wc -l | tr -d &#39; &#39;`;
+swift=`grep -r &quot;^class &quot; $project  | wc -l | tr -d &#39; &#39;`;
+
+ratio=$(bc &amp;lt;&amp;lt;&amp;lt; &quot;scale=3; $swift / $objc&quot;);
+ratio_perc=$(bc &amp;lt;&amp;lt;&amp;lt; &quot;$ratio * 100&quot;);
+
+echo &quot;Swift classes: $swift&quot;;
+echo &quot;Objective-C classes: $objc&quot;;
+printf &quot;Ratio: %0.3g%%\n&quot; $ratio_perc;
+&lt;/pre&gt;
+
+&lt;p&gt;This script is very simple however I would love to have found it written by
+someone else before I started looking for it a few hours ago today so it is me
+who is sharing this to the internet.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 06 Dec 2016 21:53:34 +0100</pubDate>
+        <link>https://stanislaw.github.io/2016/12/06/one-easy-way-to-estimate-swift-vs-objc-ratio.html</link>
+        <guid isPermaLink="true">https://stanislaw.github.io/2016/12/06/one-easy-way-to-estimate-swift-vs-objc-ratio.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>How to find the slowest XCTest</title>
@@ -1122,18 +1165,6 @@ The “no time for testing” death spiral:&lt;/p&gt;
         <pubDate>Mon, 25 Jan 2016 09:40:04 +0100</pubDate>
         <link>https://stanislaw.github.io/2016/01/25/notes-on-test-driven-development-by-example-by-kent-beck.html</link>
         <guid isPermaLink="true">https://stanislaw.github.io/2016/01/25/notes-on-test-driven-development-by-example-by-kent-beck.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Test Automation for iOS (written for Blacklane Tech Blog)</title>
-        <description>&lt;p&gt;This is the post I have written for the engineering blog of &lt;a href=&quot;https://www.blacklane.com&quot;&gt;Blacklane GmbH&lt;/a&gt;, the company where I currently work. See it on &lt;a href=&quot;https://tech.blacklane.com/2015/12/13/test-automation-for-ios/&quot;&gt;tech.blacklane.com&lt;/a&gt;.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 14 Dec 2015 20:53:28 +0100</pubDate>
-        <link>https://stanislaw.github.io/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html</link>
-        <guid isPermaLink="true">https://stanislaw.github.io/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html</guid>
         
         
       </item>

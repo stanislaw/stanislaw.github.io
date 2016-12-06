@@ -6,15 +6,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Stanislav Pankevich's blog</title>
+  <title>One easy way to estimate Swift vs Objective-C code ratio in iOS project</title>
 
-  <meta name="description" content="">
+  <meta name="description" content="One easy way to estimate Swift vs Objective-C code ratio in iOS project">
 
-  <meta name="keywords" content="iOS Development, Apple, Developer tools, Xcode, Makefile">
-  
+  <meta name="keywords" content="Swift, Objective-C">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="https://stanislaw.github.io/">
+  <link rel="canonical" href="https://stanislaw.github.io/2016/12/06/one-easy-way-to-estimate-swift-vs-objc-ratio.html">
   <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich's blog" href="https://stanislaw.github.io/feed.xml">
   <script type="text/javascript">
 var _gaq = _gaq || [];
@@ -67,121 +66,51 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">One easy way to estimate Swift vs Objective-C code ratio in iOS project</h1>
+    <p class="post-meta"><time datetime="2016-12-06T21:53:34+01:00" itemprop="datePublished">Dec 6, 2016</time></p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Dec 6, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <p>The following finding is a result of a 5 minute brainstorm we did with <a href="http://lowlevelbits.org/">Alex
+Denisov</a>: we were thinking about the fastest way to estimate
+Swift vs Objective-C code ratio in the iOS application. Transition to Swift
+can be very slow in a project which has a lot of Objective-C code so we want
+to have at least a rough understanding of how much of its code has to be
+migrated
+(<s>in case if Apple discontinues support of Objective-C as of April 2017.</s>).</p>
 
-        <h2>
-          <a class="post-link" href="/2016/12/06/one-easy-way-to-estimate-swift-vs-objc-ratio.html">One easy way to estimate Swift vs Objective-C code ratio in iOS project</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Aug 4, 2016</span>
+<p>We came up with a very simple heuristic: grep through the codebase and find
+<code class="highlighter-rouge"><span class="k">@implementation</span></code> and <code class="highlighter-rouge">^class</code> declarations for Objective-C and Swift
+declarations respectively and divide Swift value by Objective-C value. Of course
+this heuristic is very rough however we can make enough sense out of it in the
+context of the app we are currently working on.</p>
 
-        <h2>
-          <a class="post-link" href="/2016/08/04/how-to-find-the-slowest-xctest.html">How to find the slowest XCTest</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jul 28, 2016</span>
+<p>I have split original one-liner to be a more readable .sh script:</p>
 
-        <h2>
-          <a class="post-link" href="/2016/07/28/system-under-test-xterm.html">System Under Test: XTerm</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 27, 2016</span>
+<pre>
+project=./YourProject;
 
-        <h2>
-          <a class="post-link" href="/2016/06/27/documentation-first-development.html">Documentation First Development</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jun 12, 2016</span>
+objc=`grep -r "^@implementation " $project  | wc -l | tr -d ' '`;
+swift=`grep -r "^class " $project  | wc -l | tr -d ' '`;
 
-        <h2>
-          <a class="post-link" href="/2016/06/12/system-under-test-gnu-make.html">System Under Test: GNU Make</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 4, 2016</span>
+ratio=$(bc &lt;&lt;&lt; "scale=3; $swift / $objc");
+ratio_perc=$(bc &lt;&lt;&lt; "$ratio * 100");
 
-        <h2>
-          <a class="post-link" href="/2016/04/04/how-to-app-store.html">Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Apr 2, 2016</span>
+echo "Swift classes: $swift";
+echo "Objective-C classes: $objc";
+printf "Ratio: %0.3g%%\n" $ratio_perc;
+</pre>
 
-        <h2>
-          <a class="post-link" href="/2016/04/02/flex-and-bison-tips-for-beginners.html">Flex and Bison: tips for beginners</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Mar 29, 2016</span>
+<p>This script is very simple however I would love to have found it written by
+someone else before I started looking for it a few hours ago today so it is me
+who is sharing this to the internet.</p>
 
-        <h2>
-          <a class="post-link" href="/2016/03/29/reentrant-parser-using-flex-and-bison.html">Reentrant parser using Flex and Bison</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Feb 28, 2016</span>
+  </div>
 
-        <h2>
-          <a class="post-link" href="/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html">xcodebuild: how to really change its build path</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 25, 2016</span>
-
-        <h2>
-          <a class="post-link" href="/2016/01/25/notes-on-test-driven-development-by-example-by-kent-beck.html">Notes on "Test-Driven Development by Example" by Kent Beck</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Dec 14, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/12/14/test-automation-for-ios-written-for-blacklane-tech-blog.html">Test Automation for iOS (written for Blacklane Tech Blog)</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 23, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/11/23/how-to-build-static-framework-using-make.html">How to build a static iOS framework and distribute it as a Component using Make</a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Nov 20, 2015</span>
-
-        <h2>
-          <a class="post-link" href="/2015/11/20/how-apple-could-improve-their-developer-tools.html">How Apple could improve Their Developer Tools</a>
-        </h2>
-      </li>
-    
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="/feed.xml">via RSS</a></p>
-
-</div>
+</article>
 
       </div>
     </div>
