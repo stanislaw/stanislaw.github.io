@@ -5,9 +5,298 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 15 Feb 2017 11:41:14 +0100</pubDate>
-    <lastBuildDate>Wed, 15 Feb 2017 11:41:14 +0100</lastBuildDate>
+    <pubDate>Sat, 18 Feb 2017 21:13:26 +0100</pubDate>
+    <lastBuildDate>Sat, 18 Feb 2017 21:13:26 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>LLVM-based project and CMake: choosing between in-source and out-of-source hosting</title>
+        <description>&lt;p&gt;&lt;b&gt;Disclaimer:&lt;/b&gt; the following summary is based on our limited experience with
+&lt;a href=&quot;https://github.com/mull-project&quot;&gt;Mull project&lt;/a&gt; and some other smaller research
+projects and is only applicable to the projects that can live outside of LLVM
+source tree. If you intend your project to become a part of LLVM source tree
+you obviously have no choice other than hosting your project in-source.&lt;/p&gt;
+
+&lt;h2 id=&quot;tldr&quot;&gt;TL;DR&lt;/h2&gt;
+
+&lt;style&gt;
+table {
+  border:none;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  table-layout : fixed;
+}
+
+table td {
+  border: 1px solid #ddd;
+  margin: 0px;
+  padding: 4px;
+}
+
+table th {
+  margin: 0px;
+  padding: 4px;
+}
+
+table td:first-child { border-left: none; }
+td:first-child + td { text-align: center; }
+td:first-child + td + td { text-align: center; }
+
+table tr:nth-child(even) {
+    background-color: #eee;
+}
+table tr:nth-child(odd) {
+    background-color: #fff;
+}
+table th {
+    color: white;
+    background-color: gray;
+}
+
+.green {
+  color: #009966;
+  font-weight: bold;
+}
+
+&lt;/style&gt;
+
+&lt;table style=&quot;width: 100%;&quot;&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Criteria&lt;/th&gt;
+    &lt;th&gt;In-source&lt;/th&gt;
+    &lt;th&gt;Out-of-source&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Access to LLVM source code&lt;/td&gt;
+    &lt;td&gt;&lt;span class=&quot;green&quot;&gt;Full access&lt;/span&gt;&lt;/td&gt;
+    &lt;td&gt;Limited access&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;CMake generation&lt;/td&gt;
+    &lt;td&gt;Slower&lt;/td&gt;
+    &lt;td&gt;Faster&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Project structure, navigation&lt;/td&gt;
+    &lt;td&gt;Your code and LLVM code&lt;/td&gt;
+    &lt;td&gt;Only your code&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;First build time&lt;/td&gt;
+    &lt;td&gt;Slow&lt;/td&gt;
+    &lt;td&gt;&lt;span class=&quot;green&quot;&gt;Very fast&lt;/span&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Indexing&lt;/td&gt;
+    &lt;td&gt;Slow&lt;/td&gt;
+    &lt;td&gt;&lt;span class=&quot;green&quot;&gt;Much faster&lt;/span&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;CMake API&lt;/td&gt;
+    &lt;td&gt;CMake API, LLVM CMake API&lt;/td&gt;
+    &lt;td&gt;CMake API&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Project dependencies&lt;/td&gt;
+    &lt;td&gt;Might be implicit&lt;/td&gt;
+    &lt;td&gt;Explicit&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Continuous Integration&lt;/td&gt;
+    &lt;td&gt;Might be slower&lt;/td&gt;
+    &lt;td&gt;&lt;span class=&quot;green&quot;&gt;Much faster&lt;/span&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+    &lt;td&gt;Distribution&lt;/td&gt;
+    &lt;td&gt;Might be harder&lt;/td&gt;
+    &lt;td&gt;Might be easier.&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;For the scope of this post, these are the simple explanations of in-source
+and out-of-source kinds of hosting.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;In-source:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;You clone LLVM sources.&lt;/li&gt;
+  &lt;li&gt;In LLVM source code there are specific folders provided where you can embed
+your project so that you can develop your project inside of LLVM source code.&lt;/li&gt;
+  &lt;li&gt;You run CMake which generates a project structure which includes both your
+project’s code and LLVM.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;When you build project you also build LLVM source code that your project
+depends on.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The greatest example of an in-source project is Clang. This article
+demonstrates it very well how to build Clang inside of the LLVM source tree:
+&lt;a href=&quot;https://lowlevelbits.org/getting-started-with-llvm/clang-on-os-x/&quot;&gt;Getting Started With LLVM/Clang on OS X&lt;/a&gt; (by the way this was my very first tutorial I followed to get
+started with LLVM).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Out-of-source:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;You have only your project’s source code based on CMake.&lt;/li&gt;
+  &lt;li&gt;You configure your CMake to link against LLVM’s libraries
+already prebuilt by you or someone else before (the easiest way to obtain
+LLVM binaries on Mac OS is to just type: &lt;code class=&quot;highlighter-rouge&quot;&gt;brew install llvm&lt;/code&gt; and find them in
+&lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/opt/llvm&lt;/code&gt;).&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;You don’t build LLVM source code but only link with LLVM libraries that you
+or someone else have built already outside of your source tree.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;access-to-llvm-source-code&quot;&gt;Access to LLVM source code&lt;/h2&gt;
+
+&lt;p&gt;With in-source hosting you have a full access to LLVM source code. This might be
+useful if you have to explore LLVM source code and required if you want to
+change LLVM source code itself.&lt;/p&gt;
+
+&lt;p&gt;With out-of-source hosting you only have access to a public API of LLVM code,
+it is not easy to debug and is not possible to change LLVM internals.&lt;/p&gt;
+
+&lt;p&gt;This is the major and probably the only advantage of an in-source way of hosting
+over its out-of-source counterpart.&lt;/p&gt;
+
+&lt;h2 id=&quot;cmake-generation&quot;&gt;CMake generation&lt;/h2&gt;
+
+&lt;p&gt;CMake generation is what happens when you run &lt;code class=&quot;highlighter-rouge&quot;&gt;cmake&lt;/code&gt; with your favorite
+generator like Xcode, Ninja or Make to create a &lt;code class=&quot;highlighter-rouge&quot;&gt;Build&lt;/code&gt; folder with your
+project.&lt;/p&gt;
+
+&lt;p&gt;The difference in generation time for in-source and out-of-source project
+is not significant but is still very noticeable especially if you happen to
+change a layout of your CMakeLists files often.&lt;/p&gt;
+
+&lt;h2 id=&quot;project-structure-and-navigation&quot;&gt;Project structure and navigation&lt;/h2&gt;
+
+&lt;p&gt;With in-source hosting your project’s structure carries your code and the
+code from the whole LLVM source tree. It is likely that your project uses only
+a subset of LLVM API so you will have a lot of code that you will never use.&lt;/p&gt;
+
+&lt;p&gt;In Xcode CMake generator doesn’t populate schemes by default so that you
+can select them manually, however all of the build targets and their folders are
+there and that makes a navigation harder (&lt;code class=&quot;highlighter-rouge&quot;&gt;LLVM.xcodeproj&lt;/code&gt; of LLVM 3.9 has
+something around 170 targets).&lt;/p&gt;
+
+&lt;p&gt;With out-of-source hosting a project structure is entirely yours: only your
+source code and a few targets of your project.&lt;/p&gt;
+
+&lt;h2 id=&quot;first-build-time&quot;&gt;First build time&lt;/h2&gt;
+
+&lt;p&gt;The difference in build time is the most significant. With in-source, if your
+project has 50 files you additionally build a few hundreds of LLVM source files
+(Mull dependencies make up to 800 of LLVM files). With out-of-source, you only
+build your 50 files and then link a number of pre-built LLVM libraries.&lt;/p&gt;
+
+&lt;p&gt;With a newly-generated in-source Xcode project it is also harder to switch
+between DEBUG/RELEASE configurations. You use DEBUG when you develop, but then
+you want to test your project in RELEASE configuration and that makes you wait
+another round of RELEASE compilation which takes even more time because of
+optimizations.&lt;/p&gt;
+
+&lt;h2 id=&quot;indexing&quot;&gt;Indexing&lt;/h2&gt;
+
+&lt;p&gt;After you open your CMake-generated project Xcode needs to index your project
+so that it can do a number of things for you, to name a few:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;syntax highlighting&lt;/li&gt;
+  &lt;li&gt;auto-completion&lt;/li&gt;
+  &lt;li&gt;interactive code analysis&lt;/li&gt;
+  &lt;li&gt;“jump to definition” (Command + click)&lt;/li&gt;
+  &lt;li&gt;“open quickly” (Command + Alt + O).&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;For Xcode it takes longer to index an in-source project (remember: it is
+50 files of your project and ~3500 files of LLVM). It is not clear whether
+Xcode is smart enough to index only the targets that you actually use however
+even with that the difference in speed is very noticeable.&lt;/p&gt;
+
+&lt;h2 id=&quot;cmake-api&quot;&gt;CMake API&lt;/h2&gt;
+
+&lt;p&gt;With an in-source approach, an integration with LLVM CMake macros is another
+level of complexity you have to maintain on top of native CMake API.
+For newcomers who are new to LLVM/CMake this might extend their learning curve
+as instead of learning just CMake docs they have to also learn the
+&lt;code class=&quot;highlighter-rouge&quot;&gt;llvm/cmake/modules/*&lt;/code&gt; scripts.&lt;/p&gt;
+
+&lt;p&gt;With an out-of-source hosting you have a direct access to CMake API without any
+overhead of LLVM’s CMake infrastructure. Of course the maintainers of
+LLVM CMake API evolved their scripts to address a number of issues on
+various platforms so you will still have to learn from their experience.&lt;/p&gt;
+
+&lt;h2 id=&quot;dependencies&quot;&gt;Dependencies&lt;/h2&gt;
+
+&lt;p&gt;With an in-source project, when you use LLVM CMake scripts, they do a number of
+good things for you, but this comes at cost of additional magic that is
+sometimes hard to see. Switch of your project from in-source to out-of-source
+might reveal these issues like missing &lt;code class=&quot;highlighter-rouge&quot;&gt;@rpath&lt;/code&gt; settings or missing linkage to
+&lt;code class=&quot;highlighter-rouge&quot;&gt;zlib&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;ncurses&lt;/code&gt;. &lt;code class=&quot;highlighter-rouge&quot;&gt;llvm-config&lt;/code&gt; tool is very useful if you want to learn
+about what actually LLVM’s dependencies are.&lt;/p&gt;
+
+&lt;h2 id=&quot;continuous-integration&quot;&gt;Continuous Integration&lt;/h2&gt;
+
+&lt;p&gt;With in-source project, CI process that includes building LLVM code cannot be
+anything but slower: cloning LLVM sources and building them takes time.&lt;/p&gt;
+
+&lt;p&gt;Of course, if your project gets into LLVM source tree, you will get CI
+“out of the box” because LLVM CI setup is maintained by LLVM community and
+so is very well-engineered.&lt;/p&gt;
+
+&lt;p&gt;With out-of-source tree project a CI build process will probably be must faster,
+something like:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;brew install llvm@x.x&lt;/code&gt; (just fetching the binaries to a build machine, no
+clone, no build)&lt;/li&gt;
+  &lt;li&gt;clone and build your project with CMake&lt;/li&gt;
+  &lt;li&gt;run tests&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;distribution&quot;&gt;Distribution&lt;/h2&gt;
+
+&lt;p&gt;Whatever distribution type you plan for your project it will probably be
+dependent on the criteria described above: build times, continuous integration
+and dependencies.&lt;/p&gt;
+
+&lt;p&gt;With an out-of-source tree project, its distribution might be a bit easier:
+its LLVM dependencies are already outside and that makes this
+setup closer to what the users will have to deal with in the wild.&lt;/p&gt;
+
+&lt;h2 id=&quot;summary&quot;&gt;Summary&lt;/h2&gt;
+
+&lt;p&gt;Our conclusion is that the only real advantage an in-source hosting has over its
+out-of-source counterpart is the full access to LLVM source code while the main
+advantage of out-of-source hosting is a much faster build process.&lt;/p&gt;
+
+&lt;p&gt;When you develop inside LLVM source tree, you project “is LLVM” in a way. When
+you develop it outside, you are “a client of LLVM”, of its public API.&lt;/p&gt;
+
+&lt;p&gt;One reason why a developer might have to choose in-source hosting for a project
+can be that this project requires changes of LLVM source code for the project
+to work. Author of &lt;a href=&quot;https://github.com/mull-project&quot;&gt;Mull&lt;/a&gt; project originally
+started it as in-source project because he expected problems with running the
+code of test suites based on GoogleTest via LLVM ORC JIT, however with time
+it became clear that Mull worked perfectly against stable versions of LLVM API
+without any modifications so now we are now transforming Mull into an
+out-of-source project.&lt;/p&gt;
+
+&lt;p&gt;One open question that we still have is how to combine the advantages of both
+approaches in the same source tree. It is not clear how to make two parallel
+CMake hierarchies: custom one and LLVM-based to co-exist together. We are going
+to clarify this with time.&lt;/p&gt;
+
+&lt;p&gt;I will be happy to learn about your experience with in-source vs out-of-source
+tree projects, feel free to &lt;a href=&quot;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#116;&amp;#111;:&amp;#115;&amp;#046;&amp;#112;&amp;#097;&amp;#110;&amp;#107;&amp;#101;&amp;#118;&amp;#105;&amp;#099;&amp;#104;&amp;#064;&amp;#103;&amp;#109;&amp;#097;&amp;#105;&amp;#108;&amp;#046;&amp;#099;&amp;#111;&amp;#109;&quot;&gt;drop me a line&lt;/a&gt;.&lt;/p&gt;
+</description>
+        <pubDate>Sat, 18 Feb 2017 19:05:00 +0100</pubDate>
+        <link>https://stanislaw.github.io/2017/02/18/llvm-in-source-vs-out-of-source.html</link>
+        <guid isPermaLink="true">https://stanislaw.github.io/2017/02/18/llvm-in-source-vs-out-of-source.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>XCTest: focused tests</title>
@@ -879,89 +1168,6 @@ $(OUT_PATH): $(PARSER_FILES)
         <pubDate>Tue, 29 Mar 2016 02:04:34 +0200</pubDate>
         <link>https://stanislaw.github.io/2016/03/29/reentrant-parser-using-flex-and-bison.html</link>
         <guid isPermaLink="true">https://stanislaw.github.io/2016/03/29/reentrant-parser-using-flex-and-bison.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>xcodebuild: how to really change its build path</title>
-        <description>&lt;p&gt;This is short one-solution-post that is longer version of my answer to this StackOverflow topic: &lt;a href=&quot;http://stackoverflow.com/questions/4969932/separate-build-directory-using-xcodebuild&quot;&gt;Separate build directory using xcodebuild&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Background:&lt;/strong&gt; I build my tests from both Xcode and command line.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Problem:&lt;/strong&gt; If I run my tests with &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + U&lt;/code&gt; and then I run them with &lt;code class=&quot;highlighter-rouge&quot;&gt;make test&lt;/code&gt;, the build artifacts of test suite built from Xcode become overriden so that next time I run &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + U&lt;/code&gt; my test target will be built from scratch again. The benefits of incremental compilation are lost for both modes as both kinds of test runs override each other.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Solution:&lt;/strong&gt; Completely isolate build artefacts that are created by command-line builds from corresponding build artefacts created by Xcode when tests are run from within Xcode.&lt;/p&gt;
-
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
-
-&lt;p&gt;My naive approach to solve this problem was to redirect xcodebuild to another &lt;code class=&quot;highlighter-rouge&quot;&gt;CONFIGURATION_BUILD_DIR&lt;/code&gt; like:&lt;/p&gt;
-
-&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;
-xcodebuild ... CONFIGURATION_BUILD_DIR=./Build-command-line
-&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;However it turned out that xcodebuild had some build settings that were not controlled by this variable i.e. Xcode was still building some of its artefacts to its default &lt;code class=&quot;highlighter-rouge&quot;&gt;./Build&lt;/code&gt; folder. So I needed to investigate on details of &lt;code class=&quot;highlighter-rouge&quot;&gt;xcodebuild -showBuildSettings&lt;/code&gt; to understand how to make xcodebuild to build everything to desired &lt;code class=&quot;highlighter-rouge&quot;&gt;./Build-command-line&lt;/code&gt; folder. I used&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;xcodebuild -scheme MyScheme -showBuildSettings | grep Build\/
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;to find all build settings that correspond to all build paths and by trial-end-error I found “the generative” build settings that are enough to redirect all build artefacts produced by xcodebuild to custom folder.&lt;/p&gt;
-
-&lt;p&gt;I ended up using the following command:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;BUILD_DIR=./Build-command-line
-DERIVED_DATA_DIR=$(BUILD_DIR)/DerivedData
-
-xcodebuild -project MyProject.xcodeproj \
-           -IDEBuildOperationMaxNumberOfConcurrentCompileTasks=`sysctl -n hw.ncpu` \
-           -scheme MyScheme \
-           -sdk iphonesimulator \
-           -destination &#39;platform=iOS Simulator,name=iPhone 6S Plus,OS=latest&#39; \
-           -xcconfig command-line-build.xcconfig \
-           -derivedDataPath $(DERIVED_DATA_DIR) \
-           test
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Where &lt;code class=&quot;highlighter-rouge&quot;&gt;command-line-build.xcconfig&lt;/code&gt; is:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;/// This xcconfig is used to make Xcode build all of its artefacts to a
-/// custom folder. Use it for command line builds so that their caches
-/// do not interfere with the caches of normal builds from inside Xcode.
-///
-/// To make most sense of the following configuration you should also redirect
-/// path to derived data using xcodebuild parameter:
-/// xcodebuild ...-derivedDataPath $(DERIVED_DATA_DIR)...
-/// where $(DERIVED_DATA_DIR) also points to Build-command-line/DerivedData
-///
-/// Tested against Xcode 7.3.1 (7D1014)
-///
-/// Source: xcodebuild: how to really change its build path
-/// http://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html
-
-HERE_BUILD=$(SRCROOT)/Build-command-line
-HERE_INTERMEDIATES=$(HERE_BUILD)/Intermediates
-
-/// Paths
-/// the following paths are enough to redirect everything to $HERE_BUILD
-MODULE_CACHE_DIR    = $(HERE_BUILD)/DerivedData/ModuleCache
-OBJROOT             = $(HERE_INTERMEDIATES)
-SHARED_PRECOMPS_DIR = $(HERE_INTERMEDIATES)/PrecompiledHeaders
-SYMROOT             = $(HERE_BUILD)/Products
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Having this setup I can now use both &lt;code class=&quot;highlighter-rouge&quot;&gt;Command + U&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;make test&lt;/code&gt; (which is &lt;code class=&quot;highlighter-rouge&quot;&gt;make test_unit &amp;amp;&amp;amp; make test_integration &amp;amp;&amp;amp; make test_functional&lt;/code&gt; done by Make) - they are now built in two separate directories and that makes a very good speed-up in build time of both.&lt;/p&gt;
-
-&lt;p&gt;P.S. Of course &lt;code class=&quot;highlighter-rouge&quot;&gt;xcodebuild&lt;/code&gt;’s build settings are subject to change however as of &lt;code class=&quot;highlighter-rouge&quot;&gt;Xcode Version 7.3.1 (7D1014)&lt;/code&gt; this solution works very well.&lt;/p&gt;
-
-&lt;p&gt;See also my post: &lt;a href=&quot;http://tech.blacklane.com/2015/12/13/test-automation-for-ios/&quot;&gt;Test Automation for iOS&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 28 Feb 2016 21:16:21 +0100</pubDate>
-        <link>https://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html</link>
-        <guid isPermaLink="true">https://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html</guid>
         
         
       </item>
