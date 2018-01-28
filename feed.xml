@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 28 Jan 2018 18:22:03 +0100</pubDate>
-    <lastBuildDate>Sun, 28 Jan 2018 18:22:03 +0100</lastBuildDate>
+    <pubDate>Sun, 28 Jan 2018 18:35:15 +0100</pubDate>
+    <lastBuildDate>Sun, 28 Jan 2018 18:35:15 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -25,9 +25,9 @@
   font-family: monospace;
   /*font-weight: bolder;*/
   font-size: 18px;
-/*  margin: 10px;
-  padding: 5px 10px;
-*/  background-color: #efeefe;
+  /*margin: 10px;*/
+  padding: 1px 5px;
+  background-color: #efeefe;
 }
 &lt;/style&gt;
 
@@ -279,7 +279,7 @@ to get rid of the fractions:&lt;/p&gt;
 &lt;/div&gt;
 
 &lt;p&gt;This equation always holds since both
-&lt;span class=&quot;math-inline&quot;&gt;s&lt;/span&gt;
+&lt;span class=&quot;math-inline&quot;&gt;𝑠&lt;/span&gt;
 and
 &lt;span class=&quot;math-inline&quot;&gt;𝑠’&lt;/span&gt;
 are nonnegative integers, which
@@ -339,7 +339,7 @@ and
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) &amp;gt; (𝑥 - 1) / 𝑥&lt;/div&gt;
 
-&lt;p&gt;Multiply both parts by 𝑥 * (𝑥 + 1) to get rid of fractions&lt;/p&gt;
+&lt;p&gt;Multiply both parts by 𝑥 × (𝑥 + 1) to get rid of fractions&lt;/p&gt;
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥&lt;sup&gt;2&lt;/sup&gt; &amp;gt; (𝑥 - 1)(𝑥 + 1)&lt;/div&gt;
 
