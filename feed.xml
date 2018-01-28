@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 28 Jan 2018 18:17:06 +0100</pubDate>
-    <lastBuildDate>Sun, 28 Jan 2018 18:17:06 +0100</lastBuildDate>
+    <pubDate>Sun, 28 Jan 2018 18:22:03 +0100</pubDate>
+    <lastBuildDate>Sun, 28 Jan 2018 18:22:03 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -76,7 +76,7 @@ page 180 of the book and page 188 of a textbook. It proves the following claim:&
 
 &lt;p&gt;The following is a direct quote from a textbook:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.PNG&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.png&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;&lt;a name=&quot;practical-intuition&quot; href=&quot;#practical-intuition&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -132,7 +132,7 @@ practically the probability is extremely low!&lt;/p&gt;
 
 &lt;p&gt;This is the proof that the textbook suggests:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.PNG&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.png&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Let’s consider three building blocks of this proof:&lt;/p&gt;
 
@@ -151,7 +151,7 @@ practically the probability is extremely low!&lt;/p&gt;
 
 &lt;p&gt;Let’s look the lemma up in the textbook:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Lemma-2.4.6-Proof.PNG&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Lemma-2.4.6-Proof.png&quot; /&gt;&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Lemma 2.4.6. ℕ + 𝔽  is well ordered.&lt;/p&gt;
@@ -159,7 +159,7 @@ practically the probability is extremely low!&lt;/p&gt;
 
 &lt;p&gt;The definition of &lt;code class=&quot;highlighter-rouge&quot;&gt;ℕ + 𝔽&lt;/code&gt; requires us to understand what is 𝔽 first:&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Definition-Set-F.PNG&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Definition-Set-F.png&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This is the definition of &lt;strong&gt;well-ordered&lt;/strong&gt; by Wikipedia:&lt;/p&gt;
 
@@ -396,7 +396,7 @@ holds:&lt;/p&gt;
 
 &lt;h3 id=&quot;implication-of-theorem-633-robot-always-gets-stuck&quot;&gt;3. Implication of Theorem 6.3.3: Robot always gets stuck.&lt;/h3&gt;
 
-&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.PNG&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.png&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This last section concludes the proof: in the step 2 we showed that a derived
 variable
