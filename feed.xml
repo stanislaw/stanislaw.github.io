@@ -5,9 +5,576 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 07 May 2017 14:02:58 +0200</pubDate>
-    <lastBuildDate>Sun, 07 May 2017 14:02:58 +0200</lastBuildDate>
+    <pubDate>Sun, 28 Jan 2018 18:17:06 +0100</pubDate>
+    <lastBuildDate>Sun, 28 Jan 2018 18:17:06 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
+    
+      <item>
+        <title>A Southeast Jumping Robot: Notes on one proof from a textbook</title>
+        <description>&lt;style type=&quot;text/css&quot;&gt;
+.math-block {
+  font-family: monospace;
+  white-space: pre;
+  /*font-weight: bolder;*/
+  font-size: 18px;
+  margin: 10px;
+  padding: 5px 10px;
+  background-color: #efeefe;
+}
+.math-inline {
+  font-family: monospace;
+  /*font-weight: bolder;*/
+  font-size: 18px;
+/*  margin: 10px;
+  padding: 5px 10px;
+*/  background-color: #efeefe;
+}
+&lt;/style&gt;
+
+&lt;p&gt;&lt;a name=&quot;intro&quot; href=&quot;#intro&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+
+&lt;p&gt;This ad-hoc post is dedicated to one small proof from a textbook “Mathematics
+for Computer Science” [&lt;a href=&quot;#anchor_01_mathematics&quot;&gt;1&lt;/a&gt;] which is a recommended
+reading in the course “Formal Software Verification” &lt;a href=&quot;#anchor_02_course&quot;&gt;[2]&lt;/a&gt;.
+It took a while for me to understand the reasoning behind this proof so I
+decided to share my experience in a blog post because I did not find any
+information about it on the internet. Hopefully it will help someone who
+is working with this textbook to understand the material better.&lt;/p&gt;
+
+&lt;p&gt;My goal is to fill in the details I missed in the textbook, not to give a
+complete explanation of a problem so it is most likely that this post will only
+make sense to those who are familiar with the context of this proof: the chapter
+called “6.3 Partial Correctness &amp;amp; Termination”.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;#intro&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#robot&quot;&gt;A Southeast Jumping Robot: Contrived example of a termination proof&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#practical-intuition&quot;&gt;Practical intuition&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#proof&quot;&gt;Proof&lt;/a&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href=&quot;#proof-1&quot;&gt;1. Proof of the lemma 2.4.6&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#proof-2&quot;&gt;2. Proof that &lt;code class=&quot;highlighter-rouge&quot;&gt;v&lt;/code&gt; is a strictly decreasing derived variable&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href=&quot;#proof-3&quot;&gt;3. Implication of Theorem 6.3.3: Robot always gets stuck.&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#geometric-interpretation&quot;&gt;Geometric interpretation&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a name=&quot;robot&quot; href=&quot;#robot&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;a-southeast-jumping-robot&quot;&gt;A Southeast Jumping Robot&lt;/h2&gt;
+
+&lt;p&gt;This proof is located in section “6.3.4 A Southeast Jumping Robot (Optional)”,
+page 180 of the book and page 188 of a textbook. It proves the following claim:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Claim 6.3.4. The robot will always get stuck at the origin.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The following is a direct quote from a textbook:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.PNG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;practical-intuition&quot; href=&quot;#practical-intuition&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;practical-intuition&quot;&gt;Practical intuition&lt;/h2&gt;
+
+&lt;p&gt;If I put on my hat of a programmer the claim does not seem obvious to me at all:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Claim 6.3.4. The robot will always get stuck at the origin.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To demonstrate my intuition I have written the following in Ruby interactive shell &lt;code class=&quot;highlighter-rouge&quot;&gt;irb&lt;/code&gt;:&lt;/p&gt;
+
+&lt;p&gt;Let’s simulate the movement of the Robot along X axis starting from &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑥 = 10&lt;/code&gt; (𝑦
+is weakly decreasing with each move so it is of less interest). Let’s assume
+that probabilities of &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥 - 1)&lt;/code&gt; jump and random East-jump are even and are equal
+&lt;code class=&quot;highlighter-rouge&quot;&gt;1/2&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# starting coordinate of a robot.
+x = 10
+
+# rand(0..1) == 1 determines a type of move: either west or east.
+x = (rand(0..1) == 1) ? (x - 1) : [10, x + rand(0..(10 - x)].min # repeat many times
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;What we observe is that Robot is aligned to the right most of the time like:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;=&amp;gt; 9
+=&amp;gt; 8
+=&amp;gt; 9
+=&amp;gt; 10
+=&amp;gt; 10
+=&amp;gt; 9
+=&amp;gt; 8
+=&amp;gt; 7
+=&amp;gt; 10
+=&amp;gt; 10
+=&amp;gt; 10
+...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;I would assume that with a quadrant of a greater size like
+&lt;code class=&quot;highlighter-rouge&quot;&gt;10 ** 10 = 10 000 000 000&lt;/code&gt; we can expect robot to never reach 0 coordinate.&lt;/p&gt;
+
+&lt;p&gt;I think this is a contradiction between the practical and mathematical points of
+view. I can see that with a very small, tiny, probability robot can get to the
+origin (0) coordinate even in case of (10 ** 10)-sized square however
+practically the probability is extremely low!&lt;/p&gt;
+
+&lt;h2 id=&quot;proof&quot;&gt;Proof&lt;/h2&gt;
+
+&lt;p&gt;This is the proof that the textbook suggests:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.PNG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s consider three building blocks of this proof:&lt;/p&gt;
+
+&lt;p&gt;1) Lemma 2.4.6&lt;/p&gt;
+
+&lt;p&gt;2) Show that &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣&lt;/code&gt; is strictly decreasing i.e. show the implication:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;(𝑥, 𝑦) ⟶ (𝑥&#39;, 𝑦&#39;) ⟹ 𝑣((𝑥&#39;, 𝑦&#39;)) &amp;lt; 𝑣((𝑥, 𝑦))
+&lt;/div&gt;
+
+&lt;p&gt;3) Show the implication from Theorem 6.3.3 that Robot always get stuck.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;proof-1&quot; href=&quot;#proof-1&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;proof-of-the-lemma-246&quot;&gt;1. Proof of the lemma 2.4.6&lt;/h3&gt;
+
+&lt;p&gt;Let’s look the lemma up in the textbook:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Lemma-2.4.6-Proof.PNG&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Lemma 2.4.6. ℕ + 𝔽  is well ordered.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The definition of &lt;code class=&quot;highlighter-rouge&quot;&gt;ℕ + 𝔽&lt;/code&gt; requires us to understand what is 𝔽 first:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Definition-Set-F.PNG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the definition of &lt;strong&gt;well-ordered&lt;/strong&gt; by Wikipedia:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;In mathematics, a well-order (or well-ordering or well-order relation) on a set
+S is a total order on S with the property that every non-empty subset of S has a
+least element in this ordering. The set S together with the well-order relation
+is then called a well-ordered set.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;The Well Ordering Principle&lt;/strong&gt; is defined at the start of chapter 2: “Well
+Ordering Principle” as&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Every nonempty set of nonnegative integers has a smallest element.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;While the Well Ordering Principle may seem obvious, it’s hard to see offhand why it is useful. But in fact, it provides one of the most important proof rules in discrete mathematics…&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Well ordering commonly comes up in computer science as a method for proving
+that computations won’t run forever. The idea is to assign a value to each
+successive step of a computation so that the values get smaller at every step.
+If the values are all from a well ordered set, then the computation can’t run
+forever, because if it did, the values assigned to its successive steps would
+define a subset with no minimum element. You’ll see several examples of this
+technique applied in Chapter 6 to prove that various state machines will
+eventually terminate.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Given we understand the definitions of &lt;strong&gt;well-ordered&lt;/strong&gt; and &lt;strong&gt;Well Ordering
+Principle&lt;/strong&gt; we only need to prove what is left as the exercise in the textbook
+(Problem 2.20):&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Now it is easy to verify that 𝑛&lt;sub&gt;𝑠&lt;/sub&gt; + 𝑓&lt;sub&gt;𝑠&lt;/sub&gt; is the minimum
+element of S (Problem 2.20).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;To prove this statement, let’s assume the opposite:&lt;/p&gt;
+
+&lt;p&gt;There are
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt;
+so that
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt; + 𝑓&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt; is the minimum
+element of 𝑆, which means that&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑛&lt;sub&gt;𝑠&#39;&lt;/sub&gt; + 𝑓&lt;sub&gt;𝑠&#39;&lt;/sub&gt; &amp;lt; 𝑛&lt;sub&gt;𝑠&lt;/sub&gt; + 𝑓&lt;sub&gt;𝑠&lt;/sub&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;(1A)&lt;/div&gt;
+
+&lt;p&gt;Let’s consider two cases:&lt;/p&gt;
+
+&lt;p&gt;1) &lt;b&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt; = 𝑛&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/b&gt;, which reduces the equation 1A to just:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑓&lt;sub&gt;𝑠&#39;&lt;/sub&gt; &amp;lt; 𝑓&lt;sub&gt;𝑠&lt;/sub&gt;
+&lt;/div&gt;
+
+&lt;p&gt;which is a contradiction to the definition of
+&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/span&gt;
+which is the smallest element of&lt;/p&gt;
+
+&lt;p&gt;&lt;span class=&quot;math-inline&quot;&gt;{ 𝑓 ∈ 𝔽 | 𝑛&lt;sub&gt;𝑠&lt;/sub&gt; + 𝑓 ∈ S }&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;2) &lt;b&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt; ≠ 𝑛&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s group members of the equation 1A:
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt;
+to the left side of the equation and
+&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt; to the right side:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt; - 𝑛&lt;sub&gt;𝑠&lt;/sub&gt; &amp;lt; 𝑓&lt;sub&gt;𝑠&lt;/sub&gt; - 𝑓&lt;sub&gt;𝑠’&lt;/sub&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;(2A)
+&lt;/div&gt;
+
+&lt;p&gt;By definition of
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/span&gt;
+, it is the smallest of
+&lt;span class=&quot;math-inline&quot;&gt;{ 𝑛 ∈ ℕ | 𝑛 + 𝑓 ∈ S, for 𝑓 ∈ 𝔽 }&lt;/span&gt;
+which means that
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt;&lt;/span&gt;
+is greater than
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠&lt;/sub&gt;&lt;/span&gt;
+i.e.
+&lt;span class=&quot;math-inline&quot;&gt;𝑛&lt;sub&gt;𝑠’&lt;/sub&gt; - 𝑛&lt;sub&gt;𝑠&lt;/sub&gt; ≥ 1&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s obtain the contradiction by proving that the right side of the equation 2A
+is always less than 1:&lt;/p&gt;
+
+&lt;p&gt;&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠&lt;/sub&gt; ∈ 𝔽&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;𝑓&lt;sub&gt;𝑠’&lt;/sub&gt; ∈ 𝔽&lt;/span&gt;
+so by definition of
+&lt;span class=&quot;math-inline&quot;&gt;𝔽&lt;/span&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑠 / (𝑠 + 1) - 𝑠&#39; / (𝑠&#39; + 1) &amp;lt; 1, where 𝑠 ∈ ℕ and 𝑠&#39; ∈ ℕ
+&lt;/div&gt;
+
+&lt;p&gt;Let’s multiply both parts by
+&lt;span class=&quot;math-inline&quot;&gt;(𝑠 + 1) × (𝑠’ + 1)&lt;/span&gt;
+to get rid of the fractions:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑠 × (𝑠&#39; + 1) - 𝑠&#39; × (𝑠 + 1) &amp;lt; (𝑠 + 1) × (𝑠&#39; + 1)
+𝑠 × 𝑠&#39; + 𝑠 - 𝑠&#39; × 𝑠 - 𝑠&#39; &amp;lt; 𝑠 × 𝑠&#39; + 𝑠 + 𝑠&#39; + 1
+&lt;/div&gt;
+
+&lt;p&gt;Reduction gives us:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;-𝑠&#39; × 𝑠 - 𝑠&#39; &amp;lt; 𝑠&#39; + 1
+-𝑠&#39; × 𝑠 - 2 × 𝑠&#39; &amp;lt; 1
+𝑠&#39; × (𝑠 + 2) &amp;gt; -1
+&lt;/div&gt;
+
+&lt;p&gt;This equation always holds since both
+&lt;span class=&quot;math-inline&quot;&gt;s&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;𝑠’&lt;/span&gt;
+are nonnegative integers, which
+proves that the right side of the equation 1A is always less than 1.&lt;/p&gt;
+
+&lt;p&gt;At the same time we have showed already that the left side of the equation 1A
+is greater or equal to 1 which means that we arrived to the contradiction in the
+equation 1A.&lt;/p&gt;
+
+&lt;p&gt;We have just proved the homework exercise &lt;code class=&quot;highlighter-rouge&quot;&gt;Problem 2.20&lt;/code&gt;, the final building
+block for proof of Lemma 2.4.6.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;proof-2&quot; href=&quot;#proof-2&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;proof-that--is-a-strictly-decreasing-derived-variable&quot;&gt;2. Proof that &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣&lt;/code&gt; is a strictly decreasing derived variable&lt;/h3&gt;
+
+&lt;p&gt;Let’s actually check the following statement:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Now it’s easy to check that if &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (𝑥&#39;, 𝑦&#39;)&lt;/code&gt; is a legitimate robot
+move, then &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦′)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt;. In particular, v is a strictly decreasing
+derived variable…&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We need to check if &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦′)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt; holds for both types of moves
+that a robot can do:&lt;/p&gt;
+
+&lt;p&gt;1) &lt;strong&gt;a unit distance West move&lt;/strong&gt; — that is, &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (x − 1, 𝑦)&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;x &amp;gt; 0&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;By definition &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)&lt;/code&gt;, so for &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦&#39;)&lt;/code&gt;
+coordinates we have:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/div&gt;
+
+&lt;p&gt;Expand by definition of
+&lt;span class=&quot;math-inline&quot;&gt;𝑣&lt;/span&gt;
+:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥 / (𝑥 + 1)&lt;/div&gt;
+
+&lt;p&gt;Replace
+&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;(𝑥 - 1)&lt;/span&gt;
+,
+&lt;span class=&quot;math-inline&quot;&gt;𝑦’&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;𝑦&lt;/span&gt;
+:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦 + (𝑥 - 1) / ((𝑥 - 1) + 1)&lt;/div&gt;
+
+&lt;p&gt;Reduce
+&lt;span class=&quot;math-inline&quot;&gt;𝑦&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;1&lt;/span&gt;’s:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) &amp;gt; (𝑥 - 1) / 𝑥&lt;/div&gt;
+
+&lt;p&gt;Multiply both parts by 𝑥 * (𝑥 + 1) to get rid of fractions&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑥&lt;sup&gt;2&lt;/sup&gt; &amp;gt; (𝑥 - 1)(𝑥 + 1)&lt;/div&gt;
+
+&lt;p&gt;This equation always holds, so 𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥’, 𝑦’)) holds:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑥&lt;sup&gt;2&lt;/sup&gt; &amp;gt; (𝑥&lt;sup&gt;2&lt;/sup&gt; - 1)&lt;/div&gt;
+
+&lt;p&gt;2) &lt;strong&gt;a unit distance South combined with an arbitrary jump&lt;/strong&gt; East—that is,
+&lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (𝑧, 𝑦 − 1)&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑧 ≥ 𝑥&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/div&gt;
+
+&lt;p&gt;Expand by definition of
+&lt;span class=&quot;math-inline&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣&lt;/code&gt;&lt;/span&gt;
+:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥 / (𝑥 + 1)&lt;/div&gt;
+
+&lt;p&gt;Replace
+&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;𝑧&lt;/span&gt;
+,
+&lt;span class=&quot;math-inline&quot;&gt;𝑦’&lt;/span&gt;
+with
+&lt;span class=&quot;math-inline&quot;&gt;𝑦 - 1&lt;/span&gt;
+:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦 - 1 + 𝑧 / (𝑧 + 1)&lt;/div&gt;
+
+&lt;p&gt;Reduce y:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) &amp;gt; -1 + 𝑧 / (𝑧 + 1)&lt;/div&gt;
+
+&lt;p&gt;Due to
+&lt;span class=&quot;math-inline&quot;&gt;(𝑥 / 𝑥 + 1) &amp;lt; 1&lt;/span&gt;
+for any
+&lt;span class=&quot;math-inline&quot;&gt;𝑥 ≥ 0&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;(𝑧 / 𝑧 + 1) &amp;lt; 1&lt;/span&gt;
+for any
+&lt;span class=&quot;math-inline&quot;&gt;𝑧 ≥ 𝑥&lt;/span&gt;
+we have that
+&lt;span class=&quot;math-inline&quot;&gt;𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1)&lt;/span&gt;
+is always greater than -1&lt;/p&gt;
+
+&lt;p&gt;So
+&lt;span class=&quot;math-inline&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/span&gt;
+holds:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1) &amp;gt; -1&lt;/div&gt;
+
+&lt;p&gt;&lt;a name=&quot;proof-3&quot; href=&quot;#proof-3&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;implication-of-theorem-633-robot-always-gets-stuck&quot;&gt;3. Implication of Theorem 6.3.3: Robot always gets stuck.&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.PNG&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This last section concludes the proof: in the step 2 we showed that a derived
+variable
+&lt;span class=&quot;math-inline&quot;&gt;𝑣&lt;/span&gt;
+is a strictly decreasing derived variable whose range is a well ordered set
+&lt;span class=&quot;math-inline&quot;&gt;ℕ + 𝔽&lt;/span&gt; so we conclude that for any sequence of
+steps that robot can do it will eventually end up being in (0, 0).&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;geometric-interpretation&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;geometric-interpretation&quot;&gt;Geometric interpretation&lt;/h2&gt;
+
+&lt;p&gt;Let’s consider that the robot is moving on 10 x 10 quadrant. By definition of
+&lt;span class=&quot;math-inline&quot;&gt;𝑣&lt;/span&gt; we have:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)&lt;/div&gt;
+&lt;p&gt;therefore we get the
+following table of values:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;(9 + 0/1)    (9 + 1/2)    (9 + 2/3)   ... (9 + 9/10)  # 9 ≤ y + x / (x + 1) ≤ 10
+...                     ...                      ...
+(2 + 0/1)    (2 + 1/2)    (2 + 2/3)   ... (2 + 9/10)  # 2 ≤ y + x / (x + 1) ≤ 3
+(1 + 0/1)    (1 + 1/2)    (1 + 2/3)   ... (1 + 9/10)  # 1 ≤ y + x / (x + 1) ≤ 2
+(0 + 0/1)    (0 + 1/2)    (0 + 2/3)   ... (0 + 9/10)  # 0 ≤ y + x / (x + 1) ≤ 1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;We see that the rows form buckets of values constrained within the range of [𝑦, 𝑦 + 1], for
+each { 𝑦 ∈ ℕ | 0 ≤ 𝑦 ≤ 10 }:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑦 ≤ 𝑦 + 𝑥 / (𝑥 + 1) &amp;lt; 𝑦 + 1   (Observation 1)
+&lt;/div&gt;
+
+&lt;p&gt;for example
+&lt;span class=&quot;math-inline&quot;&gt;2 ≤ (2 + 0/1) &amp;lt; (2 + 1/2) &amp;lt; (2 + 2/3) &amp;lt; … &amp;lt; (2 + 9/10) &amp;lt; 3&lt;/span&gt;.&lt;/p&gt;
+
+&lt;p&gt;Also, we see that columns form buckets of points so that the difference between
+the values of any two adjacent points equals to 1, for example:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;(2 + 2/3) - (1 + 2/3) = 1  (Observation 2)&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Observation 3. Sequences from the vertical buckets decrease
+with a rate of 1 per row and the sequences from the horizontal buckets decrease
+with a rate strictly less than 1 per column so vertical sequences decrease faster&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;When robot jumps to the West it changes the column bucket which means that
+the
+&lt;span class=&quot;math-inline&quot;&gt;𝑦&lt;/span&gt;
+stays the same, but
+&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt; changes to
+&lt;span class=&quot;math-inline&quot;&gt;𝑥 - 1&lt;/span&gt;
+, for example:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;(5, 5, 5 + 5/6) ⟶ (4, 5, 5 + 4/5)  # 5 + 5 / 6 &amp;gt; 5 + 4/5
+&lt;/div&gt;
+
+&lt;p&gt;When robot jumps to the South East it changes the column and row buckets which
+means that&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;(5, 5, 5 + 5/6) ⟶ (𝑘, 4, 4 + (𝑘) / (𝑘 + 1)), 5 ≤ k ≤ 10
+&lt;/div&gt;
+
+&lt;p&gt;Along 𝑥-axis, Robot can jump to a 𝑘 coordinate as far as the right boundary of a quadrant, however its jump also changes the horizontal bucket
+&lt;span class=&quot;math-inline&quot;&gt;𝑦 - 1&lt;/span&gt;
+which means that this jump to South is always a stronger contributor to the
+value 𝑣 than an arbitrary jump to the East (this is obvious from the
+observations 1, 2 and 3).&lt;/p&gt;
+
+&lt;p&gt;Now is clear that after each of these two moves derived value
+&lt;span class=&quot;math-inline&quot;&gt;𝑣&lt;/span&gt;
+becomes smaller than (5, 5).&lt;/p&gt;
+
+&lt;h3 id=&quot;plots&quot;&gt;Plots&lt;/h3&gt;
+
+&lt;p&gt;Let’s look at the geometric interpretation of this function:&lt;/p&gt;
+
+&lt;div class=&quot;math-block&quot;&gt;𝑓(𝑥, 𝑦) = 𝑦 + 𝑥 / (𝑥 + 1)
+&lt;/div&gt;
+
+&lt;p&gt;This is a three-dimensional function
+&lt;span class=&quot;math-inline&quot;&gt;𝑧 = 𝑦 + 𝑥 / (𝑥 + 1)&lt;/span&gt;
+so we will need a 3D plot to visualize this function:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Academo-Annotated.jpg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s assume that the robot is jumping from (5, 5) coordinate to either
+(4, 5) with its “unit distance West move” or (8, 4) with its “unit distance
+South combined with an arbitrary jump”.&lt;/p&gt;
+
+&lt;p&gt;When I look at the annotated plot above, I see a good analogy: the plot
+represents a fragment of a mountain which the robot is trying climb up: values
+of
+&lt;span class=&quot;math-inline&quot;&gt;𝑧&lt;/span&gt;
+like (5 + 5/6) or (4 + 8/9) represent the altitudes corresponding to the
+coordinates
+&lt;span class=&quot;math-inline&quot;&gt;(𝑥, 𝑦)&lt;/span&gt; of robot’s positions.&lt;/p&gt;
+
+&lt;p&gt;The drama of this robot, however, is that it can only move down the hill so it
+can never climb up. The altitude of its position is always decreasing and since
+it jumps on a limited 10 x 10 quadrant and the points are nonnegative integer
+numbers, the termination claim that we proved asserts that sooner or later robot
+will reach coordinate (0, 0) and get stuck.&lt;/p&gt;
+
+&lt;p&gt;The following plots demonstrate how the function
+&lt;span class=&quot;math-inline&quot;&gt;𝑓(𝑥, 𝑦) = 𝑦 + 𝑥 / (𝑥 + 1)&lt;/span&gt; looks like when it is
+not discrete but more continuous. These plots demonstrate it even better that
+the function is decreasing to 0 both along
+&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt;
+and
+&lt;span class=&quot;math-inline&quot;&gt;𝑦&lt;/span&gt;
+axes.&lt;/p&gt;
+
+&lt;details&gt;
+&lt;summary&gt;3D Plot by Wolfram&lt;/summary&gt;
+&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/Wolfram.jpg&quot; /&gt;
+&lt;/details&gt;
+
+&lt;details&gt;
+&lt;summary&gt;3D Plot by Academo (Front)&lt;/summary&gt;
+&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/AcademoFront.jpg&quot; /&gt;
+&lt;/details&gt;
+
+&lt;details&gt;
+&lt;summary&gt;3D Plot by Academo (Back)&lt;/summary&gt;
+&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg&quot; /&gt;
+&lt;/details&gt;
+
+&lt;p&gt;&lt;a name=&quot;conclusion&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;The most interesting part of this exercise for me was to understand the
+difference between mathematical and practical points of view:&lt;/p&gt;
+
+&lt;p&gt;I can create a simulator of this Robot, put it on a quadrant 100000 x 100000,
+let it move and never see it to reach (0, 0). So in the real world the
+robot will never get stuck, but will stick to the right side of the quadrant.&lt;/p&gt;
+
+&lt;p&gt;At the same time we have a mathematical proof which we have just actually
+proved: robot will eventually reach (0, 0) and therefore get stuck.&lt;/p&gt;
+
+&lt;p&gt;I can only resolve this contradiction by assuming that if my simulator runs
+infinite amount of time there might be a combination of robot’s moves to the
+left, let’s call it a GREAT COMBO, which will stick robot to the left, however,
+I consider this case impossible in the real-world.&lt;/p&gt;
+
+&lt;h2 id=&quot;credits&quot;&gt;Credits&lt;/h2&gt;
+
+&lt;p&gt;I am working with this proof because it is the material for the Week 2 of the
+course: “Formal Software Verification” &lt;a href=&quot;#anchor_02_course&quot;&gt;[2]&lt;/a&gt;. It is unlikely
+that I would have encountered this problem otherwise.&lt;/p&gt;
+
+&lt;p&gt;I used to two online services: Wolfram|Alpha &lt;a href=&quot;#anchor_03_wolframalpha&quot;&gt;[3]&lt;/a&gt; and
+Academo.org &lt;a href=&quot;#anchor_04_academo&quot;&gt;[4]&lt;/a&gt; to draw the plots. I used the amazing
+Academo service to create the annotated plot which helped me to visualize and
+understand the geometric interpretation of the proof.&lt;/p&gt;
+
+&lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
+
+&lt;p&gt;&lt;a name=&quot;anchor_01_mathematics&quot;&gt;&lt;/a&gt;
+[1] &lt;a href=&quot;https://courses.csail.mit.edu/6.042/spring17/mcs.pdf&quot;&gt;Eric Lehman, F Thomson Leighton, Albert R Meyer, “Mathematics for Computer
+Science”, revised Monday 5th June, 2017, 19:42.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;anchor_02_course&quot;&gt;&lt;/a&gt;
+[2] &lt;a href=&quot;https://www.edx.org/course/formal-software-verification-usmx-umuc-stv1-3x&quot;&gt;edx - Formal Software Verification&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;anchor_03_wolframalpha&quot;&gt;&lt;/a&gt;
+[3] &lt;a href=&quot;http://www.wolframalpha.com/input/?i=plot&quot;&gt;Wolfram|Alpha&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;anchor_04_academo&quot;&gt;&lt;/a&gt;
+[4] &lt;a href=&quot;https://academo.org/demos/3d-surface-plotter/?expression=y%2Bx%2F(x%2B1)&amp;amp;xRange=0%2C+10&amp;amp;yRange=0%2C+10&amp;amp;resolution=100&quot;&gt;Academo&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Sun, 28 Jan 2018 16:20:00 +0100</pubDate>
+        <link>https://stanislaw.github.io/2018/01/28/southeast-jumping-robot.html</link>
+        <guid isPermaLink="true">https://stanislaw.github.io/2018/01/28/southeast-jumping-robot.html</guid>
+        
+        
+      </item>
     
       <item>
         <title>Mull and Klee, part 1: mutation testing analysis for Klee&#39;s Tutorial Two</title>
@@ -1672,135 +2239,6 @@ Test Case &#39;E...&#39; passed (0.201 seconds).
         <pubDate>Sun, 12 Jun 2016 22:05:00 +0200</pubDate>
         <link>https://stanislaw.github.io/2016/06/12/system-under-test-gnu-make.html</link>
         <guid isPermaLink="true">https://stanislaw.github.io/2016/06/12/system-under-test-gnu-make.html</guid>
-        
-        
-      </item>
-    
-      <item>
-        <title>Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?</title>
-        <description>&lt;p&gt;&lt;strong&gt;TLDR;&lt;/strong&gt; Эта статья - ответ на мой собственный вопрос, заданный мной 3 года назад на сайте Stack Overflow на русском: &lt;a href=&quot;http://ru.stackoverflow.com/questions/196420/%D0%A7%D1%82%D0%BE-%D0%BD%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D0%BE-%D0%B4%D0%BB%D1%8F-%D1%82%D0%BE%D0%B3%D0%BE-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-ios-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D0%BF%D0%B0%D0%BB%D0%BE-%D0%B2-app-store-app-store-subm&quot;&gt;Что необходимо для того, чтобы iOS-приложение попало в App Store (App Store Submission) ?&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Статья предназначена для начинающих разработчиков и описывает рабочий сценарий процесса подготовки приложения к App Store. Если вы начинающий разработчик iOS, и вас интересует проблема подготовки приложения в App Store, вы можете:&lt;/p&gt;
-
-&lt;p&gt;1. не дожидаясь последних недели-двух-месяца перед релизом, попробовать собрать продакшн-билд вашего приложения в его нынешнем состоянии &lt;strong&gt;прямо сейчас&lt;/strong&gt; и отправить его на iTunesConnect [вариант более сложный, реалистичный].&lt;/p&gt;
-
-&lt;p&gt;и/или&lt;/p&gt;
-
-&lt;p&gt;2. чтобы получить общее представление о сути процесса, вы можете создать пустое одноэкранное приложение по iOS-шаблону в Xcode, добавить в него фейковые, но строго по гайдлайнам, изображения и мета-данные и отправить это пустое приложение в iTunesConnect [вариант более простой, тренировочный].&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Оба варианта не предполагают подачу заявки на рассмотрение App Store Review, то есть вы имеете возможность пройти все фазы подготовки кроме самой последней, когда необходимо нажать “красную кнопку submit for review”.&lt;/strong&gt; Если вы не нажимаете эту последнюю “красную” кнопку, то ваше приложение не рассматривается Apple, а просто висит в бета-состоянии сколь угодно долго. Статья описывает этот подход в деталях.&lt;/p&gt;
-
-&lt;h2 id=&quot;section&quot;&gt;Вступление&lt;/h2&gt;
-
-&lt;p&gt;Вместо того, чтобы писать очередной гайдлайн о гайдлайнах или ещё один App Store checklist, я хочу поделиться информацией, которая, как мне кажется, дает возможность посмотреть на процесс подготовки немного с другой стороны, сделать его более простым и доступным. Данная статья предлагает начинающим разработчикам ознакомиться с &lt;strong&gt;практикой Walking Skeleton (ходячий скелет)&lt;/strong&gt; и приступить к так называемой ранней интеграции их програмных продуктов (Early Integration). В контексте iOS ранняя интеграция помимо ранней документации, тестирования наперед т.е. Test-Driven Development, означает ранние сборки продакшн-версий приложения для их последующего бета-тестирования с использованием Apple TestFlight или других сервисов.&lt;/p&gt;
-
-&lt;h2 id=&quot;walking-skeleton--&quot;&gt;Walking skeleton (ходячий скелет)&lt;/h2&gt;
-
-&lt;p&gt;Подробное описание этой очень важной инженерной практики читатель может найти самостоятельно, для данной статьи вполне достаточно исходного определения:&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;A Walking Skeleton is a tiny implementation of the system that performs a small end-to-end function. It need not use the final architecture, but it should link together the main architectural components. The architecture and the functionality can then evolve in parallel.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;взято с &lt;a href=&quot;http://alistair.cockburn.us/Walking+skeleton&quot;&gt;Alistair Cockburn: Walking skeleton&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Мой вольный перевод:&lt;/p&gt;
-
-&lt;p&gt;“Walking Skeleton (ходячий скелет) это минимальная реализация будущей системы, которая выполняет некую простейшую задачу. Такая реализация не требует полноценной архитектуры готового проекта, ее цель - первоначальная работоспособность компонентов будущей системы и их интеграция друг с другом. Когда минимальная реализация готова, архитектура и реализация могут развиваться параллельно.”&lt;/p&gt;
-
-&lt;p&gt;Последовательное применение этой практики в случае iOS разработки, с точностью до специфики каждого отдельного проекта, состоит в том, что вместо того, чтобы начинать разработку с написания кода будущего проекта, сначала полностью подготавливается инфраструктура: делается одноэкранное приложение, которое имеет от будущего проекта, пожалуй, лишь название:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;по шаблону Xcode создается одноэкранное iOS приложение (Single View Application)&lt;/li&gt;
-  &lt;li&gt;в Xcode проекте NewApp.xcodeproj создаются пустые, но рабочие тестовые таргеты (юнит-, интеграционное, acceptance и др. виды тестирования)&lt;/li&gt;
-  &lt;li&gt;проект ставится под контроль версий: Git, Mercurial или др.&lt;/li&gt;
-  &lt;li&gt;создаются первые фрагменты будущей документации&lt;/li&gt;
-  &lt;li&gt;налаживается процесс beta-тестирования (как можно раньше)&lt;/li&gt;
-  &lt;li&gt;дополнительная конфигурация инфраструктуры под специфику проекта&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Затем полный цикл разработки разворачивается в последовательности:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;документация того, что будет реализовано (практика documentation-first)&lt;/li&gt;
-  &lt;li&gt;пишутся соответствующий падающие тесты (test-driven development)&lt;/li&gt;
-  &lt;li&gt;затем и лишь на этом этапе начинается собственно реализация…&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Степень необходимости и своевременности каждого шага определяется задачами конкретного проекта и практикой конкретной команды, но в целом цикл работы в зрелых командах, где ценятся качество и настрой на долгосрочную разработку проекта, является именно таким: сначала инфракструктура, потом реализация.&lt;/p&gt;
-
-&lt;h2 id=&quot;app-store&quot;&gt;Процесс подготовки приложения к App Store&lt;/h2&gt;
-
-&lt;p&gt;Легко сделать вывод, что практика Walking Skeleton, то есть как можно более ранние работоспособность и интеграция системы, может включать в себя также и как можно более раннее тестирование процесса публикации в App Store. Это означает, что вместо того, чтобы откладывать подготовку к публикации в App Store до времени самой публикации, можно, и даже рекоменуется, сделать тестовую публикацию как можно раньше, чтобы получить представление о том, с чем вам придется столкнуться в реальности в процессе настоящей публикации.&lt;/p&gt;
-
-&lt;p&gt;В рамках этой статьи процесс подготовки приложения к App Store можно условно разделить на две части (оба перечня неисчерпывающие, лишь для иллюстрации):&lt;/p&gt;
-
-&lt;p&gt;1) Приготовить все, что необходимо для любого приложения:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;100 долларовый аккаунт разработчика Apple Developer&lt;/li&gt;
-  &lt;li&gt;Meta-data. Подготовить мета-информацию, такую как bundle identifier вашего проекта: com.mycompany.myapp, версия приложения: 0.1 и др.&lt;/li&gt;
-  &lt;li&gt;Code Signing. Подготовить App ID, ключи и сертификаты: главным образом, production distribution certificate и provisoning profile.&lt;/li&gt;
-  &lt;li&gt;Изображения. Подготовить картинки с размерами и названиями строго по гайдлайнам, главным образом App Icons и Launch Screens.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;2) Приготовить все, что необходимо именно для вашего приложения:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Убедиться в том, что сторонние (3rd party) библиотеки, которые включены в ваш проект, не используют private API фреймворков Apple.&lt;/li&gt;
-  &lt;li&gt;Желательно убедиться в том, что сторонние библиотеки имеют правильные и подходящие лицензии:
-    &lt;ul&gt;
-      &lt;li&gt;&lt;a href=&quot;http://ru.stackoverflow.com/questions/196446/%D0%92%D1%8B%D0%B1%D0%BE%D1%80-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9-%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8-%D0%B4%D0%BB%D1%8F-open-source-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-%D0%BD%D0%B0-objective-c-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-%D0%BD%D0%B5-%D0%B1%D1%8B%D0%BB%D0%BE/432726#432726&quot;&gt;Выбор правильной лицензии для open-source проекта на Objective-C, чтобы не было проблем с App Store?&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href=&quot;https://www.quora.com/What-is-the-reason-for-some-of-the-Linux-tools-on-OS-X-being-so-old-Is-this-related-to-GPL-licensing&quot;&gt;What is the reason for some of the Linux tools on OS X being so old? Is this related to GPL licensing?&lt;/a&gt;.&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-  &lt;li&gt;Все дополнительные части функционала вашего приложения работают в приложении, собранном в Release-конфигурации с помощью Archive. Например,  для работы push-нотификаций требуется, чтобы Production APN certificate был привязан к вашему App ID.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;walking-skeleton-----app-store&quot;&gt;Walking Skeleton и процесс публикации в App Store&lt;/h2&gt;
-
-&lt;p&gt;В начале статьи было предложено два подхода к подготовке приложения к публикации в App Store: первый, более простой, может быть использован в любое время, независимо от жизненного цикла вашего проекта и независимо от вашего проекта вообще. &lt;strong&gt;Этот подход позволяет вам изучить необходимый перечень того, что требуется для публикации вообще любого приложения в App Store, не только вашего&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;вы выбираете произвольное имя для шаблона Xcode для одноэкранного приложения (например, Sandbox, т.е. “песочница”)&lt;/li&gt;
-  &lt;li&gt;не пишете никакого кода!&lt;/li&gt;
-  &lt;li&gt;создаете картинки всех разрешений в соответствии с требованиями Guidelines, картинки могут быть просто черным фоном - нужен лишь формальный набор картинок соответствующих разрешений!&lt;/li&gt;
-  &lt;li&gt;создаете необходимые мета-данные, вроде com.mycompany.sandbox, версии 0.1, и т.д.&lt;/li&gt;
-  &lt;li&gt;создаете Distribution Certificate на Apple Developer Portal и соответствующий Provisioning Profile&lt;/li&gt;
-  &lt;li&gt;собираете в iTunesConnect ваше приложение Sandbox с версией 0.1&lt;/li&gt;
-  &lt;li&gt;нажимаете Archive в Xcode, а затем Upload.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Суть в том, что при таком подходе вы сознательно игнорируете специфику вашего проекта: упражнение состоит в том, чтобы набить руку, разобраться в том, что минимально необходимо для любого релиза любого приложения. После того, как архив вашего приложения (напоминаю: это пустое приложение, созданное по шаблону Xcode и названное Sandbox!) загрузится в iTunesConnect, вы можете пойти туда и посмотреть, каковы следующие шаги и опции, что необходимо для отправки приложения на ревью. Среди прочего вы увидите форму для загрузки скриншотов приложения для всех видов разрешений, дополнительно необходимые поля, которые нужно заполнить перед отправкой приложения на рассмотрение Apple. Таким образом, вы увидите в тренировочном режиме все то, с чем вам придется столкнуться при реальной публикации. Это упражнение может помочь вам разобраться в деталях любой публикации и не волноваться при этом о том, одобрят ли ваше приложение, все ли сделано правильно и т.п., ведь это приложение лишь эксперимент. По ходу действий вы можете сделать заметки, свой собственный чеклист, в которых вы задокументируете свой опыт первой “песочной” публикации.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Второй вариант более реалистичный: проделать все то же самое, но по отношению к вашему реальному проекту в его текущем состоянии.&lt;/strong&gt; Проект может быть готов лишь наполовину, но это совершенно не важно для этого упражнения: ваша задача - лишь посмотреть, какие шаги понадобится пройти и с чем придется столкнуться. Как и в первом варианте, вы можете тщательно задокументировать все шаги, чтобы быть более основательно подготовленными ко времени настоящей публикации.&lt;/p&gt;
-
-&lt;p&gt;Преимущество выполнения первого упражнения с пустым приложением может состоять в том, что когда вы будете интегрировать свое настоящее приложение и столкнетесь с непредвиденными проблемами, вы сможете легче распознать, является ли конкретная проблема просто вашей недоработкой по шагам из первой группы, то есть ошибкой в общем следовании гайдланам, которым подчиняется любое приложение, или это именно специфика вашего приложения.&lt;/p&gt;
-
-&lt;p&gt;Лично у меня 3 года назад, к сожалению, не было знания об этой практике ранней интеграции, поэтому мне пришлось повозиться с релизом моего первого приложения именно в ту “самую последнюю” релизную неделю. Все проходило в большой спешке и потому в волнении о том, пройдет ли приложение проверку App Store, или возникнут какие-то непредвиденные препятствия.&lt;/p&gt;
-
-&lt;p&gt;С тех пор, процесс публикации стал намного лучше:&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Сам процесс стал более отлаженным: стало в целом меньше ошибок, ошибки стали более понятными и дружелюбными;&lt;/li&gt;
-  &lt;li&gt;Валидации, которые производятся Xcode до загрузки архива приложения на iTunesConnect, стали более качественными, поэтому многие ошибки теперь выявляются до собственно подачи приложения на рассмотрение;&lt;/li&gt;
-  &lt;li&gt;Apple TestFlight, которые позволяет вам бета-тестировать те самые билды вашего приложения, которые затем подаются на рассмотрение App Store Review.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Все эти улучшения и изменения очень способствуют тому, чтобы делать предварительную обкатку процесса публикации легкой и информативной.&lt;/p&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;Заключение&lt;/h2&gt;
-
-&lt;p&gt;В этой статье я постарался поделиться своим знанием о практике Walking Skeleton и ее возможном применении к процессу подготовки iOS приложения к публикации в App Store. Лично мне это знание стало доступно лишь на третьем году моей карьеры разработчика iOS, и так как это знание о необходимости ранней интеграции мне кажется очень ценным, я считаю своим профессиональным долгом поделиться им со своими менее опытными в iOS разработке коллегами. Надеюсь, что статья действительно окажется полезной начинающим.&lt;/p&gt;
-
-&lt;p&gt;При необходимости, для обратной связи вы можете связаться со мной по email, который можно найти на моем профиле Github.&lt;/p&gt;
-
-</description>
-        <pubDate>Mon, 04 Apr 2016 20:59:39 +0200</pubDate>
-        <link>https://stanislaw.github.io/2016/04/04/how-to-app-store.html</link>
-        <guid isPermaLink="true">https://stanislaw.github.io/2016/04/04/how-to-app-store.html</guid>
         
         
       </item>

@@ -7,6 +7,9 @@ help: ## Show this help message.
 preview: build ## Run preview server
 	bundle exec jekyll serve --watch
 
+draft: build ## Run preview server with drafts included
+	bundle exec jekyll serve --watch --draft
+
 deploy: clean build ## Deploy
 	bundle exec octopress deploy
 

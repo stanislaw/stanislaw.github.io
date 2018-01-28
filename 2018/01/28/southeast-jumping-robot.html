@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>A Southeast Jumping Robot: Notes on one proof from a textbook</title>
+
+  <meta name="description" content="">
+
+  <meta name="keywords" content="math, formal verification">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/share.css">
+  <link rel="canonical" href="https://stanislaw.github.io/2018/01/28/southeast-jumping-robot.html">
+  <link rel="alternate" type="application/rss+xml" title="Stanislav Pankevich's blog" href="https://stanislaw.github.io/feed.xml">
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@sbpankevich" />
+<meta name="twitter:title" content="A Southeast Jumping Robot: Notes on one proof from a textbook" />
+<meta name="twitter:description" content="" />
+<meta name="twitter:image" content="https://stanislaw.github.io/images/avatar.jpeg" />
+
+
+  <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-70472472-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Stanislav Pankevich's blog</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">A Southeast Jumping Robot: Notes on one proof from a textbook</h1>
+    <p class="post-meta"><time datetime="2018-01-28T16:20:00+01:00" itemprop="datePublished">Jan 28, 2018</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <style type="text/css">
+.math-block {
+  font-family: monospace;
+  white-space: pre;
+  /*font-weight: bolder;*/
+  font-size: 18px;
+  margin: 10px;
+  padding: 5px 10px;
+  background-color: #efeefe;
+}
+.math-inline {
+  font-family: monospace;
+  /*font-weight: bolder;*/
+  font-size: 18px;
+/*  margin: 10px;
+  padding: 5px 10px;
+*/  background-color: #efeefe;
+}
+</style>
+
+<p><a name="intro" href="#intro"></a></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>This ad-hoc post is dedicated to one small proof from a textbook “Mathematics
+for Computer Science” [<a href="#anchor_01_mathematics">1</a>] which is a recommended
+reading in the course “Formal Software Verification” <a href="#anchor_02_course">[2]</a>.
+It took a while for me to understand the reasoning behind this proof so I
+decided to share my experience in a blog post because I did not find any
+information about it on the internet. Hopefully it will help someone who
+is working with this textbook to understand the material better.</p>
+
+<p>My goal is to fill in the details I missed in the textbook, not to give a
+complete explanation of a problem so it is most likely that this post will only
+make sense to those who are familiar with the context of this proof: the chapter
+called “6.3 Partial Correctness &amp; Termination”.</p>
+
+<ul>
+  <li><a href="#intro">Introduction</a></li>
+  <li><a href="#robot">A Southeast Jumping Robot: Contrived example of a termination proof</a></li>
+  <li><a href="#practical-intuition">Practical intuition</a></li>
+  <li><a href="#proof">Proof</a>
+    <ul>
+      <li><a href="#proof-1">1. Proof of the lemma 2.4.6</a></li>
+      <li><a href="#proof-2">2. Proof that <code class="highlighter-rouge">v</code> is a strictly decreasing derived variable</a></li>
+      <li><a href="#proof-3">3. Implication of Theorem 6.3.3: Robot always gets stuck.</a></li>
+    </ul>
+  </li>
+  <li><a href="#geometric-interpretation">Geometric interpretation</a></li>
+  <li><a href="#conclusion">Conclusion</a></li>
+</ul>
+
+<p><a name="robot" href="#robot"></a></p>
+
+<h2 id="a-southeast-jumping-robot">A Southeast Jumping Robot</h2>
+
+<p>This proof is located in section “6.3.4 A Southeast Jumping Robot (Optional)”,
+page 180 of the book and page 188 of a textbook. It proves the following claim:</p>
+
+<blockquote>
+  <p>Claim 6.3.4. The robot will always get stuck at the origin.</p>
+</blockquote>
+
+<p>The following is a direct quote from a textbook:</p>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.PNG" /></p>
+
+<p><a name="practical-intuition" href="#practical-intuition"></a></p>
+
+<h2 id="practical-intuition">Practical intuition</h2>
+
+<p>If I put on my hat of a programmer the claim does not seem obvious to me at all:</p>
+
+<blockquote>
+  <p>Claim 6.3.4. The robot will always get stuck at the origin.</p>
+</blockquote>
+
+<p>To demonstrate my intuition I have written the following in Ruby interactive shell <code class="highlighter-rouge">irb</code>:</p>
+
+<p>Let’s simulate the movement of the Robot along X axis starting from <code class="highlighter-rouge">𝑥 = 10</code> (𝑦
+is weakly decreasing with each move so it is of less interest). Let’s assume
+that probabilities of <code class="highlighter-rouge">(𝑥 - 1)</code> jump and random East-jump are even and are equal
+<code class="highlighter-rouge">1/2</code>.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># starting coordinate of a robot.
+x = 10
+
+# rand(0..1) == 1 determines a type of move: either west or east.
+x = (rand(0..1) == 1) ? (x - 1) : [10, x + rand(0..(10 - x)].min # repeat many times
+</code></pre>
+</div>
+
+<p>What we observe is that Robot is aligned to the right most of the time like:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>=&gt; 9
+=&gt; 8
+=&gt; 9
+=&gt; 10
+=&gt; 10
+=&gt; 9
+=&gt; 8
+=&gt; 7
+=&gt; 10
+=&gt; 10
+=&gt; 10
+...
+</code></pre>
+</div>
+
+<p>I would assume that with a quadrant of a greater size like
+<code class="highlighter-rouge">10 ** 10 = 10 000 000 000</code> we can expect robot to never reach 0 coordinate.</p>
+
+<p>I think this is a contradiction between the practical and mathematical points of
+view. I can see that with a very small, tiny, probability robot can get to the
+origin (0) coordinate even in case of (10 ** 10)-sized square however
+practically the probability is extremely low!</p>
+
+<h2 id="proof">Proof</h2>
+
+<p>This is the proof that the textbook suggests:</p>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.PNG" /></p>
+
+<p>Let’s consider three building blocks of this proof:</p>
+
+<p>1) Lemma 2.4.6</p>
+
+<p>2) Show that <code class="highlighter-rouge">𝑣</code> is strictly decreasing i.e. show the implication:</p>
+
+<div class="math-block">(𝑥, 𝑦) ⟶ (𝑥', 𝑦') ⟹ 𝑣((𝑥', 𝑦')) &lt; 𝑣((𝑥, 𝑦))
+</div>
+
+<p>3) Show the implication from Theorem 6.3.3 that Robot always get stuck.</p>
+
+<p><a name="proof-1" href="#proof-1"></a></p>
+
+<h3 id="proof-of-the-lemma-246">1. Proof of the lemma 2.4.6</h3>
+
+<p>Let’s look the lemma up in the textbook:</p>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/Lemma-2.4.6-Proof.PNG" /></p>
+
+<blockquote>
+  <p>Lemma 2.4.6. ℕ + 𝔽  is well ordered.</p>
+</blockquote>
+
+<p>The definition of <code class="highlighter-rouge">ℕ + 𝔽</code> requires us to understand what is 𝔽 first:</p>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/Definition-Set-F.PNG" /></p>
+
+<p>This is the definition of <strong>well-ordered</strong> by Wikipedia:</p>
+
+<blockquote>
+  <p>In mathematics, a well-order (or well-ordering or well-order relation) on a set
+S is a total order on S with the property that every non-empty subset of S has a
+least element in this ordering. The set S together with the well-order relation
+is then called a well-ordered set.</p>
+</blockquote>
+
+<p><strong>The Well Ordering Principle</strong> is defined at the start of chapter 2: “Well
+Ordering Principle” as</p>
+
+<blockquote>
+  <p>Every nonempty set of nonnegative integers has a smallest element.</p>
+</blockquote>
+
+<blockquote>
+  <p>While the Well Ordering Principle may seem obvious, it’s hard to see offhand why it is useful. But in fact, it provides one of the most important proof rules in discrete mathematics…</p>
+</blockquote>
+
+<blockquote>
+  <p>Well ordering commonly comes up in computer science as a method for proving
+that computations won’t run forever. The idea is to assign a value to each
+successive step of a computation so that the values get smaller at every step.
+If the values are all from a well ordered set, then the computation can’t run
+forever, because if it did, the values assigned to its successive steps would
+define a subset with no minimum element. You’ll see several examples of this
+technique applied in Chapter 6 to prove that various state machines will
+eventually terminate.</p>
+</blockquote>
+
+<p>Given we understand the definitions of <strong>well-ordered</strong> and <strong>Well Ordering
+Principle</strong> we only need to prove what is left as the exercise in the textbook
+(Problem 2.20):</p>
+
+<blockquote>
+  <p>Now it is easy to verify that 𝑛<sub>𝑠</sub> + 𝑓<sub>𝑠</sub> is the minimum
+element of S (Problem 2.20).</p>
+</blockquote>
+
+<p>To prove this statement, let’s assume the opposite:</p>
+
+<p>There are
+<span class="math-inline">𝑛<sub>𝑠’</sub></span>
+and
+<span class="math-inline">𝑓<sub>𝑠’</sub></span>
+so that
+<span class="math-inline">𝑛<sub>𝑠’</sub> + 𝑓<sub>𝑠’</sub></span> is the minimum
+element of 𝑆, which means that</p>
+
+<div class="math-block">𝑛<sub>𝑠'</sub> + 𝑓<sub>𝑠'</sub> &lt; 𝑛<sub>𝑠</sub> + 𝑓<sub>𝑠</sub>&nbsp;&nbsp;&nbsp;(1A)</div>
+
+<p>Let’s consider two cases:</p>
+
+<p>1) <b>𝑛<sub>𝑠’</sub> = 𝑛<sub>𝑠</sub></b>, which reduces the equation 1A to just:</p>
+
+<div class="math-block">𝑓<sub>𝑠'</sub> &lt; 𝑓<sub>𝑠</sub>
+</div>
+
+<p>which is a contradiction to the definition of
+<span class="math-inline">𝑓<sub>𝑠</sub></span>
+which is the smallest element of</p>
+
+<p><span class="math-inline">{ 𝑓 ∈ 𝔽 | 𝑛<sub>𝑠</sub> + 𝑓 ∈ S }</span>.</p>
+
+<p>2) <b>𝑛<sub>𝑠’</sub> ≠ 𝑛<sub>𝑠</sub></b></p>
+
+<p>Let’s group members of the equation 1A:
+<span class="math-inline">𝑛<sub>𝑠</sub></span>
+with
+<span class="math-inline">𝑛<sub>𝑠’</sub></span>
+to the left side of the equation and
+<span class="math-inline">𝑓<sub>𝑠</sub></span>
+with
+<span class="math-inline">𝑓<sub>𝑠’</sub></span> to the right side:</p>
+
+<div class="math-block">𝑛<sub>𝑠’</sub> - 𝑛<sub>𝑠</sub> &lt; 𝑓<sub>𝑠</sub> - 𝑓<sub>𝑠’</sub>&nbsp;&nbsp;&nbsp;(2A)
+</div>
+
+<p>By definition of
+<span class="math-inline">𝑛<sub>𝑠</sub></span>
+, it is the smallest of
+<span class="math-inline">{ 𝑛 ∈ ℕ | 𝑛 + 𝑓 ∈ S, for 𝑓 ∈ 𝔽 }</span>
+which means that
+<span class="math-inline">𝑛<sub>𝑠’</sub></span>
+is greater than
+<span class="math-inline">𝑛<sub>𝑠</sub></span>
+i.e.
+<span class="math-inline">𝑛<sub>𝑠’</sub> - 𝑛<sub>𝑠</sub> ≥ 1</span></p>
+
+<p>Let’s obtain the contradiction by proving that the right side of the equation 2A
+is always less than 1:</p>
+
+<p><span class="math-inline">𝑓<sub>𝑠</sub> ∈ 𝔽</span>
+and
+<span class="math-inline">𝑓<sub>𝑠’</sub> ∈ 𝔽</span>
+so by definition of
+<span class="math-inline">𝔽</span>:</p>
+
+<div class="math-block">𝑠 / (𝑠 + 1) - 𝑠' / (𝑠' + 1) &lt; 1, where 𝑠 ∈ ℕ and 𝑠' ∈ ℕ
+</div>
+
+<p>Let’s multiply both parts by
+<span class="math-inline">(𝑠 + 1) × (𝑠’ + 1)</span>
+to get rid of the fractions:</p>
+
+<div class="math-block">𝑠 × (𝑠' + 1) - 𝑠' × (𝑠 + 1) &lt; (𝑠 + 1) × (𝑠' + 1)
+𝑠 × 𝑠' + 𝑠 - 𝑠' × 𝑠 - 𝑠' &lt; 𝑠 × 𝑠' + 𝑠 + 𝑠' + 1
+</div>
+
+<p>Reduction gives us:</p>
+
+<div class="math-block">-𝑠' × 𝑠 - 𝑠' &lt; 𝑠' + 1
+-𝑠' × 𝑠 - 2 × 𝑠' &lt; 1
+𝑠' × (𝑠 + 2) &gt; -1
+</div>
+
+<p>This equation always holds since both
+<span class="math-inline">s</span>
+and
+<span class="math-inline">𝑠’</span>
+are nonnegative integers, which
+proves that the right side of the equation 1A is always less than 1.</p>
+
+<p>At the same time we have showed already that the left side of the equation 1A
+is greater or equal to 1 which means that we arrived to the contradiction in the
+equation 1A.</p>
+
+<p>We have just proved the homework exercise <code class="highlighter-rouge">Problem 2.20</code>, the final building
+block for proof of Lemma 2.4.6.</p>
+
+<p><a name="proof-2" href="#proof-2"></a></p>
+
+<h3 id="proof-that--is-a-strictly-decreasing-derived-variable">2. Proof that <code class="highlighter-rouge">𝑣</code> is a strictly decreasing derived variable</h3>
+
+<p>Let’s actually check the following statement:</p>
+
+<blockquote>
+  <p>Now it’s easy to check that if <code class="highlighter-rouge">(𝑥, 𝑦) → (𝑥', 𝑦')</code> is a legitimate robot
+move, then <code class="highlighter-rouge">𝑣((𝑥', 𝑦′)) &lt; 𝑣((𝑥, 𝑦))</code>. In particular, v is a strictly decreasing
+derived variable…</p>
+</blockquote>
+
+<p>We need to check if <code class="highlighter-rouge">𝑣((𝑥', 𝑦′)) &lt; 𝑣((𝑥, 𝑦))</code> holds for both types of moves
+that a robot can do:</p>
+
+<p>1) <strong>a unit distance West move</strong> — that is, <code class="highlighter-rouge">(𝑥, 𝑦) → (x − 1, 𝑦)</code> for <code class="highlighter-rouge">x &gt; 0</code></p>
+
+<p>By definition <code class="highlighter-rouge">𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)</code>, so for <code class="highlighter-rouge">(𝑥, 𝑦)</code> and <code class="highlighter-rouge">(𝑥, 𝑦')</code>
+coordinates we have:</p>
+
+<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</div>
+
+<p>Expand by definition of
+<span class="math-inline">𝑣</span>
+:</p>
+
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥 / (𝑥 + 1)</div>
+
+<p>Replace
+<span class="math-inline">𝑥</span>
+with
+<span class="math-inline">(𝑥 - 1)</span>
+,
+<span class="math-inline">𝑦’</span>
+with
+<span class="math-inline">𝑦</span>
+:</p>
+
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦 + (𝑥 - 1) / ((𝑥 - 1) + 1)</div>
+
+<p>Reduce
+<span class="math-inline">𝑦</span>
+and
+<span class="math-inline">1</span>’s:</p>
+
+<div class="math-block">𝑥 / (𝑥 + 1) &gt; (𝑥 - 1) / 𝑥</div>
+
+<p>Multiply both parts by 𝑥 * (𝑥 + 1) to get rid of fractions</p>
+
+<div class="math-block">𝑥<sup>2</sup> &gt; (𝑥 - 1)(𝑥 + 1)</div>
+
+<p>This equation always holds, so 𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥’, 𝑦’)) holds:</p>
+
+<div class="math-block">𝑥<sup>2</sup> &gt; (𝑥<sup>2</sup> - 1)</div>
+
+<p>2) <strong>a unit distance South combined with an arbitrary jump</strong> East—that is,
+<code class="highlighter-rouge">(𝑥, 𝑦) → (𝑧, 𝑦 − 1)</code> for <code class="highlighter-rouge">𝑧 ≥ 𝑥</code>.</p>
+
+<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</div>
+
+<p>Expand by definition of
+<span class="math-inline"><code class="highlighter-rouge">𝑣</code></span>
+:</p>
+
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥 / (𝑥 + 1)</div>
+
+<p>Replace
+<span class="math-inline">𝑥</span>
+with
+<span class="math-inline">𝑧</span>
+,
+<span class="math-inline">𝑦’</span>
+with
+<span class="math-inline">𝑦 - 1</span>
+:</p>
+
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦 - 1 + 𝑧 / (𝑧 + 1)</div>
+
+<p>Reduce y:</p>
+
+<div class="math-block">𝑥 / (𝑥 + 1) &gt; -1 + 𝑧 / (𝑧 + 1)</div>
+
+<p>Due to
+<span class="math-inline">(𝑥 / 𝑥 + 1) &lt; 1</span>
+for any
+<span class="math-inline">𝑥 ≥ 0</span>
+and
+<span class="math-inline">(𝑧 / 𝑧 + 1) &lt; 1</span>
+for any
+<span class="math-inline">𝑧 ≥ 𝑥</span>
+we have that
+<span class="math-inline">𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1)</span>
+is always greater than -1</p>
+
+<p>So
+<span class="math-inline">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</span>
+holds:</p>
+
+<div class="math-block">𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1) &gt; -1</div>
+
+<p><a name="proof-3" href="#proof-3"></a></p>
+
+<h3 id="implication-of-theorem-633-robot-always-gets-stuck">3. Implication of Theorem 6.3.3: Robot always gets stuck.</h3>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.PNG" /></p>
+
+<p>This last section concludes the proof: in the step 2 we showed that a derived
+variable
+<span class="math-inline">𝑣</span>
+is a strictly decreasing derived variable whose range is a well ordered set
+<span class="math-inline">ℕ + 𝔽</span> so we conclude that for any sequence of
+steps that robot can do it will eventually end up being in (0, 0).</p>
+
+<p><a name="geometric-interpretation"></a></p>
+
+<h2 id="geometric-interpretation">Geometric interpretation</h2>
+
+<p>Let’s consider that the robot is moving on 10 x 10 quadrant. By definition of
+<span class="math-inline">𝑣</span> we have:</p>
+
+<div class="math-block">𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)</div>
+<p>therefore we get the
+following table of values:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>(9 + 0/1)    (9 + 1/2)    (9 + 2/3)   ... (9 + 9/10)  # 9 ≤ y + x / (x + 1) ≤ 10
+...                     ...                      ...
+(2 + 0/1)    (2 + 1/2)    (2 + 2/3)   ... (2 + 9/10)  # 2 ≤ y + x / (x + 1) ≤ 3
+(1 + 0/1)    (1 + 1/2)    (1 + 2/3)   ... (1 + 9/10)  # 1 ≤ y + x / (x + 1) ≤ 2
+(0 + 0/1)    (0 + 1/2)    (0 + 2/3)   ... (0 + 9/10)  # 0 ≤ y + x / (x + 1) ≤ 1
+</code></pre>
+</div>
+
+<p>We see that the rows form buckets of values constrained within the range of [𝑦, 𝑦 + 1], for
+each { 𝑦 ∈ ℕ | 0 ≤ 𝑦 ≤ 10 }:</p>
+
+<div class="math-block">𝑦 ≤ 𝑦 + 𝑥 / (𝑥 + 1) &lt; 𝑦 + 1   (Observation 1)
+</div>
+
+<p>for example
+<span class="math-inline">2 ≤ (2 + 0/1) &lt; (2 + 1/2) &lt; (2 + 2/3) &lt; … &lt; (2 + 9/10) &lt; 3</span>.</p>
+
+<p>Also, we see that columns form buckets of points so that the difference between
+the values of any two adjacent points equals to 1, for example:</p>
+
+<div class="math-block">(2 + 2/3) - (1 + 2/3) = 1  (Observation 2)</div>
+
+<p><strong>Observation 3. Sequences from the vertical buckets decrease
+with a rate of 1 per row and the sequences from the horizontal buckets decrease
+with a rate strictly less than 1 per column so vertical sequences decrease faster</strong>.</p>
+
+<p>When robot jumps to the West it changes the column bucket which means that
+the
+<span class="math-inline">𝑦</span>
+stays the same, but
+<span class="math-inline">𝑥</span> changes to
+<span class="math-inline">𝑥 - 1</span>
+, for example:</p>
+
+<div class="math-block">(5, 5, 5 + 5/6) ⟶ (4, 5, 5 + 4/5)  # 5 + 5 / 6 &gt; 5 + 4/5
+</div>
+
+<p>When robot jumps to the South East it changes the column and row buckets which
+means that</p>
+
+<div class="math-block">(5, 5, 5 + 5/6) ⟶ (𝑘, 4, 4 + (𝑘) / (𝑘 + 1)), 5 ≤ k ≤ 10
+</div>
+
+<p>Along 𝑥-axis, Robot can jump to a 𝑘 coordinate as far as the right boundary of a quadrant, however its jump also changes the horizontal bucket
+<span class="math-inline">𝑦 - 1</span>
+which means that this jump to South is always a stronger contributor to the
+value 𝑣 than an arbitrary jump to the East (this is obvious from the
+observations 1, 2 and 3).</p>
+
+<p>Now is clear that after each of these two moves derived value
+<span class="math-inline">𝑣</span>
+becomes smaller than (5, 5).</p>
+
+<h3 id="plots">Plots</h3>
+
+<p>Let’s look at the geometric interpretation of this function:</p>
+
+<div class="math-block">𝑓(𝑥, 𝑦) = 𝑦 + 𝑥 / (𝑥 + 1)
+</div>
+
+<p>This is a three-dimensional function
+<span class="math-inline">𝑧 = 𝑦 + 𝑥 / (𝑥 + 1)</span>
+so we will need a 3D plot to visualize this function:</p>
+
+<p><img src="/images/2018-01-24-southeast-jumping-robot/Academo-Annotated.jpg" /></p>
+
+<p>Let’s assume that the robot is jumping from (5, 5) coordinate to either
+(4, 5) with its “unit distance West move” or (8, 4) with its “unit distance
+South combined with an arbitrary jump”.</p>
+
+<p>When I look at the annotated plot above, I see a good analogy: the plot
+represents a fragment of a mountain which the robot is trying climb up: values
+of
+<span class="math-inline">𝑧</span>
+like (5 + 5/6) or (4 + 8/9) represent the altitudes corresponding to the
+coordinates
+<span class="math-inline">(𝑥, 𝑦)</span> of robot’s positions.</p>
+
+<p>The drama of this robot, however, is that it can only move down the hill so it
+can never climb up. The altitude of its position is always decreasing and since
+it jumps on a limited 10 x 10 quadrant and the points are nonnegative integer
+numbers, the termination claim that we proved asserts that sooner or later robot
+will reach coordinate (0, 0) and get stuck.</p>
+
+<p>The following plots demonstrate how the function
+<span class="math-inline">𝑓(𝑥, 𝑦) = 𝑦 + 𝑥 / (𝑥 + 1)</span> looks like when it is
+not discrete but more continuous. These plots demonstrate it even better that
+the function is decreasing to 0 both along
+<span class="math-inline">𝑥</span>
+and
+<span class="math-inline">𝑦</span>
+axes.</p>
+
+<details>
+<summary>3D Plot by Wolfram</summary>
+<img src="/images/2018-01-24-southeast-jumping-robot/Wolfram.jpg" />
+</details>
+
+<details>
+<summary>3D Plot by Academo (Front)</summary>
+<img src="/images/2018-01-24-southeast-jumping-robot/AcademoFront.jpg" />
+</details>
+
+<details>
+<summary>3D Plot by Academo (Back)</summary>
+<img src="/images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg" />
+</details>
+
+<p><a name="conclusion"></a></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The most interesting part of this exercise for me was to understand the
+difference between mathematical and practical points of view:</p>
+
+<p>I can create a simulator of this Robot, put it on a quadrant 100000 x 100000,
+let it move and never see it to reach (0, 0). So in the real world the
+robot will never get stuck, but will stick to the right side of the quadrant.</p>
+
+<p>At the same time we have a mathematical proof which we have just actually
+proved: robot will eventually reach (0, 0) and therefore get stuck.</p>
+
+<p>I can only resolve this contradiction by assuming that if my simulator runs
+infinite amount of time there might be a combination of robot’s moves to the
+left, let’s call it a GREAT COMBO, which will stick robot to the left, however,
+I consider this case impossible in the real-world.</p>
+
+<h2 id="credits">Credits</h2>
+
+<p>I am working with this proof because it is the material for the Week 2 of the
+course: “Formal Software Verification” <a href="#anchor_02_course">[2]</a>. It is unlikely
+that I would have encountered this problem otherwise.</p>
+
+<p>I used to two online services: Wolfram|Alpha <a href="#anchor_03_wolframalpha">[3]</a> and
+Academo.org <a href="#anchor_04_academo">[4]</a> to draw the plots. I used the amazing
+Academo service to create the annotated plot which helped me to visualize and
+understand the geometric interpretation of the proof.</p>
+
+<h2 id="links">Links</h2>
+
+<p><a name="anchor_01_mathematics"></a>
+[1] <a href="https://courses.csail.mit.edu/6.042/spring17/mcs.pdf">Eric Lehman, F Thomson Leighton, Albert R Meyer, “Mathematics for Computer
+Science”, revised Monday 5th June, 2017, 19:42.</a></p>
+
+<p><a name="anchor_02_course"></a>
+[2] <a href="https://www.edx.org/course/formal-software-verification-usmx-umuc-stv1-3x">edx - Formal Software Verification</a></p>
+
+<p><a name="anchor_03_wolframalpha"></a>
+[3] <a href="http://www.wolframalpha.com/input/?i=plot">Wolfram|Alpha</a></p>
+
+<p><a name="anchor_04_academo"></a>
+[4] <a href="https://academo.org/demos/3d-surface-plotter/?expression=y%2Bx%2F(x%2B1)&amp;xRange=0%2C+10&amp;yRange=0%2C+10&amp;resolution=100">Academo</a></p>
+
+  </div>
+
+  <div>
+  <a class="resp-sharing-button__link" href="https://twitter.com/intent/tweet/?text=A Southeast Jumping Robot: Notes on one proof from a textbook&amp;url=https://stanislaw.github.io/2018/01/28/southeast-jumping-robot.html&amp;via=sbpankevich" target="_blank" aria-label="">
+    <div class="resp-sharing-button resp-sharing-button--twitter resp-sharing-button--small"><div aria-hidden="true" class="resp-sharing-button__icon resp-sharing-button__icon--solid">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.57v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/></svg>
+      </div>
+    </div>
+  </a>
+</div>
+
+
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Stanislav Pankevich's blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Stanislav Pankevich's blog</li>
+          <li><a href="mailto:s.pankevich@gmail.com">s.pankevich@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/stanislaw"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">stanislaw</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/sbpankevich"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">sbpankevich</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Blog about software development</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
