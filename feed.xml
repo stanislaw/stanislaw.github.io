@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 28 Jan 2018 18:35:15 +0100</pubDate>
-    <lastBuildDate>Sun, 28 Jan 2018 18:35:15 +0100</lastBuildDate>
+    <pubDate>Sun, 04 Feb 2018 00:04:45 +0100</pubDate>
+    <lastBuildDate>Sun, 04 Feb 2018 00:04:45 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -300,28 +300,28 @@ block for proof of Lemma 2.4.6.&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Now it’s easy to check that if &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (𝑥&#39;, 𝑦&#39;)&lt;/code&gt; is a legitimate robot
-move, then &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦′)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt;. In particular, v is a strictly decreasing
+move, then &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦&#39;)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt;. In particular, v is a strictly decreasing
 derived variable…&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;We need to check if &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦′)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt; holds for both types of moves
+&lt;p&gt;We need to check if &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣((𝑥&#39;, 𝑦&#39;)) &amp;lt; 𝑣((𝑥, 𝑦))&lt;/code&gt; holds for both types of moves
 that a robot can do:&lt;/p&gt;
 
 &lt;p&gt;1) &lt;strong&gt;a unit distance West move&lt;/strong&gt; — that is, &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (x − 1, 𝑦)&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;x &amp;gt; 0&lt;/code&gt;&lt;/p&gt;
 
-&lt;p&gt;By definition &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)&lt;/code&gt;, so for &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦&#39;)&lt;/code&gt;
+&lt;p&gt;By definition &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)&lt;/code&gt;, so for &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥&#39;, 𝑦&#39;)&lt;/code&gt;
 coordinates we have:&lt;/p&gt;
 
-&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/div&gt;
+&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥&#39;, 𝑦&#39;))&lt;/div&gt;
 
 &lt;p&gt;Expand by definition of
 &lt;span class=&quot;math-inline&quot;&gt;𝑣&lt;/span&gt;
 :&lt;/p&gt;
 
-&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥 / (𝑥 + 1)&lt;/div&gt;
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥&#39; / (𝑥&#39; + 1)&lt;/div&gt;
 
 &lt;p&gt;Replace
-&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt;
+&lt;span class=&quot;math-inline&quot;&gt;𝑥’&lt;/span&gt;
 with
 &lt;span class=&quot;math-inline&quot;&gt;(𝑥 - 1)&lt;/span&gt;
 ,
@@ -350,16 +350,16 @@ and
 &lt;p&gt;2) &lt;strong&gt;a unit distance South combined with an arbitrary jump&lt;/strong&gt; East—that is,
 &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥, 𝑦) → (𝑧, 𝑦 − 1)&lt;/code&gt; for &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑧 ≥ 𝑥&lt;/code&gt;.&lt;/p&gt;
 
-&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/div&gt;
+&lt;div class=&quot;math-block&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥&#39;, 𝑦&#39;))&lt;/div&gt;
 
 &lt;p&gt;Expand by definition of
 &lt;span class=&quot;math-inline&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;𝑣&lt;/code&gt;&lt;/span&gt;
 :&lt;/p&gt;
 
-&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥 / (𝑥 + 1)&lt;/div&gt;
+&lt;div class=&quot;math-block&quot;&gt;𝑦 + 𝑥 / (𝑥 + 1) &amp;gt; 𝑦&#39; + 𝑥&#39; / (𝑥&#39; + 1)&lt;/div&gt;
 
 &lt;p&gt;Replace
-&lt;span class=&quot;math-inline&quot;&gt;𝑥&lt;/span&gt;
+&lt;span class=&quot;math-inline&quot;&gt;𝑥’&lt;/span&gt;
 with
 &lt;span class=&quot;math-inline&quot;&gt;𝑧&lt;/span&gt;
 ,
@@ -387,7 +387,7 @@ we have that
 is always greater than -1&lt;/p&gt;
 
 &lt;p&gt;So
-&lt;span class=&quot;math-inline&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥′, 𝑦′))&lt;/span&gt;
+&lt;span class=&quot;math-inline&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥’, 𝑦’))&lt;/span&gt;
 holds:&lt;/p&gt;
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1) &amp;gt; -1&lt;/div&gt;

@@ -371,28 +371,28 @@ block for proof of Lemma 2.4.6.</p>
 
 <blockquote>
   <p>Now it’s easy to check that if <code class="highlighter-rouge">(𝑥, 𝑦) → (𝑥', 𝑦')</code> is a legitimate robot
-move, then <code class="highlighter-rouge">𝑣((𝑥', 𝑦′)) &lt; 𝑣((𝑥, 𝑦))</code>. In particular, v is a strictly decreasing
+move, then <code class="highlighter-rouge">𝑣((𝑥', 𝑦')) &lt; 𝑣((𝑥, 𝑦))</code>. In particular, v is a strictly decreasing
 derived variable…</p>
 </blockquote>
 
-<p>We need to check if <code class="highlighter-rouge">𝑣((𝑥', 𝑦′)) &lt; 𝑣((𝑥, 𝑦))</code> holds for both types of moves
+<p>We need to check if <code class="highlighter-rouge">𝑣((𝑥', 𝑦')) &lt; 𝑣((𝑥, 𝑦))</code> holds for both types of moves
 that a robot can do:</p>
 
 <p>1) <strong>a unit distance West move</strong> — that is, <code class="highlighter-rouge">(𝑥, 𝑦) → (x − 1, 𝑦)</code> for <code class="highlighter-rouge">x &gt; 0</code></p>
 
-<p>By definition <code class="highlighter-rouge">𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)</code>, so for <code class="highlighter-rouge">(𝑥, 𝑦)</code> and <code class="highlighter-rouge">(𝑥, 𝑦')</code>
+<p>By definition <code class="highlighter-rouge">𝑣(𝑥, 𝑦) := 𝑦 + 𝑥 / (𝑥 + 1)</code>, so for <code class="highlighter-rouge">(𝑥, 𝑦)</code> and <code class="highlighter-rouge">(𝑥', 𝑦')</code>
 coordinates we have:</p>
 
-<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</div>
+<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥', 𝑦'))</div>
 
 <p>Expand by definition of
 <span class="math-inline">𝑣</span>
 :</p>
 
-<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥 / (𝑥 + 1)</div>
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥' / (𝑥' + 1)</div>
 
 <p>Replace
-<span class="math-inline">𝑥</span>
+<span class="math-inline">𝑥’</span>
 with
 <span class="math-inline">(𝑥 - 1)</span>
 ,
@@ -421,16 +421,16 @@ and
 <p>2) <strong>a unit distance South combined with an arbitrary jump</strong> East—that is,
 <code class="highlighter-rouge">(𝑥, 𝑦) → (𝑧, 𝑦 − 1)</code> for <code class="highlighter-rouge">𝑧 ≥ 𝑥</code>.</p>
 
-<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</div>
+<div class="math-block">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥', 𝑦'))</div>
 
 <p>Expand by definition of
 <span class="math-inline"><code class="highlighter-rouge">𝑣</code></span>
 :</p>
 
-<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥 / (𝑥 + 1)</div>
+<div class="math-block">𝑦 + 𝑥 / (𝑥 + 1) &gt; 𝑦' + 𝑥' / (𝑥' + 1)</div>
 
 <p>Replace
-<span class="math-inline">𝑥</span>
+<span class="math-inline">𝑥’</span>
 with
 <span class="math-inline">𝑧</span>
 ,
@@ -458,7 +458,7 @@ we have that
 is always greater than -1</p>
 
 <p>So
-<span class="math-inline">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥′, 𝑦′))</span>
+<span class="math-inline">𝑣((𝑥, 𝑦)) &gt; 𝑣((𝑥’, 𝑦’))</span>
 holds:</p>
 
 <div class="math-block">𝑥 / (𝑥 + 1) - 𝑧 / (𝑧 + 1) &gt; -1</div>
