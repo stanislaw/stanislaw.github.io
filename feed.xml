@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 04 Feb 2018 00:10:46 +0100</pubDate>
-    <lastBuildDate>Sun, 04 Feb 2018 00:10:46 +0100</lastBuildDate>
+    <pubDate>Sun, 04 Feb 2018 00:40:49 +0100</pubDate>
+    <lastBuildDate>Sun, 04 Feb 2018 00:40:49 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -51,7 +51,7 @@ called “6.3 Partial Correctness &amp;amp; Termination”.&lt;/p&gt;
 &lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;#intro&quot;&gt;Introduction&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#robot&quot;&gt;A Southeast Jumping Robot: Contrived example of a termination proof&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#practical-intuition&quot;&gt;Practical intuition&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#understanding-problem&quot;&gt;Understanding the problem&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#proof&quot;&gt;Proof&lt;/a&gt;
     &lt;ul&gt;
       &lt;li&gt;&lt;a href=&quot;#proof-1&quot;&gt;1. Proof of the lemma 2.4.6&lt;/a&gt;&lt;/li&gt;
@@ -60,7 +60,8 @@ called “6.3 Partial Correctness &amp;amp; Termination”.&lt;/p&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;#geometric-interpretation&quot;&gt;Geometric interpretation&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;#conclusion&quot;&gt;Conclusion&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#credits&quot;&gt;Credits&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;#links&quot;&gt;Links&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;p&gt;&lt;a name=&quot;robot&quot; href=&quot;#robot&quot;&gt;&lt;/a&gt;&lt;/p&gt;
@@ -78,55 +79,20 @@ page 180 of the book and page 188 of a textbook. It proves the following claim:&
 
 &lt;p&gt;&lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.png&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;a name=&quot;practical-intuition&quot; href=&quot;#practical-intuition&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a name=&quot;understanding-problem&quot; href=&quot;#understanding-problem&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;h2 id=&quot;practical-intuition&quot;&gt;Practical intuition&lt;/h2&gt;
-
-&lt;p&gt;If I put on my hat of a programmer the claim does not seem obvious to me at all:&lt;/p&gt;
+&lt;h2 id=&quot;understanding-the-problem&quot;&gt;Understanding the problem&lt;/h2&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Claim 6.3.4. The robot will always get stuck at the origin.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;To demonstrate my intuition I have written the following in Ruby interactive shell &lt;code class=&quot;highlighter-rouge&quot;&gt;irb&lt;/code&gt;:&lt;/p&gt;
-
-&lt;p&gt;Let’s simulate the movement of the Robot along X axis starting from &lt;code class=&quot;highlighter-rouge&quot;&gt;𝑥 = 10&lt;/code&gt; (𝑦
-is weakly decreasing with each move so it is of less interest). Let’s assume
-that probabilities of &lt;code class=&quot;highlighter-rouge&quot;&gt;(𝑥 - 1)&lt;/code&gt; jump and random East-jump are even and are equal
-&lt;code class=&quot;highlighter-rouge&quot;&gt;1/2&lt;/code&gt;.&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;# starting coordinate of a robot.
-x = 10
-
-# rand(0..1) == 1 determines a type of move: either west or east.
-x = (rand(0..1) == 1) ? (x - 1) : [10, x + rand(0..(10 - x)].min # repeat many times
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;What we observe is that Robot is aligned to the right most of the time like:&lt;/p&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;=&amp;gt; 9
-=&amp;gt; 8
-=&amp;gt; 9
-=&amp;gt; 10
-=&amp;gt; 10
-=&amp;gt; 9
-=&amp;gt; 8
-=&amp;gt; 7
-=&amp;gt; 10
-=&amp;gt; 10
-=&amp;gt; 10
-...
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;I would assume that with a quadrant of a greater size like
-&lt;code class=&quot;highlighter-rouge&quot;&gt;10 ** 10 = 10 000 000 000&lt;/code&gt; we can expect robot to never reach 0 coordinate.&lt;/p&gt;
-
-&lt;p&gt;I think this is a contradiction between the practical and mathematical points of
-view. I can see that with a very small, tiny, probability robot can get to the
-origin (0) coordinate even in case of (10 ** 10)-sized square however
-practically the probability is extremely low!&lt;/p&gt;
+&lt;p&gt;The key observation about the behaviour of the robot is that even though the
+robot can jump east quicker than west, sooner or later it will not be able to
+jump east when it reaches the bottom of the quadrant due to the &lt;code class=&quot;highlighter-rouge&quot;&gt;y - 1&lt;/code&gt;
+component of the Southeast move. After the robot has reached the bottom of the
+quadrant it can only move West so finally it will get stuck in &lt;code class=&quot;highlighter-rouge&quot;&gt;(0, 0)&lt;/code&gt;
+because the West move will also become impossible.&lt;/p&gt;
 
 &lt;h2 id=&quot;proof&quot;&gt;Proof&lt;/h2&gt;
 
@@ -528,24 +494,7 @@ axes.&lt;/p&gt;
 &lt;img src=&quot;/images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg&quot; /&gt;
 &lt;/details&gt;
 
-&lt;p&gt;&lt;a name=&quot;conclusion&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&quot;conclusion&quot;&gt;Conclusion&lt;/h2&gt;
-
-&lt;p&gt;The most interesting part of this exercise for me was to understand the
-difference between mathematical and practical points of view:&lt;/p&gt;
-
-&lt;p&gt;I can create a simulator of this Robot, put it on a quadrant 100000 x 100000,
-let it move and never see it to reach (0, 0). So in the real world the
-robot will never get stuck, but will stick to the right side of the quadrant.&lt;/p&gt;
-
-&lt;p&gt;At the same time we have a mathematical proof which we have just actually
-proved: robot will eventually reach (0, 0) and therefore get stuck.&lt;/p&gt;
-
-&lt;p&gt;I can only resolve this contradiction by assuming that if my simulator runs
-infinite amount of time there might be a combination of robot’s moves to the
-left, let’s call it a GREAT COMBO, which will stick robot to the left, however,
-I consider this case impossible in the real-world.&lt;/p&gt;
+&lt;p&gt;&lt;a name=&quot;credits&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;credits&quot;&gt;Credits&lt;/h2&gt;
 
@@ -557,6 +506,8 @@ that I would have encountered this problem otherwise.&lt;/p&gt;
 Academo.org &lt;a href=&quot;#anchor_04_academo&quot;&gt;[4]&lt;/a&gt; to draw the plots. I used the amazing
 Academo service to create the annotated plot which helped me to visualize and
 understand the geometric interpretation of the proof.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&quot;links&quot;&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;h2 id=&quot;links&quot;&gt;Links&lt;/h2&gt;
 

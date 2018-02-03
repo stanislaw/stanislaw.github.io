@@ -122,7 +122,7 @@ called “6.3 Partial Correctness &amp; Termination”.</p>
 <ul>
   <li><a href="#intro">Introduction</a></li>
   <li><a href="#robot">A Southeast Jumping Robot: Contrived example of a termination proof</a></li>
-  <li><a href="#practical-intuition">Practical intuition</a></li>
+  <li><a href="#understanding-problem">Understanding the problem</a></li>
   <li><a href="#proof">Proof</a>
     <ul>
       <li><a href="#proof-1">1. Proof of the lemma 2.4.6</a></li>
@@ -131,7 +131,8 @@ called “6.3 Partial Correctness &amp; Termination”.</p>
     </ul>
   </li>
   <li><a href="#geometric-interpretation">Geometric interpretation</a></li>
-  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#credits">Credits</a></li>
+  <li><a href="#links">Links</a></li>
 </ul>
 
 <p><a name="robot" href="#robot"></a></p>
@@ -149,55 +150,20 @@ page 180 of the book and page 188 of a textbook. It proves the following claim:<
 
 <p><img src="/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.png" /></p>
 
-<p><a name="practical-intuition" href="#practical-intuition"></a></p>
+<p><a name="understanding-problem" href="#understanding-problem"></a></p>
 
-<h2 id="practical-intuition">Practical intuition</h2>
-
-<p>If I put on my hat of a programmer the claim does not seem obvious to me at all:</p>
+<h2 id="understanding-the-problem">Understanding the problem</h2>
 
 <blockquote>
   <p>Claim 6.3.4. The robot will always get stuck at the origin.</p>
 </blockquote>
 
-<p>To demonstrate my intuition I have written the following in Ruby interactive shell <code class="highlighter-rouge">irb</code>:</p>
-
-<p>Let’s simulate the movement of the Robot along X axis starting from <code class="highlighter-rouge">𝑥 = 10</code> (𝑦
-is weakly decreasing with each move so it is of less interest). Let’s assume
-that probabilities of <code class="highlighter-rouge">(𝑥 - 1)</code> jump and random East-jump are even and are equal
-<code class="highlighter-rouge">1/2</code>.</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code># starting coordinate of a robot.
-x = 10
-
-# rand(0..1) == 1 determines a type of move: either west or east.
-x = (rand(0..1) == 1) ? (x - 1) : [10, x + rand(0..(10 - x)].min # repeat many times
-</code></pre>
-</div>
-
-<p>What we observe is that Robot is aligned to the right most of the time like:</p>
-
-<div class="highlighter-rouge"><pre class="highlight"><code>=&gt; 9
-=&gt; 8
-=&gt; 9
-=&gt; 10
-=&gt; 10
-=&gt; 9
-=&gt; 8
-=&gt; 7
-=&gt; 10
-=&gt; 10
-=&gt; 10
-...
-</code></pre>
-</div>
-
-<p>I would assume that with a quadrant of a greater size like
-<code class="highlighter-rouge">10 ** 10 = 10 000 000 000</code> we can expect robot to never reach 0 coordinate.</p>
-
-<p>I think this is a contradiction between the practical and mathematical points of
-view. I can see that with a very small, tiny, probability robot can get to the
-origin (0) coordinate even in case of (10 ** 10)-sized square however
-practically the probability is extremely low!</p>
+<p>The key observation about the behaviour of the robot is that even though the
+robot can jump east quicker than west, sooner or later it will not be able to
+jump east when it reaches the bottom of the quadrant due to the <code class="highlighter-rouge">y - 1</code>
+component of the Southeast move. After the robot has reached the bottom of the
+quadrant it can only move West so finally it will get stuck in <code class="highlighter-rouge">(0, 0)</code>
+because the West move will also become impossible.</p>
 
 <h2 id="proof">Proof</h2>
 
@@ -599,24 +565,7 @@ axes.</p>
 <img src="/images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg" />
 </details>
 
-<p><a name="conclusion"></a></p>
-
-<h2 id="conclusion">Conclusion</h2>
-
-<p>The most interesting part of this exercise for me was to understand the
-difference between mathematical and practical points of view:</p>
-
-<p>I can create a simulator of this Robot, put it on a quadrant 100000 x 100000,
-let it move and never see it to reach (0, 0). So in the real world the
-robot will never get stuck, but will stick to the right side of the quadrant.</p>
-
-<p>At the same time we have a mathematical proof which we have just actually
-proved: robot will eventually reach (0, 0) and therefore get stuck.</p>
-
-<p>I can only resolve this contradiction by assuming that if my simulator runs
-infinite amount of time there might be a combination of robot’s moves to the
-left, let’s call it a GREAT COMBO, which will stick robot to the left, however,
-I consider this case impossible in the real-world.</p>
+<p><a name="credits"></a></p>
 
 <h2 id="credits">Credits</h2>
 
@@ -628,6 +577,8 @@ that I would have encountered this problem otherwise.</p>
 Academo.org <a href="#anchor_04_academo">[4]</a> to draw the plots. I used the amazing
 Academo service to create the annotated plot which helped me to visualize and
 understand the geometric interpretation of the proof.</p>
+
+<p><a name="links"></a></p>
 
 <h2 id="links">Links</h2>
 
