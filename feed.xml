@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 04 Feb 2018 00:04:45 +0100</pubDate>
-    <lastBuildDate>Sun, 04 Feb 2018 00:04:45 +0100</lastBuildDate>
+    <pubDate>Sun, 04 Feb 2018 00:10:46 +0100</pubDate>
+    <lastBuildDate>Sun, 04 Feb 2018 00:10:46 +0100</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -339,11 +339,15 @@ and
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥 / (𝑥 + 1) &amp;gt; (𝑥 - 1) / 𝑥&lt;/div&gt;
 
-&lt;p&gt;Multiply both parts by 𝑥 × (𝑥 + 1) to get rid of fractions&lt;/p&gt;
+&lt;p&gt;Multiply both parts by
+&lt;span class=&quot;math-inline&quot;&gt;𝑥 × (𝑥 + 1)&lt;/span&gt;
+to get rid of fractions&lt;/p&gt;
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥&lt;sup&gt;2&lt;/sup&gt; &amp;gt; (𝑥 - 1)(𝑥 + 1)&lt;/div&gt;
 
-&lt;p&gt;This equation always holds, so 𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥’, 𝑦’)) holds:&lt;/p&gt;
+&lt;p&gt;This equation always holds, so
+&lt;span class=&quot;math-inline&quot;&gt;𝑣((𝑥, 𝑦)) &amp;gt; 𝑣((𝑥’, 𝑦’))&lt;/span&gt;
+holds:&lt;/p&gt;
 
 &lt;div class=&quot;math-block&quot;&gt;𝑥&lt;sup&gt;2&lt;/sup&gt; &amp;gt; (𝑥&lt;sup&gt;2&lt;/sup&gt; - 1)&lt;/div&gt;
 
