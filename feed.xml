@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 03 Sep 2018 15:27:39 +0200</pubDate>
-    <lastBuildDate>Mon, 03 Sep 2018 15:27:39 +0200</lastBuildDate>
+    <pubDate>Mon, 03 Sep 2018 15:32:56 +0200</pubDate>
+    <lastBuildDate>Mon, 03 Sep 2018 15:32:56 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -421,6 +421,8 @@ objc_readClassPair(Class _Nonnull cls,
 #endif
 &lt;/pre&gt;
 &lt;/details&gt;
+
+&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
 
 &lt;p&gt;As it has been done with &lt;code class=&quot;highlighter-rouge&quot;&gt;__objc_selrefs&lt;/code&gt; section, given that we have collected
 the information about the classes from the &lt;code class=&quot;highlighter-rouge&quot;&gt;__objc_classlist&lt;/code&gt; section, we can
