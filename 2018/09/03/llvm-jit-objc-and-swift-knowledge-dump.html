@@ -82,7 +82,10 @@ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <h3 id="tldr">TL;DR</h3>
+    <p>This post is the counterpart of another post:
+<a href="http://localhost:4000/2018/09/03/mull-and-swift-how-it-almost-works.html">Mutation testing for Swift with Mull: how it could work. Looking for contributors.</a></p>
+
+<h3 id="tldr">TL;DR</h3>
 
 <p>It is possible to run Objective-C and Swift code with LLVM JIT on macOS system.
 One way to make it work is to subclass a <code class="highlighter-rouge">SectionMemoryManager</code> used by LLVM
@@ -103,13 +106,16 @@ LLVM JIT 3.9 - 6.0 and Objective-C Runtime as it is found in the
 
 <p>We want LLVM JIT to run Swift and Objective-C code, because we want
 <a href="https://github.com/mull-project/mull">Mull</a>, the mutation testing tool,
-to support these programming languages. Mull compiles original program and its
-numerous modified clones (mutations) using LLVM JIT to save time because it does
-not have to recompile all of the programs from scratch: Mull finds and performs
-mutations on LLVM IR level and never goes back to the AST level. This approach
-gives a great advantage in performance but also imposes a constraint: Mull
-supports a programming language only if it can be run with LLVM JIT. In this
-case, it is important that LLVM JIT runs Swift and Objective-C.</p>
+to support these programming languages. Mull accepts an input program which is
+precompiled to LLVM bitcode, finds and performs mutations in this program and
+then runs the program and its numerous modified (or “mutated”) clones
+using LLVM JIT. Running the program and its mutations in memory with LLVM JIT
+saves time because Mull does not have to recompile and relink all of the programs
+from scratch: Mull finds and performs mutations on LLVM IR level and never goes
+back to the AST level. This approach gives a great advantage in performance but
+also imposes a constraint: Mull supports a programming language only if it can
+be run with LLVM JIT. In this case, it is important that LLVM JIT runs Swift and
+Objective-C.</p>
 
 <h3 id="related-sources">Related Sources</h3>
 

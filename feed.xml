@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 03 Sep 2018 15:32:56 +0200</pubDate>
-    <lastBuildDate>Mon, 03 Sep 2018 15:32:56 +0200</lastBuildDate>
+    <pubDate>Mon, 03 Sep 2018 16:15:12 +0200</pubDate>
+    <lastBuildDate>Mon, 03 Sep 2018 16:15:12 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -96,7 +96,10 @@ everything you might need to get the whole thing working.&lt;/p&gt;
     
       <item>
         <title>LLVM JIT, Objective-C and Swift on macOS: knowledge dump</title>
-        <description>&lt;h3 id=&quot;tldr&quot;&gt;TL;DR&lt;/h3&gt;
+        <description>&lt;p&gt;This post is the counterpart of another post:
+&lt;a href=&quot;http://localhost:4000/2018/09/03/mull-and-swift-how-it-almost-works.html&quot;&gt;Mutation testing for Swift with Mull: how it could work. Looking for contributors.&lt;/a&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;tldr&quot;&gt;TL;DR&lt;/h3&gt;
 
 &lt;p&gt;It is possible to run Objective-C and Swift code with LLVM JIT on macOS system.
 One way to make it work is to subclass a &lt;code class=&quot;highlighter-rouge&quot;&gt;SectionMemoryManager&lt;/code&gt; used by LLVM
@@ -117,13 +120,16 @@ LLVM JIT 3.9 - 6.0 and Objective-C Runtime as it is found in the
 
 &lt;p&gt;We want LLVM JIT to run Swift and Objective-C code, because we want
 &lt;a href=&quot;https://github.com/mull-project/mull&quot;&gt;Mull&lt;/a&gt;, the mutation testing tool,
-to support these programming languages. Mull compiles original program and its
-numerous modified clones (mutations) using LLVM JIT to save time because it does
-not have to recompile all of the programs from scratch: Mull finds and performs
-mutations on LLVM IR level and never goes back to the AST level. This approach
-gives a great advantage in performance but also imposes a constraint: Mull
-supports a programming language only if it can be run with LLVM JIT. In this
-case, it is important that LLVM JIT runs Swift and Objective-C.&lt;/p&gt;
+to support these programming languages. Mull accepts an input program which is
+precompiled to LLVM bitcode, finds and performs mutations in this program and
+then runs the program and its numerous modified (or “mutated”) clones
+using LLVM JIT. Running the program and its mutations in memory with LLVM JIT
+saves time because Mull does not have to recompile and relink all of the programs
+from scratch: Mull finds and performs mutations on LLVM IR level and never goes
+back to the AST level. This approach gives a great advantage in performance but
+also imposes a constraint: Mull supports a programming language only if it can
+be run with LLVM JIT. In this case, it is important that LLVM JIT runs Swift and
+Objective-C.&lt;/p&gt;
 
 &lt;h3 id=&quot;related-sources&quot;&gt;Related Sources&lt;/h3&gt;
 
