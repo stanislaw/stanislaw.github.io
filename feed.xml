@@ -5,8 +5,8 @@
     <description>Blog about software development</description>
     <link>https://stanislaw.github.io/</link>
     <atom:link href="https://stanislaw.github.io/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 26 Apr 2019 22:02:17 +0200</pubDate>
-    <lastBuildDate>Fri, 26 Apr 2019 22:02:17 +0200</lastBuildDate>
+    <pubDate>Fri, 26 Apr 2019 22:12:09 +0200</pubDate>
+    <lastBuildDate>Fri, 26 Apr 2019 22:12:09 +0200</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
@@ -810,11 +810,11 @@ on the llvm-dev threads:&lt;/p&gt;
   &lt;p&gt;Create a new CGObjCRuntime subclass that creates a module init function that constructs all of the classes using the public APIs, by adding something like -fobjc-runtime=jit to the clang flags.  This is not particularly difficult and means that the same code can be used with any Objective-C runtime.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;The reason we did go with this CGObjCRuntime approach because it was easier go
-with RuntimeDyld to solve one problem at a time: SectionMemoryManager already
-gave us Objective-C sections so we could focus on how to register Objective-C
-Runtime with LLVM JIT without having to figure out how hack on Clang to emit
-these sections to LLVM IR which would be additional challenge.&lt;/p&gt;
+&lt;p&gt;The reason we didn’t go with this CGObjCRuntime approach because it was easier
+to go with RuntimeDyld to solve one problem at a time: SectionMemoryManager
+already gave us Objective-C sections so we could focus on how to register
+Objective-C Runtime with LLVM JIT without having to figure out how hack on Clang
+to emit these sections to LLVM IR which would be additional challenge.&lt;/p&gt;
 
 &lt;p&gt;Also it is still not clear which public Objective-C Runtime API would the
 emitted code use given the limitation of the public method
