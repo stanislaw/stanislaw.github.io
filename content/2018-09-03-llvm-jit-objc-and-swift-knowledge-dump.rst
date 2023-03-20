@@ -8,8 +8,9 @@ LLVM JIT, Objective-C and Swift on macOS: knowledge dump
 :slug: 2018-09-03-llvm-jit-objc-and-swift-knowledge-dump
 :summary: Short summary
 
-This post is the counterpart of another post:
-`Mutation testing for Swift with Mull: how it could work. Looking for contributors <2018-09-03-mull-and-swift-how-it-almost-works.html>`_.
+This post is the counterpart of another post: `Mutation testing for Swift with
+Mull: how it could work. Looking for contributors
+<2018-09-03-mull-and-swift-how-it-almost-works.html>`_.
 
 TL;DR
 -----
@@ -19,51 +20,54 @@ One way to make it work is to subclass a ``SectionMemoryManager`` used by LLVM
 JIT engine, intercept memory sections related to Objective-C as they get
 allocated in memory, find the Objective-C metadata in these sections, parse the
 Objective-C class information from this metadata, use a number of Objective-C
-Runtime API methods to register found Objective-C classes in Objective-C runtime.
+Runtime API methods to register found Objective-C classes in Objective-C
+runtime.
 
 Although this approach only targets Objective-C code and the Objective-C
 Runtime, it also seems to enable support for combined Swift and Objective-C
-code: given that the Objective-C classes are registered, Swift code with enabled Objective-C interoperability  seems to run without any major issues in LLVM JIT.
+code: given that the Objective-C classes are registered, Swift code with enabled
+Objective-C interoperability seems to run without any major issues in LLVM JIT.
 
-This information is actual as of Summer 2018 and is based on the details of
-LLVM JIT 3.9 - 6.0 and Objective-C Runtime as it is found in the
-`objc4-723 <https://opensource.apple.com/source/objc4/objc4-723/>`_.
+This information is actual as of Summer 2018 and is based on the details of LLVM
+JIT 3.9 - 6.0 and Objective-C Runtime as it is found in the `objc4-723
+<https://opensource.apple.com/source/objc4/objc4-723/>`_.
 
 Why does anyone want to run Swift with LLVM JIT?
 ------------------------------------------------
 
-We want LLVM JIT to run Swift and Objective-C code, because we want
-`Mull <https://github.com/mull-project/mull>`_, the mutation testing tool,
-to support these programming languages. Mull accepts an input program which is
-precompiled to LLVM bitcode, finds and performs mutations in this program and
-then runs the program and its numerous modified (or "mutated") clones
-using LLVM JIT. Running the program and its mutations in memory with LLVM JIT
-saves time because Mull does not have to recompile and relink all of the programs
-from scratch: Mull finds and performs mutations on LLVM IR level and never goes
-back to the AST level. This approach gives a great advantage in performance but
-also imposes a constraint: Mull supports a programming language only if it can
-be run with LLVM JIT. In this case, it is important that LLVM JIT runs Swift and
-Objective-C.
+We want LLVM JIT to run Swift and Objective-C code, because we want `Mull
+<https://github.com/mull-project/mull>`_, the mutation testing tool, to support
+these programming languages. Mull accepts an input program which is precompiled
+to LLVM bitcode, finds and performs mutations in this program and then runs the
+program and its numerous modified (or "mutated") clones using LLVM JIT. Running
+the program and its mutations in memory with LLVM JIT saves time because Mull
+does not have to recompile and relink all of the programs from scratch: Mull
+finds and performs mutations on LLVM IR level and never goes back to the AST
+level. This approach gives a great advantage in performance but also imposes a
+constraint: Mull supports a programming language only if it can be run with LLVM
+JIT. In this case, it is important that LLVM JIT runs Swift and Objective-C.
 
 Related Sources
 ---------------
 
-The prototype code can be found here:
-`mull-project/llvm-jit-objc <https://github.com/mull-project/llvm-jit-objc>`_.
+The prototype code can be found here: `mull-project/llvm-jit-objc
+<https://github.com/mull-project/llvm-jit-objc>`_.
 
-My own research on this topic started from this StackOverflow topic:
-`All selectors unrecognised when invoking Objective-C methods using the LLVM ExecutionEngine <https://stackoverflow.com/questions/10375324/all-selectors-unrecognised-when-invoking-objective-c-methods-using-the-llvm-exec>`_.
+My own research on this topic started from this StackOverflow topic: `All
+selectors unrecognised when invoking Objective-C methods using the LLVM
+ExecutionEngine
+<https://stackoverflow.com/questions/10375324/all-selectors-unrecognised-when-invoking-objective-c-methods-using-the-llvm-exec>`_.
 
 Most of the information can be found in an llvm-dev thread that I created in
-2016:
-`[llvm-dev] Is it possible to execute Objective-C code via LLVM JIT? <https://groups.google.com/forum/#!topic/llvm-dev/pqeeY9zUhzg>`_
-or the same via mailing lists:
+2016: `[llvm-dev] Is it possible to execute Objective-C code via LLVM JIT?
+<https://groups.google.com/forum/#!topic/llvm-dev/pqeeY9zUhzg>`_ or the same via
+mailing lists:
 
-`1 <http://lists.llvm.org/pipermail/llvm-dev/2016-October/106218.html>`_,
-`2 <http://lists.llvm.org/pipermail/llvm-dev/2016-November/106995.html>`_,
-`3 <http://lists.llvm.org/pipermail/llvm-dev/2018-February/121198.html>`_,
-`4 <http://lists.llvm.org/pipermail/llvm-dev/2018-April/122452.html>`_ and
-`5 <http://lists.llvm.org/pipermail/llvm-dev/2018-May/122887.html>`_.
+`1 <http://lists.llvm.org/pipermail/llvm-dev/2016-October/106218.html>`_, `2
+<http://lists.llvm.org/pipermail/llvm-dev/2016-November/106995.html>`_, `3
+<http://lists.llvm.org/pipermail/llvm-dev/2018-February/121198.html>`_, `4
+<http://lists.llvm.org/pipermail/llvm-dev/2018-April/122452.html>`_ and `5
+<http://lists.llvm.org/pipermail/llvm-dev/2018-May/122887.html>`_.
 
 What is a registered Objective-C code?
 --------------------------------------
@@ -102,8 +106,8 @@ then, when the program exits, you will get the crash in
 
     <br/>
 
-3) If the class's category methods are not registered there is an exception about
-unrecognized selector:
+3) If the class's category methods are not registered there is an exception
+about unrecognized selector:
 
 .. raw:: html
 
@@ -133,21 +137,22 @@ library) with this Objective-C code is loaded to the memory, a ``dyld`` loader
 reads the loaded code and triggers callbacks that register the Objective-C
 classes in the Objective-C runtime of a running process.
 
-Objective-C-related sections have names that start from ``__objc_``. For example,
-``__objc_selrefs`` contains information about selectors, ``__objc_classlist``
-contains references to the Objective-C class declarations, ``__objc_catlist``
-contains references to the Objective-C class categories and a few others.
+Objective-C-related sections have names that start from ``__objc_``. For
+example, ``__objc_selrefs`` contains information about selectors,
+``__objc_classlist`` contains references to the Objective-C class declarations,
+``__objc_catlist`` contains references to the Objective-C class categories and a
+few others.
 
 With LLVM JIT there is no ``dyld`` to trigger the code that does Objective-C
 registration. The dynamic loader implementation, that LLVM JIT uses:
-`llvm::RuntimeDyld <http://llvm.org/doxygen/classllvm_1_1RuntimeDyld.html>`_ class
-(and its related classes for Mach-O), is not
-aware of Objective-C, so a special code that does the Objective-C registration
-is needed and the approach described below is the one way to accomplish this.
+`llvm::RuntimeDyld <http://llvm.org/doxygen/classllvm_1_1RuntimeDyld.html>`_
+class (and its related classes for Mach-O), is not aware of Objective-C, so a
+special code that does the Objective-C registration is needed and the approach
+described below is the one way to accomplish this.
 
 If you don't know how Objective-C sections looks like in a Mach-O object file,
-see the
-`Appendix A: Example of a Mach-O file with a simple Objective-C code <#appendix-a-example>`_.
+see the `Appendix A: Example of a Mach-O file with a simple Objective-C code
+<#appendix-a-example>`_.
 
 LLVM JIT and Section Memory Manager
 -----------------------------------
@@ -182,18 +187,19 @@ and
     bool finalizeMemory(std::string *ErrMsg = nullptr) override;
 
 When ``SectionMemoryManager`` is used for memory allocation, its
-``allocateDataSection`` method is called per each data section in an object file.
+``allocateDataSection`` method is called per each data section in an object
+file.
 
 Example: if an object file is a Mach-O binary and it has some Objective-C code
-in it, the section memory manager will have its ``allocateDataSection`` called for
-each of the sections: ``__objc_selrefs``, ``__objc_classlist`` etc.
+in it, the section memory manager will have its ``allocateDataSection`` called
+for each of the sections: ``__objc_selrefs``, ``__objc_classlist`` etc.
 
 We can create a subclass ``SectionMemoryManager`` called
 ``ObjCEnabledMemoryManager``, override the ``allocateDataSection`` function and
 collect pointers to these sections:
 
 ObjCEnabledMemoryManager: collecting Objective-C related sections
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: objective-c
 
@@ -227,7 +233,7 @@ ObjCEnabledMemoryManager: collecting Objective-C related sections
     }
 
 Allocated sections
-^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: objective-c
 
@@ -246,7 +252,7 @@ the Objective-C registration routine by hand. In our code, the right moment to
 do this is right before LLVM JIT finalizes the memory:
 
 ObjCEnabledMemoryManager: register Objective-C and finalize the memory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: objective-c
 
@@ -283,16 +289,16 @@ Objective-C code with LLVM JIT:
     <br/>
 
 ``__objc_selrefs`` is the section that is responsible for selectors. Each entry
-of ``__objc_selrefs`` is simply a selector i.e. a pointer to a ``char *`` string.
-The reason for this exception is that a selector in the object file that has just
-been allocated by LLVM JIT is not the same as selector known to Objective-C
-runtime.
+of ``__objc_selrefs`` is simply a selector i.e. a pointer to a ``char *``
+string. The reason for this exception is that a selector in the object file that
+has just been allocated by LLVM JIT is not the same as selector known to
+Objective-C runtime.
 
 Given that we have collected the information about the sections, we can get the
 access to the contents of the ``__objc_selrefs`` section and register the
 selectors using our code. We do the registration by simply rewriting the
-selector entry of the ``__objc_selrefs`` section to point to a selector registered
-by Objective-C runtime.
+selector entry of the ``__objc_selrefs`` section to point to a selector
+registered by Objective-C runtime.
 
 .. raw:: html
 
@@ -315,18 +321,18 @@ by Objective-C runtime.
     </pre>
 
 After this code is executed, selectors in the loaded code point to the selector
-entries in ``__objc_selrefs`` section and these selector entries now point to the
-selectors known by Objective-C runtime.
+entries in ``__objc_selrefs`` section and these selector entries now point to
+the selectors known by Objective-C runtime.
 
 This makes the exception go away.
 
 Registration of Classes
 -----------------------
 
-Registration of classes is the most important part of this prototype. It is
-also hacky because it uses not a public but internal method of Objective-C
-Runtime API: ``objc_readClassPair``. It can be found in ``objc-internal.h``
-header file of ``libobjc``:
+Registration of classes is the most important part of this prototype. It is also
+hacky because it uses not a public but internal method of Objective-C Runtime
+API: ``objc_readClassPair``. It can be found in ``objc-internal.h`` header file
+of ``libobjc``:
 
 .. raw:: html
 
@@ -353,10 +359,10 @@ header file of ``libobjc``:
 
     <br/>
 
-As it has been done with ``__objc_selrefs`` section, given that we have collected
-the information about the classes from the ``__objc_classlist`` section, we can
-iterate over the classes and call ``objc_registerClassPair()`` function on every
-class pointer.
+As it has been done with ``__objc_selrefs`` section, given that we have
+collected the information about the classes from the ``__objc_classlist``
+section, we can iterate over the classes and call ``objc_registerClassPair()``
+function on every class pointer.
 
 .. raw:: html
 
@@ -396,36 +402,36 @@ class pointer.
 
     <br/>
 
-If you have some experience with creating Objective-C classes using
-Objective-C Runtime you know that a pair of methods ``objc_allocateClassPair`` and
-then ``objc_registerClassPair`` must be used to create a new Objective-C class.
+If you have some experience with creating Objective-C classes using Objective-C
+Runtime you know that a pair of methods ``objc_allocateClassPair`` and then
+``objc_registerClassPair`` must be used to create a new Objective-C class.
 
 The difference here is that we do not create a new class but rather activate
 existing class by reading the information from its definition that exists in
-``__objc_classlist`` section. This is why ``objc_readClassPair()`` method is used
-instead of ``objc_allocateClassPair()`` method. It turns out that
-``objc_readClassPair`` is not written to play well with ``objc_registerClassPair``
-method this is why we need to do a small hack to set ``RW_CONSTRUCTING`` flag on a
-class struct to pretend that this is a new class that we want
-``objc_registerClassPair`` to register.
+``__objc_classlist`` section. This is why ``objc_readClassPair()`` method is
+used instead of ``objc_allocateClassPair()`` method. It turns out that
+``objc_readClassPair`` is not written to play well with
+``objc_registerClassPair`` method this is why we need to do a small hack to set
+``RW_CONSTRUCTING`` flag on a class struct to pretend that this is a new class
+that we want ``objc_registerClassPair`` to register.
 
 Registration of Categories
 --------------------------
 
-Each category definition in ``__objc_catlist`` section has a pointer to its class,
-so it is a trivial to connect the definition with the class it belongs to.
+Each category definition in ``__objc_catlist`` section has a pointer to its
+class, so it is a trivial to connect the definition with the class it belongs
+to.
 
 Once all classes are registered with
 ``objc_readClassPair/objc_registerClassPair``, we read the information about
-categories and use a ``class_addMethod`` method of public Objective-C Runtime API
-to add the category's instance and class methods to the registered classes.
-
+categories and use a ``class_addMethod`` method of public Objective-C Runtime
+API to add the category's instance and class methods to the registered classes.
 
 Known issues
 ------------
 
 Known issue 1: duplicate definition of class
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Calling ``objc_registerClassPair()`` on a class pointer obtained with
 ``objc_readClassPair()`` always triggers a warning:
@@ -438,33 +444,33 @@ Calling ``objc_registerClassPair()`` on a class pointer obtained with
 
 One detail to notice, however, is that the pointers to the both classes are
 equal and from looking at the code that causes this warning it seems that this
-code is just not built with the ``objc_readClassPair`` case in mind. The exception
-is annoying but there is nothing criminal going under the hood.
+code is just not built with the ``objc_readClassPair`` case in mind. The
+exception is annoying but there is nothing criminal going under the hood.
 
 .. raw:: html
 
     <a name="known-issue-2"></a>
 
 Known issue 2: objc_readClassPair works, objc_allocateClassPair doesn't
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the beginning, we thought that it was possible to register Objective-C
-classes with the public methods:
-``objc_allocateClassPair()`` and ``objc_registerClassPair()``. In contrast to
-``objc_readClassPair`` that reads existing Objective-C class definitions in the
-Mach-O and only registers them in Objective-C runtime, ``objc_allocateClassPair``
-creates a new class struct for a class and registers the class in the
-Objective-C Runtime. This approach creates some redundancy
-because for each definition in the Mach-O a new class struct is created so two
-copies of class structs exist in memory: unregistered structs in the memory allocated from Mach-O sections and the memory created by Objective-C Runtime
-methods. While this is not a problem for us, there is another problem that seems
-to be hard to fix: ``objc_allocateClassPair`` is designed to create
-new classes and by doing this it breaks the Swift code that contains
-Objective-C classes. It turns out that the code that is generated from the files
-with Swift code with Objective-C-based classes is hardcoded against the
-Objective-C definitions as they are written in the Mach-O so creating a new
-parallel class hierarchy in Objective-C runtime does not work: we start to get
-crashes related to pointers pointing to the wrong offsets in the memory.
+classes with the public methods: ``objc_allocateClassPair()`` and
+``objc_registerClassPair()``. In contrast to ``objc_readClassPair`` that reads
+existing Objective-C class definitions in the Mach-O and only registers them in
+Objective-C runtime, ``objc_allocateClassPair`` creates a new class struct for a
+class and registers the class in the Objective-C Runtime. This approach creates
+some redundancy because for each definition in the Mach-O a new class struct is
+created so two copies of class structs exist in memory: unregistered structs in
+the memory allocated from Mach-O sections and the memory created by Objective-C
+Runtime methods. While this is not a problem for us, there is another problem
+that seems to be hard to fix: ``objc_allocateClassPair`` is designed to create
+new classes and by doing this it breaks the Swift code that contains Objective-C
+classes. It turns out that the code that is generated from the files with Swift
+code with Objective-C-based classes is hardcoded against the Objective-C
+definitions as they are written in the Mach-O so creating a new parallel class
+hierarchy in Objective-C runtime does not work: we start to get crashes related
+to pointers pointing to the wrong offsets in the memory.
 
 .. raw:: html
 
@@ -475,17 +481,18 @@ crashes related to pointers pointing to the wrong offsets in the memory.
 
     <br/>
 
-Another issue: with ``objc_allocateClassPair`` it is not possible to specify that
-you want to create a Swift-enhanced Objective-C class because
-``objc_allocateClassPair()`` decides on whether it creates a struct with a normal
-Objective-C or Swift-enhanced class layout based on the superclass (this is
-weird but do check the source code) so it is not possible to create a Swift
+Another issue: with ``objc_allocateClassPair`` it is not possible to specify
+that you want to create a Swift-enhanced Objective-C class because
+``objc_allocateClassPair()`` decides on whether it creates a struct with a
+normal Objective-C or Swift-enhanced class layout based on the superclass (this
+is weird but do check the source code) so it is not possible to create a Swift
 class that is a subclass of an Objective-C class because
-``objc_allocateClassPair()`` will create an Objective-C class, not a Swift class.
+``objc_allocateClassPair()`` will create an Objective-C class, not a Swift
+class.
 
-Example: If you want to use ``objc_allocateClassPair()`` to register a Swift class
-that is a subclass of ``XCTestCase`` Objective-C class, it will create a class
-struct for Objective-C class instead of Swift class.
+Example: If you want to use ``objc_allocateClassPair()`` to register a Swift
+class that is a subclass of ``XCTestCase`` Objective-C class, it will create a
+class struct for Objective-C class instead of Swift class.
 
 Conclusion
 ----------
@@ -493,18 +500,20 @@ Conclusion
 In this post I have shared the most important parts of what I have learned about
 the "LLVM JIT and Objective-C" topic.
 
-The prototype code `llvm-jit-objc <https://github.com/mull-project/llvm-jit-objc>`_
-is very raw and contains only a few basic test cases. It can be that the
-approach described here has some flaws that we overlooked or some parts of Objective-C that we did not implement but we still believe that the framework
-for reading Objective-C sections as they are loaded by ``RuntimeDyld`` and using
-the methods from Objective-C runtime to register the Objective-C contents such
-as classes, selectors, categories is the right approach.
+The prototype code `llvm-jit-objc
+<https://github.com/mull-project/llvm-jit-objc>`_ is very raw and contains only
+a few basic test cases. It can be that the approach described here has some
+flaws that we overlooked or some parts of Objective-C that we did not implement
+but we still believe that the framework for reading Objective-C sections as they
+are loaded by ``RuntimeDyld`` and using the methods from Objective-C runtime to
+register the Objective-C contents such as classes, selectors, categories is the
+right approach.
 
 We also believe that with a rather small joint effort by developers of LLVM JIT
 and Swift / Objective-C Runtime this approach could be implemented so that we
 would not have to hack on the internals of the Objective-C Runtime. Another
-approaches also exist, see
-`Appendix B: Altenative approach: Objective-C Registration using Clang <#appendix-b-clang>`_.
+approaches also exist, see `Appendix B: Altenative approach: Objective-C
+Registration using Clang <#appendix-b-clang>`_.
 
 ----
 
@@ -673,8 +682,8 @@ these:
 With Hopper it is also possible to see and navigate the content of the
 Objective-C sections:
 
-This is how ``__objc_classlist`` section with the pointer to
-the ``SomeClass`` class data looks like:
+This is how ``__objc_classlist`` section with the pointer to the ``SomeClass``
+class data looks like:
 
 .. raw:: html
 
@@ -685,8 +694,8 @@ the ``SomeClass`` class data looks like:
 
     <br/>
 
-The metadata for the
-``SomeClass`` class is contained in another section called ``__objc_data``.
+The metadata for the ``SomeClass`` class is contained in another section called
+``__objc_data``.
 
 .. raw:: html
 
@@ -698,8 +707,8 @@ The metadata for the
     <br/>
 
 The actual data of ``SomeClass`` such as ``hello`` method can be found in the
-``__objc_const`` section through a ``data`` field of the struct which is rendered as
-``__objc_class_SomeClass_data``.
+``__objc_const`` section through a ``data`` field of the struct which is
+rendered as ``__objc_class_SomeClass_data``.
 
 .. raw:: html
 
@@ -719,11 +728,21 @@ On the llvm-dev forums, David Chisnall proposed what he called the best way of
 doing the Objective-C registration, the following quotes from David can be found
 on the llvm-dev threads:
 
-    1) A few years ago, I put together a proof-of-concept implementation of CGObjCRuntime that emitted a load function that called out to the runtime’s functions for registering selectors, generating classes, adding methods, and so on.  I don’t have the code anymore (and it’s probably bitrotted to the extent that a clean reimplementation would probably be easier), but it was only a few hundred lines of code and would work with any Objective-C runtime in a JIT context.
-
-    2) As I said in the earlier thread, the best way of doing this is to add a new subclass of CGObjCRuntime that generates the code using the public APIs...
-
-    3) Create a new CGObjCRuntime subclass that creates a module init function that constructs all of the classes using the public APIs, by adding something like -fobjc-runtime=jit to the clang flags.  This is not particularly difficult and means that the same code can be used with any Objective-C runtime.
+    1. A few years ago, I put together a proof-of-concept implementation of
+       CGObjCRuntime that emitted a load function that called out to the
+       runtime’s functions for registering selectors, generating classes, adding
+       methods, and so on. I don’t have the code anymore (and it’s probably
+       bitrotted to the extent that a clean reimplementation would probably be
+       easier), but it was only a few hundred lines of code and would work with
+       any Objective-C runtime in a JIT context.
+    2. As I said in the earlier thread, the best way of doing this is to add a
+       new subclass of CGObjCRuntime that generates the code using the public
+       APIs...
+    3. Create a new CGObjCRuntime subclass that creates a module init function
+       that constructs all of the classes using the public APIs, by adding
+       something like -fobjc-runtime=jit to the clang flags. This is not
+       particularly difficult and means that the same code can be used with any
+       Objective-C runtime.
 
 The reason we didn't go with this CGObjCRuntime approach because it was easier
 to go with RuntimeDyld to solve one problem at a time: ``SectionMemoryManager``
@@ -733,5 +752,5 @@ to emit these sections to LLVM IR which would be additional challenge.
 
 Also it is still not clear which public Objective-C Runtime API would the
 emitted code use given the limitation of the public method
-``objc_allocateClassPair()`` as described in:
-`Known issue 2: objc_readClassPair works, objc_allocateClassPair doesn't <#known-issue-2>`_.
+``objc_allocateClassPair()`` as described in: `Known issue 2: objc_readClassPair
+works, objc_allocateClassPair doesn't <#known-issue-2>`_.

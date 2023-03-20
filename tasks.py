@@ -1,17 +1,20 @@
-# -*- coding: utf-8 -*-
-
+import datetime
+import inspect
 import os
+import re
 import shlex
 import shutil
 import sys
-import datetime
 
+import invoke as invoke
 from invoke import task
 from invoke.main import program
-from invoke.util import cd
 from pelican import main as pelican_main
 from pelican.server import ComplexHTTPRequestHandler, RootedHTTPServer
 from pelican.settings import DEFAULT_CONFIG, get_settings_from_file
+
+if not hasattr(inspect, "getargspec"):
+    inspect.getargspec = inspect.getfullargspec
 
 OPEN_BROWSER_ON_SERVE = True
 SETTINGS_FILE_BASE = 'pelicanconf.py'
@@ -32,6 +35,20 @@ CONFIG = {
     'host': 'localhost',
     'port': 8000,
 }
+
+
+def run_invoke_cmd(*, context, command) -> invoke.runners.Result:
+    def one_line_command(string):
+        return re.sub("\\s+", " ", string).strip()
+    return context.run(
+        one_line_command(command),
+        env=None,
+        hide=False,
+        warn=False,
+        pty=False,
+        echo=True,
+    )
+
 
 @task
 def clean(c):
@@ -135,6 +152,7 @@ def publish(c):
             CONFIG['deploy_path'].rstrip('/') + '/',
             **CONFIG))
 
+
 @task
 def gh_pages(c):
     """Publish to GitHub Pages"""
@@ -142,6 +160,18 @@ def gh_pages(c):
     c.run('ghp-import -b {github_pages_branch} '
           '-m {commit_message} '
           '{deploy_path} -p'.format(**CONFIG))
+
+
+@task
+def format_rst(context, file=None):
+    input_files = "content/" if not file else file
+    command = f"""
+        docstrfmt
+            -l 80
+            {input_files}
+    """
+    run_invoke_cmd(context=context, command=command)
+
 
 def pelican_run(cmd):
     cmd += ' ' + program.core.remainder  # allows to pass-through args to pelican
