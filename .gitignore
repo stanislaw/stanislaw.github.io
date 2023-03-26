@@ -1,0 +1,8 @@
+.deploy/
+.idea/
+
+__pycache__/
+
+cache/
+output/
+
