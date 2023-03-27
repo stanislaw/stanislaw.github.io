@@ -28,6 +28,8 @@ Jinja `supports a number of checks
 <https://jinja.palletsprojects.com/en/latest/templates/#list-of-builtin-tests>`_,
 all of which are usable with this approach.
 
+The code of the extension is as follows.
+
 .. code-block:: python
 
     from typing import Any, Optional
