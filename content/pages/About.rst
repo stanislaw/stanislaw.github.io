@@ -1,8 +1,8 @@
 About
 =====
 
-:date: 2010-10-03 10:20
-:modified: 2010-10-04 18:40
+:date: 2023-03-27 23:50
+:modified: 2023-03-27 23:50
 :tags: About
 :category: Posts
 :slug: about
@@ -38,7 +38,7 @@ StrictDoc project
 Some time ago, when I was deciding which topics to work on in my spare time for
 open-source projects, I chose to focus on Requirements Engineering. My latest
 open-source project is called StrictDoc
-<https://github.com/strictdoc-project/strictdoc>_, which aims to create a free
+`<https://github.com/strictdoc-project/strictdoc>`_, which aims to create a free
 and open-source tool for writing, analyzing, and exchanging requirements. While
 I have limited time to devote to this project, with enough dedication and
 continuous attention, I believe I can make significant progress. I'm happy to
@@ -61,6 +61,6 @@ I am happy to talk about anything that has to do with, but not limited to:
 
 - Space systems and space software, software reliability
 - Requirements engineering, systems engineering, model-based systems
-  engineering.
+  engineering
 - Open-source software development
 - Development tools.
