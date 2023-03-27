@@ -1,4 +1,4 @@
 invoke>=1.7.3
 pelican==4.8.0
+beautifulsoup4==4.12.0  # used by TOC plugin
 livereload
-
