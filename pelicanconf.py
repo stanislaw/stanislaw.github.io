@@ -1,6 +1,6 @@
 AUTHOR = 'Stanislav Pankevich'
 SITENAME = "Stanislav Pankevich's Blog"
-SITEURL = 'https://stanislaw.github.io/'
+SITEURL = 'https://stanislaw.github.io'
 
 PATH = 'content'
 
