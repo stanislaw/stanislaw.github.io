@@ -11,6 +11,14 @@ A Southeast Jumping Robot: Notes on one proof from a textbook
 .. raw:: html
 
     <style type="text/css">
+    sup {
+      vertical-align: super;
+      font-size: smaller;
+    }
+    sub {
+      vertical-align: sub;
+      font-size: smaller;
+    }
     .math-block {
       font-family: monospace;
       white-space: pre;
@@ -18,7 +26,7 @@ A Southeast Jumping Robot: Notes on one proof from a textbook
       font-size: 18px;
       margin: 10px;
       padding: 5px 10px;
-      background-color: #efeefe;
+      background-color: #ff0000;
     }
     .math-inline {
       font-family: monospace;
@@ -26,7 +34,7 @@ A Southeast Jumping Robot: Notes on one proof from a textbook
       font-size: 18px;
       /*margin: 10px;*/
       padding: 1px 5px;
-      background-color: #efeefe;
+      background-color: #ff0000;
     }
     </style>
 
@@ -101,7 +109,7 @@ Let's consider three building blocks of this proof:
 3. Show the implication from Theorem 6.3.3 that Robot always get stuck.
 
 1. Proof of the lemma 2.4.6
----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's look the lemma up in the textbook:
 
@@ -255,13 +263,13 @@ We have just proved the homework exercise ``Problem 2.20``, the final building
 block for proof of Lemma 2.4.6.
 
 2. Proof that '𝑣' is a strictly decreasing derived variable
------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Let's actually check the following statement:
 
-> Now it’s easy to check that if ``(𝑥, 𝑦) → (𝑥', 𝑦')`` is a legitimate robot
-move, then ``𝑣((𝑥', 𝑦')) < 𝑣((𝑥, 𝑦))``. In particular, v is a strictly
-decreasing derived variable...
+    Now it’s easy to check that if ``(𝑥, 𝑦) → (𝑥', 𝑦')`` is a legitimate robot
+    move, then ``𝑣((𝑥', 𝑦')) < 𝑣((𝑥, 𝑦))``. In particular, v is a strictly
+    decreasing derived variable...
 
 We need to check if ``𝑣((𝑥', 𝑦')) < 𝑣((𝑥, 𝑦))`` holds for both types of moves
 that a robot can do:
@@ -369,7 +377,7 @@ coordinates we have:
     <br/>
 
 3. Implication of Theorem 6.3.3: Robot always gets stuck
---------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. raw:: html
 
@@ -552,8 +560,8 @@ Science", revised Monday 5th June, 2017, 19:42.
 
 .. _anchor_02_course:
 
-[2] `edx - Formal Software Verification <#>`_. Update from 2023.03: It turns out
-that the course no longer exist.
+[2] `edx - Formal Software Verification <#>`_. **Update from 2023.03:** It turns
+out that the course no longer exist.
 
 .. _anchor_03_wolframalpha:
 
