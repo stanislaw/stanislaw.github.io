@@ -50,22 +50,6 @@ complete explanation of a problem so it is most likely that this post will only
 make sense to those who are familiar with the context of this proof: the chapter
 called "6.3 Partial Correctness & Termination".
 
-- `Introduction <introduction_>`_
-- `A Southeast Jumping Robot: Contrived example of a termination proof
-  <robot_>`_
-- `Understanding the problem <understanding_the_problem_>`_
-- `Proof <proof_>`_
-
-  - `1. Proof of the lemma 2.4.6 <proof_1_>`_
-  - `2. Proof that 'v' is a strictly decreasing derived variable <proof_2_>`_
-  - `3. Implication of Theorem 6.3.3: Robot always gets stuck. <proof_3_>`_
-
-- `Geometric interpretation <geometric_interpretation_>`_
-- `Credits <credits_>`_
-- `Links <links_>`_
-
-.. _robot:
-
 A Southeast Jumping Robot
 -------------------------
 
@@ -83,8 +67,6 @@ The following is a direct quote from a textbook:
     <br/>
     <br/>
 
-.. _understanding_the_problem:
-
 Understanding the problem
 -------------------------
 
@@ -96,8 +78,6 @@ jump East when it reaches the bottom of the quadrant due to the ``y - 1``
 component of the Southeast move. After the robot has reached the bottom of the
 quadrant it can only move West so finally it will get stuck in ``(0, 0)``
 because the West move will also become impossible.
-
-.. _proof:
 
 Proof
 -----
@@ -119,8 +99,6 @@ Let's consider three building blocks of this proof:
     </div>
 
 3. Show the implication from Theorem 6.3.3 that Robot always get stuck.
-
-.. _proof_1:
 
 1. Proof of the lemma 2.4.6
 ---------------------------
@@ -276,8 +254,6 @@ equation 1A.
 We have just proved the homework exercise ``Problem 2.20``, the final building
 block for proof of Lemma 2.4.6.
 
-.. _proof_2:
-
 2. Proof that '𝑣' is a strictly decreasing derived variable
 -----------------------------------------------------------
 
@@ -392,8 +368,6 @@ coordinates we have:
 
     <br/>
 
-.. _proof_3:
-
 3. Implication of Theorem 6.3.3: Robot always gets stuck
 --------------------------------------------------------
 
@@ -412,8 +386,6 @@ coordinates we have:
 
     <br/>
     <br/>
-
-.. _geometric_interpretation:
 
 Geometric interpretation
 ------------------------
@@ -557,8 +529,6 @@ will reach coordinate (0, 0) and get stuck.
 
     <br/>
 
-.. _credits:
-
 Credits
 -------
 
@@ -570,8 +540,6 @@ I used two online services: Wolfram|Alpha `[3] <anchor_03_wolframalpha_>`_ and
 Academo.org `[4] <anchor_04_academo_>`_ to draw the plots. I used the amazing
 Academo service to create the annotated plot which helped me to visualize and
 understand the geometric interpretation of the proof.
-
-.. _links:
 
 Links
 -----
