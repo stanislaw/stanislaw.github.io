@@ -1,3 +1,4 @@
-pelican
+invoke>=1.7.3
+pelican==4.8.0
 livereload
 
