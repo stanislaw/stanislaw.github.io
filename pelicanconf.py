@@ -34,3 +34,10 @@ STATIC_PATHS = ['images', 'files']
 
 # Uncomment following line if you want document-relative URLs when developing
 # RELATIVE_URLS = True
+
+PLUGIN_PATHS = ["plugins"]
+PLUGINS = ["pelican-toc"]
+
+TOC = {
+    'TOC_INCLUDE_TITLE': 'false',  # If 'true' include title in toc
+}
