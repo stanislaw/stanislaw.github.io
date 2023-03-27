@@ -552,9 +552,8 @@ Science", revised Monday 5th June, 2017, 19:42.
 
 .. _anchor_02_course:
 
-[2] `edx - Formal Software Verification
-<#>`_.
-Update from 2023.03: It turns out that the course no longer exist.
+[2] `edx - Formal Software Verification <#>`_. Update from 2023.03: It turns out
+that the course no longer exist.
 
 .. _anchor_03_wolframalpha:
 
