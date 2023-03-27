@@ -1,6 +1,6 @@
 AUTHOR = 'Stanislav Pankevich'
 SITENAME = "Stanislav Pankevich's Blog"
-SITEURL = ''
+SITEURL = 'https://stanislaw.github.io/'
 
 PATH = 'content'
 
@@ -33,7 +33,7 @@ THEME = "themes/notmyidea"
 STATIC_PATHS = ['images', 'files']
 
 # Uncomment following line if you want document-relative URLs when developing
-# RELATIVE_URLS = True
+RELATIVE_URLS = True
 
 PLUGIN_PATHS = ["plugins"]
 PLUGINS = ["pelican-toc"]

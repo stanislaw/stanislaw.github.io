@@ -15,14 +15,13 @@ While both tools are mainly used by the LLVM compiler infrastructure developers,
 they can be also used for testing any kinds of programs, not necessarily the
 compiler tools.
 
-This post is not a tutorial about using LIT/FileCheck. I will
-show only few examples of what both tools can do and instead, I will focus on
-what are the use cases for these tools, and in which situations both tools can
-be exceptionally useful.
+This post is not a tutorial about using LIT/FileCheck. I will show only few
+examples of what both tools can do and instead, I will focus on what are the use
+cases for these tools, and in which situations both tools can be exceptionally
+useful.
 
-At the bottom of this post,
-I provide several helpful links about LIT/FileCheck, some of which point to the
-practical step-by-step tutorials.
+At the bottom of this post, I provide several helpful links about LIT/FileCheck,
+some of which point to the practical step-by-step tutorials.
 
 Where LIT/FileCheck can be used
 -------------------------------
@@ -31,9 +30,9 @@ Use case 1: Testing a command-line tool with a large number of test inputs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You have a command-line tool that you want to test against
-tens/hundreds/thousands of scenarios and combinations of input arguments.
-LIT is a test runner which gives you a DSL for writing your tests, something
-that is more advanced than writing your custom Shell scripts.
+tens/hundreds/thousands of scenarios and combinations of input arguments. LIT is
+a test runner which gives you a DSL for writing your tests, something that is
+more advanced than writing your custom Shell scripts.
 
 Example of a LIT test text file:
 
@@ -62,8 +61,8 @@ FileCheck is a "grep on steroids" kind of tool. You write your checks in a check
 file and then run FileCheck against your program's input. FileCheck supports
 several matchers, regular expressions syntax and many other features.
 
-Example of a FileCheck check text file that matches against the output of
-``git --version`` command, e.g., ``git version 2.37.1 (Apple Git-137.1)``.
+Example of a FileCheck check text file that matches against the output of ``git
+--version`` command, e.g., ``git version 2.37.1 (Apple Git-137.1)``.
 
 .. code-block:: text
 
@@ -77,9 +76,9 @@ a whole command-line program test in one file which includes:
 
 - Combining test runner commands, check commands, and test input in one file
 
-. An example is better than a long
-explanation. Let's assume we want to test that our C program, when compiled and
-run, produces a given output. Here's how a FileCheck/LIT test could look like:
+. An example is better than a long explanation. Let's assume we want to test
+that our C program, when compiled and run, produces a given output. Here's how a
+FileCheck/LIT test could look like:
 
 .. code-block:: text
 
@@ -123,11 +122,10 @@ The rest of this post explains in more detail what are LIT and FileCheck.
 What is LIT?
 ------------
 
-LLVM LIT is a testing tool developed for
-`LLVM <https://llvm.org/>`_, a collection of modular and
-reusable compiler and toolchain technologies. LIT stands for LLVM Integrated
-Tester and was created to provide a flexible and lightweight testing framework
-for LLVM.
+LLVM LIT is a testing tool developed for `LLVM <https://llvm.org/>`_, a
+collection of modular and reusable compiler and toolchain technologies. LIT
+stands for LLVM Integrated Tester and was created to provide a flexible and
+lightweight testing framework for LLVM.
 
 LIT is a flexible and extensible test runner program. It can run any kinds of
 command-line programs, without any limitations or requirements of connection to
@@ -148,8 +146,8 @@ the test will fail.
 LIT can be configured to work with files of any extension but let's say, the
 above test file is called ``test.itest``.
 
-When LIT is minimally configured (see
-`Tutorial: LIT and FileCheck <https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html>`_
+When LIT is minimally configured (see `Tutorial: LIT and FileCheck
+<https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html>`_
 for more details), the following command will run the above test:
 
 .. code-block:: bash
@@ -199,8 +197,8 @@ What is LLVM FileCheck?
 -----------------------
 
 LLVM FileCheck is an utility tool that is part of the LLVM project. It is used
-for checking the contents of files against expected patterns or contents, and
-it is often used for testing LLVM components and tools.
+for checking the contents of files against expected patterns or contents, and it
+is often used for testing LLVM components and tools.
 
 FileCheck works by reading a file and searching for patterns that match certain
 regular expressions. It can be configured to check for the presence or absence
@@ -218,8 +216,8 @@ produces expected output.
 ``filecheck`` acts as a more advanced version of ``grep``. It consumes the
 output of the ``command_line_program`` via stdin and reads the ``CHECK:`` checks
 from a file that is specified as ``%s`` input argument. The ``%s`` is translated
-to "a full path to this file" by LIT, see
-`lit - LLVM Integrated Tester - Substitutions <https://llvm.org/docs/CommandGuide/lit.html#substitutions>`_.
+to "a full path to this file" by LIT, see `lit - LLVM Integrated Tester -
+Substitutions <https://llvm.org/docs/CommandGuide/lit.html#substitutions>`_.
 
 Under the hood, ``filecheck`` reads the test file and finds all the CHECK:
 statements. ``filecheck`` enumerates over a list of checks and for every input
@@ -258,32 +256,40 @@ Real-world LIT/FileCheck test suites
 
 Here are some examples of the LIT/FileCheck test suites found on GitHub:
 
-- `LLVM's integration tests <https://github.com/llvm/llvm-project/tree/main/llvm/test>`_
-- `WebAssembly/binaryen <https://github.com/WebAssembly/binaryen/tree/main/test/lit>`_
-- `Mull, mutation testing system <https://github.com/mull-project/mull/tree/main/tests-lit>`_
-- `StrictDoc, documentation tool <https://github.com/strictdoc-project/strictdoc/tree/main/tests/integration>`_
+- `LLVM's integration tests
+  <https://github.com/llvm/llvm-project/tree/main/llvm/test>`_
+- `WebAssembly/binaryen
+  <https://github.com/WebAssembly/binaryen/tree/main/test/lit>`_
+- `Mull, mutation testing system
+  <https://github.com/mull-project/mull/tree/main/tests-lit>`_
+- `StrictDoc, documentation tool
+  <https://github.com/strictdoc-project/strictdoc/tree/main/tests/integration>`_
 
 Conclusion
 ----------
 
-LIT can serve as a perfect replacement for a bunch of hand-crafted Shell scripts.
-The simple DSL of ``RUN:`` commands and LIT's Substitutions such as ``%s`` help
-to organize the test commands.
+LIT can serve as a perfect replacement for a bunch of hand-crafted Shell
+scripts. The simple DSL of ``RUN:`` commands and LIT's Substitutions such as
+``%s`` help to organize the test commands.
 
 FileCheck serves as "grep on steroids" kind of tool. It helps to match tested
 program output against user-defined checks stored in a text file.
 
-As explained above in
-`Use case 3: Test input, run commands and checks in a single file`_,
-the option of combining LIT/FileCheck's RUN/CHECK statements with test
-inputs increases the maintainability of the test suites.
+As explained above in `Use case 3: Test input, run commands and checks in a
+single file`_, the option of combining LIT/FileCheck's RUN/CHECK statements with
+test inputs increases the maintainability of the test suites.
 
 LIT/FileCheck documentation
 ---------------------------
 
-- `LLVM documentation - lit - LLVM Integrated Tester <https://llvm.org/docs/CommandGuide/lit.html>`_
-- `LLVM documentation - FileCheck - Flexible pattern matching file verifier <https://llvm.org/docs/CommandGuide/FileCheck.html>`_
-` `LLVM Testing Infrastructure Guide <https://llvm.org/docs/TestingGuide.html>`_
-- `Tutorial: LIT and FileCheck <https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html>`_
-- `Using LLVM LIT Out-Of-Tree <https://medium.com/@mshockwave/using-llvm-lit-out-of-tree-5cddada85a78>`_
-- `FileCheck.py, A Python port of LLVM FileCheck <https://github.com/mull-project/FileCheck.py>`_
+- `LLVM documentation - lit - LLVM Integrated Tester
+  <https://llvm.org/docs/CommandGuide/lit.html>`_
+- `LLVM documentation - FileCheck - Flexible pattern matching file verifier
+  <https://llvm.org/docs/CommandGuide/FileCheck.html>`_
+- `LLVM Testing Infrastructure Guide <https://llvm.org/docs/TestingGuide.html>`_
+- `Tutorial: LIT and FileCheck
+  <https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html>`_
+- `Using LLVM LIT Out-Of-Tree
+  <https://medium.com/@mshockwave/using-llvm-lit-out-of-tree-5cddada85a78>`_
+- `FileCheck.py, A Python port of LLVM FileCheck
+  <https://github.com/mull-project/FileCheck.py>`_
