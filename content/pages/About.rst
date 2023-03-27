@@ -26,7 +26,7 @@ technological developments.
 What is in this blog?
 ---------------------
 
-This blog features updates about my spare-time activities as an open-source
+This blog features updates from my spare-time activities as an open-source
 software developer. Since my day job is separate from my open-source and
 blogging activities, I mostly write about topics related to software
 development, such as how-tos, tool notes, testing, and other miscellaneous
