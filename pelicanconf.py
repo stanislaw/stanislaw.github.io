@@ -1,5 +1,6 @@
 AUTHOR = 'Stanislav Pankevich'
-SITENAME = "Stanislav Pankevich's Blog"
+SITENAME = "TECH NOTES"
+SITESUBTITLE = " by Stanislav Pankevich"
 SITEURL = 'https://stanislaw.github.io'
 
 PATH = 'content'
@@ -19,16 +20,19 @@ AUTHOR_FEED_RSS = None
 LINKS = (('Pelican', 'https://getpelican.com/'),
          ('Python.org', 'https://www.python.org/'),
          ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
-         ('You can modify those links in your config file', '#'),)
+        )
 
 # Social widget
-SOCIAL = (('You can add links in your config file', '#'),
-          ('Another social link', '#'),)
+SOCIAL = (
+          ('stanislaw', 'https://github.com/stanislaw'),
+          ('stanislav-pankevich', 'https://stackoverflow.com/users/598057/stanislav-pankevich'),
+          ('stanislavpankevich', 'https://www.linkedin.com/in/stanislavpankevich'),
+        )
 
 DEFAULT_PAGINATION = False
 
 # THEME = "themes/simple"
-THEME = "themes/notmyidea"
+THEME = "themes/mottto"
 
 STATIC_PATHS = ['images', 'files']
 
@@ -41,3 +45,12 @@ PLUGINS = ["pelican-toc"]
 TOC = {
     'TOC_INCLUDE_TITLE': 'false',  # If 'true' include title in toc
 }
+
+# Uncomment following line if you want to show the 'Fork me on Github' strip
+# GITHUB_URL = ''
+
+# Uncomment following line if you want to show the tweet button under the article title
+TWITTER_USERNAME = 'sbpankevich'
+
+# Uncomment following line if you want to enable comments
+# DISQUS_SITENAME = ''

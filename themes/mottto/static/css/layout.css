@@ -1,0 +1,67 @@
+/***** Layout *****/
+
+mottto-container {
+  display: grid;
+  height: 100vh;
+  width: 100%;
+
+  grid-template-columns:
+    fit-content(30%)
+    1fr;
+  grid-template-rows:
+    fit-content(1%)
+    fit-content(1%)
+    minmax( 0, 1fr ) /* https://github.com/w3c/csswg-drafts/issues/1777 */
+    fit-content(1%);
+  grid-template-areas:
+    "header   main "
+    "nav      main"
+    "toc      main"
+    "footer   main";
+
+  place-items: stretch stretch;
+  place-content: stretch stretch;
+}
+
+mottto-aside {
+  display: contents;
+}
+
+mottto-aside > * {
+  min-width: 18rem;
+  width: 18rem;
+  line-height: 1.2;
+}
+
+mottto-header {
+  grid-area: header;
+  padding: 2rem;
+}
+
+mottto-nav {
+  grid-area: nav;
+  padding: 0 2rem;
+}
+
+mottto-toc {
+  grid-area: toc;
+  padding: 2rem 1rem 1rem 2rem;
+  overflow-y: auto;
+}
+
+mottto-footer {
+  grid-area: footer;
+}
+
+mottto-footer:not(:empty) {
+	padding: 2rem;
+  padding-bottom: 1rem;
+}
+
+mottto-main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  min-width: 500px;
+}

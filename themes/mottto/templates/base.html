@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{% block html_lang %}{{ DEFAULT_LANG }}{% endblock html_lang %}">
+<head>
+        {% block head %}
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>{% block title %}{{ SITENAME }}{%endblock%}</title>
+        <link rel="stylesheet" href="{{ SITEURL }}/{{ THEME_STATIC_DIR }}/css/{{ CSS_FILE }}" />
+        {% if FEED_ALL_ATOM %}
+        <link href="{{ FEED_DOMAIN }}/{% if FEED_ALL_ATOM_URL %}{{ FEED_ALL_ATOM_URL }}{% else %}{{ FEED_ALL_ATOM }}{% endif %}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Atom Feed" />
+        {% endif %}
+        {% if FEED_ALL_RSS %}
+        <link href="{{ FEED_DOMAIN }}/{% if FEED_ALL_RSS_URL %}{{ FEED_ALL_RSS_URL }}{% else %}{{ FEED_ALL_RSS }}{% endif %}" type="application/rss+xml" rel="alternate" title="{{ SITENAME }} RSS Feed" />
+        {% endif %}
+        {% block extra_head %}{% endblock extra_head %}
+        {% endblock head %}
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+{% include 'github.html' %}
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">{{ SITENAME }}</div>
+                        {%- if SITESUBTITLE -%}
+                        <div class="site_subname">{{ SITESUBTITLE }}</div>
+                        {%- endif -%}
+                </mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="{{ SITEURL }}/">Home</!-->
+                        {% for title, link in MENUITEMS %}
+                                <a href="{{ link }}">{{ title }}</a>
+                        {% endfor %}
+                        {% if DISPLAY_PAGES_ON_MENU -%}
+                                {% for pg in pages %}
+                                <a {% if pg == page %} class="active"{% endif %} href="{{ SITEURL }}/{{ pg.url }}">{{ pg.title }}</a>
+                                {% endfor %}
+                        {% endif %}
+                        {% if DISPLAY_CATEGORIES_ON_MENU -%}
+                                {% for cat, null in categories %}
+                                <a {% if cat == category %} class="active"{% endif %} href="{{ SITEURL }}/{{ cat.url }}">{{ cat }}</a>
+                                {% endfor %}
+                        {% endif %}
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+                        {% block article_aside %}{% endblock %}
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+                {% block content %}
+                {% endblock %}
+                        <footer class="color:footer">
+                        {% if SOCIAL or FEED_ALL_ATOM or FEED_ALL_RSS %}
+                                <section class="social">
+                                        <h4>{{ SOCIAL_WIDGET_NAME | default('Social') }}</h4>
+                                        <ul>
+                                        {% if FEED_ALL_ATOM %}
+                                                <li><a href="{{ FEED_DOMAIN }}/{% if FEED_ALL_ATOM_URL %}{{ FEED_ALL_ATOM_URL }}{% else %}{{ FEED_ALL_ATOM }}{% endif %}" type="application/atom+xml" rel="alternate">atom feed</a></li>
+                                        {% endif %}
+                                        {% if FEED_ALL_RSS %}
+                                                <li><a href="{{ FEED_DOMAIN }}/{% if FEED_ALL_RSS_URL %}{{ FEED_ALL_RSS_URL }}{% else %}{{ FEED_ALL_RSS }}{% endif %}" type="application/rss+xml" rel="alternate">rss feed</a></li>
+                                        {% endif %}
+
+                                        {% for name, link in SOCIAL %}
+                                                <li><a href="{{ link }}">{{ name }}</a></li>
+                                        {% endfor %}
+                                        </ul>
+                                </section><!-- /.social -->
+                        {% endif %}
+                        {% if LINKS %}
+                                <section class="blogroll">
+                                        <h4>{{ LINKS_WIDGET_NAME | default('Links') }}</h4>
+                                        <ul>
+                                        {% for name, link in LINKS %}
+                                                <li><a href="{{ link }}">{{ name }}</a></li>
+                                        {% endfor %}
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                        {% endif %}
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+{% block page_title %}{% endblock page_title %}
+{% if articles %}
+    {% for article in articles_page.object_list %}
+
+        {# This block is not used #}
+        {% if false and loop.first and not articles_page.has_previous() %}
+        <h1>test loop.first</h1>
+        {% else %}
+            {% if loop.first %}
+
+            {% endif %}
+            <article
+                data-time="{{ article.date.strftime("%Y-%m-%d") }}"
+                data-display="index"
+            >
+                <time>{{ article.date.strftime("%Y-%m-%d") }}</time>
+                <h5><a
+                    href="{{ SITEURL }}/{{ article.url }}"
+                    rel="bookmark"
+                    title="Permalink to {{ article.title|striptags }}"
+                >{{ article.title }}</a></h5>
+            </article>
+        {% endif %}
+        {% if loop.last %}
+            {% if loop.length > 1 or articles_page.has_other_pages() %}
+
+                {% if articles_page.has_other_pages() %}
+                    {% include 'pagination.html' %}
+                {% endif %}
+
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% else %}
+
+    {% if pages %}
+    <h2>Pages</h2>
+
+    {% for page in pages %}
+        <p><a href="{{ SITEURL }}/{{ page.url }}">{{ page.title }}</a></p>
+    {% endfor %}
+
+    {% else %}
+    <p>This site currently has no content.</p>
+    {% endif %}
+
+{% endif %}
+{% endblock content %}
