@@ -203,7 +203,6 @@ ObjCEnabledMemoryManager: collecting Objective-C related sections
 
 .. code-block:: objective-c
 
-    <pre>
     uint8_t *
     ObjCEnabledMemoryManager::allocateDataSection(uintptr_t Size,
                                                   unsigned Alignment,
@@ -274,7 +273,9 @@ Objective-C code with LLVM JIT:
     <details>
     <summary>Selector does not match selector known to Objective-C runtime</summary>
 
-    <pre>
+
+.. code-block:: text
+
     2016-10-18 21:25:58.332 lli[12970:169282] *** NSForwarding: warning: selector
     (0x10356a38f) for message 'alloc' does not match selector known to Objective C
     runtime (0x7fff8e93afb5)-- abort
@@ -283,10 +284,10 @@ Objective-C code with LLVM JIT:
     2016-10-18 21:25:58.338 lli[12970:169282] *** Terminating app due to uncaught
     exception 'NSInvalidArgumentException', reason: '+[NSAutoreleasePool alloc]:
     unrecognized selector sent to class 0x7fff7a562130'
-    </pre>
-    </details>
 
-    <br/>
+.. raw:: html
+
+    </details>
 
 ``__objc_selrefs`` is the section that is responsible for selectors. Each entry
 of ``__objc_selrefs`` is simply a selector i.e. a pointer to a ``char *``
@@ -300,9 +301,8 @@ selectors using our code. We do the registration by simply rewriting the
 selector entry of the ``__objc_selrefs`` section to point to a selector
 registered by Objective-C runtime.
 
-.. raw:: html
+.. code-block:: objective-c
 
-    <pre>
     void registerSelectors(void *selRefsSectionPtr,
                            uintptr_t selRefsSectionSize) {
       uint8_t *sectionStart = (uint8_t *)selRefsSectionPtr;
@@ -318,7 +318,6 @@ registered by Objective-C runtime.
         *selector = sel_registerName(name);
       }
     }
-    </pre>
 
 After this code is executed, selectors in the loaded code point to the selector
 entries in ``__objc_selrefs`` section and these selector entries now point to
@@ -338,7 +337,9 @@ of ``libobjc``:
 
     <details>
     <summary>objc_registerClassPair() method as defined in objc/objc-internal.h</summary>
-    <pre>
+
+.. code-block:: objective-c
+
     // Class and metaclass construction from a compiler-generated memory image.
     // cls and cls->isa must each be OBJC_MAX_CLASS_SIZE bytes.
     // Extra bytes not used the the metadata must be zero.
@@ -354,10 +355,10 @@ of ``libobjc``:
                        const struct objc_image_info * _Nonnull info)
         OBJC_AVAILABLE(10.10, 8.0, 9.0, 1.0, 2.0);
     #endif
-    </pre>
-    </details>
 
-    <br/>
+.. raw:: html
+
+    </details>
 
 As it has been done with ``__objc_selrefs`` section, given that we have
 collected the information about the classes from the ``__objc_classlist``
@@ -369,7 +370,9 @@ function on every class pointer.
     <details>
       <summary>The code to register Objective-C class with objc_readClassPair() and
     objc_registerClassPair()</summary>
-    <pre>
+
+.. code-block:: objective-c
+
     Class mull::objc::Runtime::registerOneClass(class64_t **classrefPtr,
                                                 Class superclass) {
 
@@ -397,10 +400,10 @@ function on every class pointer.
 
       return runtimeClass;
     }
-    </pre>
-    </details>
 
-    <br/>
+.. raw:: html
+
+    </details>
 
 If you have some experience with creating Objective-C classes using Objective-C
 Runtime you know that a pair of methods ``objc_allocateClassPair`` and then
@@ -519,8 +522,6 @@ Registration using Clang <#appendix-b-clang>`_.
 
 .. raw:: html
 
-    <br/>
-
     <a name="appendix-a-example"></a>
 
 Appendix A: Example of a Mach-O file with a simple Objective-C code
@@ -529,9 +530,8 @@ Appendix A: Example of a Mach-O file with a simple Objective-C code
 The following illustrates how Objective-C-related sections appear in the Mach-O
 object file.
 
-.. raw:: html
+.. code-block:: objective-c
 
-    <pre>
     // Compile this file with:
     // clang -fobjc-arc objc.m
 
@@ -552,7 +552,6 @@ object file.
       [obj hello];
       return 0;
     }
-    </pre>
 
 There are many ways to see Objective-C sections in the Mach-O file, including
 these:
@@ -561,7 +560,9 @@ these:
 
     <details>
     <summary>Listing section headers using otool</summary>
-    <pre>
+
+.. code-block:: text
+
     otool -l a.out
     a.out:
     Mach header
@@ -641,12 +642,15 @@ these:
      reserved1 0
      reserved2 0
     ...
-    </pre>
-    </details>
 
+.. raw:: html
+
+    </details>
     <details>
     <summary>Listing section headers using llvm-objdump</summary>
-    <pre>
+
+.. code-block:: text
+
     /opt/llvm-6.0.0/bin/llvm-objdump -section-headers a.out
 
     a.out:  file format Mach-O 64-bit x86-64
@@ -669,15 +673,18 @@ these:
      13 __objc_selrefs 00000010 00000001000010e8 DATA
      14 __objc_classrefs 00000008 00000001000010f8 DATA
      15 __objc_data   00000050 0000000100001100 DATA
-    </pre>
-    </details>
 
+.. raw:: html
+
+    </details>
     <details>
     <summary>Listing section headers using MachOView</summary>
-    <img src="{static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/ListingObjCSectionsWithMachOView.jpg">
-    </details>
 
-    <br/>
+.. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/ListingObjCSectionsWithMachOView.jpg
+
+.. raw:: html
+
+    </details>
 
 With Hopper it is also possible to see and navigate the content of the
 Objective-C sections:
@@ -689,10 +696,12 @@ class data looks like:
 
     <details>
     <summary>__objc_classlist section with a pointer to SomeClass metadata</summary>
-    <img src="{static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_classlist_with_SomeClass.jpg">
-    </details>
 
-    <br/>
+.. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_classlist_with_SomeClass.jpg
+
+.. raw:: html
+
+    </details>
 
 The metadata for the ``SomeClass`` class is contained in another section called
 ``__objc_data``.
@@ -701,10 +710,12 @@ The metadata for the ``SomeClass`` class is contained in another section called
 
     <details>
     <summary>__objc_data section with a struct with SomeClass metadata</summary>
-    <img src="{static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_data_with_SomeClass.jpg">
-    </details>
 
-    <br/>
+.. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_data_with_SomeClass.jpg
+
+.. raw:: html
+
+    </details>
 
 The actual data of ``SomeClass`` such as ``hello`` method can be found in the
 ``__objc_const`` section through a ``data`` field of the struct which is
@@ -715,9 +726,12 @@ rendered as ``__objc_class_SomeClass_data``.
     <details>
     <summary>__objc_const section with a struct with the metadata for SomeClass
     </summary>
-    <img src="{static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_const_with_SomeClass.jpg">
+
+.. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_const_with_SomeClass.jpg
+
+.. raw:: html
+
     </details>
-    <br/>
 
     <a name="appendix-b-clang"></a>
 
