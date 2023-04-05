@@ -1,0 +1,1 @@
+{% if article.tags %}<div class="taglist">{% for tag in article.tags %}<a class="tag" href="{{ SITEURL }}/{{ tag.url }}">{{ tag | escape }}</a> {% endfor %}</div>{% endif %}

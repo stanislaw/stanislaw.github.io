@@ -1,0 +1,18 @@
+<aside>
+        <time class="published" title="{{ article.date.isoformat() }}">
+                {{ article.date.strftime("%Y-%m-%d") }}
+        </time>
+        {% if article.modified %}
+                {% if (article.modified - article.date).total_seconds() > 3600 %}
+        <time class="modified" title="{{ article.modified.isoformat() }}">
+                / updated
+                {{ article.date.strftime("%Y-%m-%d") }}
+        </time>
+                {% endif %}
+        {% endif %}
+
+
+{% include 'taglist.html' %}
+{% import 'translations.html' as translations with context %}
+{{ translations.translations_for(article) }}
+</aside>

@@ -1,0 +1,289 @@
+/*
+	Name: MOTTTO
+	Version: 1.0
+	License: MIT
+	Author: Maryna Balioura mettta@gmail.com
+*/
+
+/* Imports */
+/* @import url("reset.css"); */
+@import url("pygment.css");
+@import url("layout.css");
+@import url("icons.css");
+@import url("typografy.css");
+@import url("color.css");
+
+:root {
+	color-scheme: light dark;
+
+	--base-rhythm: .5rem;	/* 8px; */
+	--base-margin: calc(var(--base-rhythm)*4);
+}
+
+/***** Global *****/
+
+* { box-sizing: border-box; }
+
+/* Body */
+body {
+	margin: 0;
+	padding: 0;
+}
+
+/* HTML5 tags */
+main, header, section, footer,
+aside, nav, article, figure {
+	display: block;
+	max-width: 100%;
+}
+
+/* Anchors */
+a,
+a:link, a:visited,
+a:hover, a:active {
+	outline: 0;
+	text-decoration: none;
+}
+
+/*
+	main
+*****************/
+
+main {
+  padding: var(--base-margin);
+	padding-bottom: 0;
+	width: 100%;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: var(--base-margin);
+	min-height: 100%;
+}
+
+main a:link,
+main a:visited {
+	text-decoration: underline;
+}
+main a:hover {
+	text-decoration: none;
+}
+
+/*
+	main - bottom part
+*****************/
+
+main > footer {
+	padding: var(--base-margin);
+	margin: var(--base-margin) calc(-1*var(--base-margin)) 0;
+	margin-top: calc(2*var(--base-margin));
+	max-width: unset;
+
+	margin-top: auto;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: var(--base-margin);
+}
+
+main > footer > address {
+	width: 100%;
+}
+
+/*
+	left panel
+*****************/
+
+.site_nav {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	gap: 1rem;
+}
+
+.site_nav a:hover {
+	font-weight: 900;
+}
+
+.site_nav a:active,
+.site_nav a.active {
+	font-weight: 900;
+}
+
+.article_url::before {
+	content: '↳';
+}
+
+.article_toc ul {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	list-style-type: '▸ ';
+	padding-inline-start: var(--base-rhythm);
+	gap: calc(2 * var(--base-rhythm));
+	margin-top: calc(2 * var(--base-rhythm));
+}
+
+/***** Sections *****/
+
+/* MONO // BLOG */
+
+article [id] {
+	/* for Fixed Headers + Section Anchors */
+	scroll-margin-top: var(--base-margin);
+	}
+
+article aside {
+	/* article info block */
+	margin: var(--base-margin) 0 var(--base-margin);
+}
+
+/* index */
+
+article[data-display="article"] {
+	margin-bottom: calc(2*var(--base-margin));
+}
+
+article[data-display="index"] {
+	position: relative;
+	margin-bottom: var(--base-margin);
+	padding-left: calc(var(--base-rhythm)*15);
+}
+
+article[data-display="index"]:first-of-type {
+	margin-top: calc(2*var(--base-margin));
+}
+
+article[data-display="index"]:last-of-type {
+	margin-bottom: calc(2*var(--base-margin));
+}
+
+article[data-display="index"] time {
+	display: none;
+}
+
+article[data-display="index"],
+article[data-display="index"] * {
+	margin: 0; /* because of the parent flex + flex gap */
+}
+
+article[data-display="index"]::before {
+	content: attr(data-time);
+	position: absolute;
+	left: 0;
+}
+
+article[data-display="index"] a {
+	text-decoration: none;
+}
+
+article[data-display="index"] a::after {
+	content: '\00a0▸';
+}
+
+article[data-display="index"]::before {
+	line-height: 36px;
+}
+
+/* tag */
+
+.taglist {
+	display: flex;
+	gap: var(--base-rhythm);
+	margin-top: var(--base-rhythm);
+}
+
+.tag {
+	display: inline-block;
+	text-decoration: none !important;
+	padding:	calc(.25 * var(--base-rhythm))
+						var(--base-rhythm);
+	border-radius: calc(.5 * var(--base-rhythm));
+	font-size: medium;
+	font-weight: bolder;
+}
+
+.tag::before {
+	content: '#';
+	font-weight: 100;
+}
+
+/***** CODE / MATH *****/
+
+/* .highlight, */
+/* pre {
+	word-wrap: break-word;
+	white-space: pre-wrap;
+} */
+
+/* .. code-block:: */
+pre {
+	padding: var(--base-margin);
+	margin: var(--base-margin) calc(-1*var(--base-margin));
+	line-height: 125%;
+	overflow-x: auto;
+}
+
+/* .. math:: */
+div.formula {
+	padding: 0 var(--base-margin);
+	margin: var(--base-margin) 0;
+	word-wrap: break-word;
+}
+.formula .mbox,
+.formula .text {
+	padding: 4px;
+	border-radius: 4px;
+}
+
+/* `some code` , :math:`some code` */
+span.formula {
+	padding:	calc(0 * var(--base-rhythm))
+						calc(.5 * var(--base-rhythm));
+	border-radius: calc(.5 * var(--base-rhythm));
+}
+code, tt {
+	padding:	calc(.15 * var(--base-rhythm))
+						var(--base-rhythm)
+						calc(.25 * var(--base-rhythm));
+	border-radius: calc(.5 * var(--base-rhythm));
+}
+
+/* .rst support */
+
+/* img */
+img { max-width: 100%; }
+img.right, figure.right, div.figure.align-right {
+    float: right;
+    margin: 0 0 var(--base-margin) var(--base-margin);
+}
+img.left, figure.left, div.figure.align-left {
+    float: left;
+    margin: 0 var(--base-margin) var(--base-margin) 0;
+}
+
+/* .. figure::  */
+div.figure img, figure img {  /* to fill figure exactly */
+    max-width: 100%;
+		margin: var(--base-margin) 0;
+}
+div.figure p.caption, figure p.caption { /* margin provided by figure */
+    margin-top: calc(-1 * var(--base-margin));
+    margin-bottom: var(--base-margin);
+		text-align: center;
+		font-size: smaller;
+}
+
+/* twitter */
+
+.widget-twitter {
+	filter: grayscale(1);
+	float: right;
+	margin-top: calc(var(--base-margin));
+}
+
+.widget-twitter iframe {
+	border-radius: 9999px;
+}
