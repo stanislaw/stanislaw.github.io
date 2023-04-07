@@ -681,6 +681,7 @@ these:
     <summary>Listing section headers using MachOView</summary>
 
 .. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/ListingObjCSectionsWithMachOView.jpg
+    :alt: Listing section headers using MachOView
 
 .. raw:: html
 
@@ -698,6 +699,7 @@ class data looks like:
     <summary>__objc_classlist section with a pointer to SomeClass metadata</summary>
 
 .. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_classlist_with_SomeClass.jpg
+    :alt: __objc_classlist section with a pointer to SomeClass metadata
 
 .. raw:: html
 
@@ -712,6 +714,7 @@ The metadata for the ``SomeClass`` class is contained in another section called
     <summary>__objc_data section with a struct with SomeClass metadata</summary>
 
 .. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_data_with_SomeClass.jpg
+    :alt: __objc_data section with a struct with SomeClass metadata
 
 .. raw:: html
 
@@ -728,6 +731,7 @@ rendered as ``__objc_class_SomeClass_data``.
     </summary>
 
 .. figure:: {static}/images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_const_with_SomeClass.jpg
+    :alt: __objc_const section with a struct with the metadata for SomeClass
 
 .. raw:: html
 
