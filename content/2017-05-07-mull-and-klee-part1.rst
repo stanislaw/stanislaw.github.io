@@ -1,11 +1,11 @@
-Mull and Klee, part 1: mutation testing analysis for Klee's Tutorial Two
-========================================================================
+Mull and Klee: Mutation testing analysis for Klee's Tutorial Two
+================================================================
 
 :date: 2017-05-07 13:20:00
 :modified: 2017-05-07 13:20:00
 :tags: Mull
 :category: Posts
-:slug: 2017-05-07-mull-and-klee-part1
+:slug: 2017-05-07-mull-and-klee
 :summary: A short post comparing Mull and Klee using basic examples.
 
 Comparison between Mull and Klee and finding possible ways of collaboration
@@ -321,7 +321,7 @@ Step 3: Running Mull on a manually-created test suite
 
 .. raw:: html
 
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_1.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_1.png"/>
 
 The legend below helps to interpret the numbers of this report.
 
@@ -329,7 +329,7 @@ The legend below helps to interpret the numbers of this report.
 
     <details>
     <summary>Mull: legend</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Legend.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Legend.png"/>
     </details>
 
     <br/>
@@ -350,22 +350,22 @@ legend above.
 
     <details>
     <summary>Mutation #1</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_1.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_1.png"/>
     </details>
 
     <details>
     <summary>Mutation #2</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_2.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_2.png"/>
     </details>
 
     <details>
     <summary>Mutation #3</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_3.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_3.png"/>
     </details>
 
     <details>
     <summary>Mutation #4</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_4.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_4.png"/>
     </details>
 
     <br/>
@@ -527,16 +527,16 @@ report:
 
 .. raw:: html
 
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_2.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_2.png"/>
 
     <details>
     <summary>Mutation #1</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_1.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_1.png"/>
     </details>
 
     <details>
     <summary>Mutation #2</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_2.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_2.png"/>
     </details>
 
     <br/>
@@ -656,16 +656,16 @@ Step 4c: Adding more test scenarios with Klee ("" instead of "hello")
 
     <br/>
 
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_3.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_3.png"/>
 
     <details>
     <summary>Mutation #1</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_1.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_1.png"/>
     </details>
 
     <details>
     <summary>Mutation #2</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_2.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_2.png"/>
     </details>
 
     <br/>
@@ -869,8 +869,6 @@ it executed both ``re`` and input string parameters so that we did not have to
 substitute "hello" -> "h" -> "" -> "hhh" inputs manually by hands. However, this
 goes beyond a scope of this post and a content of Tutorial Two.
 
-<br/>
-
 This is a final report with redundancy of the tests auto-generated for
 ``"hello"``, ``"h"`` and ``""`` strings and two tests that we wrote to kill the
 last two mutations.
@@ -879,12 +877,10 @@ last two mutations.
 
     <details>
     <summary>Final report</summary>
-    <img src="/images/2017-05-07-mull-and-klee-part1/Report_4_Final.png"/>
+    <img src="{static}/images/2017-05-07-mull-and-klee-part1/Report_4_Final.png"/>
     </details>
 
-    <br/>
-
-Full 4 reports can be downloaded here: `Klee-Tutorial-Two.zip
+The complete four reports can be downloaded here: `Klee-Tutorial-Two.zip
 <{static}/files/2017-05-07-mull-and-klee-part1/Klee-Tutorial-Two.zip>`_.
 
 This post is only a beginning of our research on possible collaboration between
