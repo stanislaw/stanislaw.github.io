@@ -37,6 +37,7 @@ page 180 of the book and page 188 of a textbook. It proves the following claim:
 The following is a direct quote from a textbook:
 
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.png
+    :alt: 6.3.4 A Southeast Jumping Robot (Optional)
 
 Understanding the problem
 -------------------------
@@ -56,6 +57,7 @@ Proof
 This is the proof that the textbook suggests:
 
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.png
+    :alt: Proof
 
 Let's consider three building blocks of this proof:
 
@@ -248,6 +250,7 @@ So `υ((𝑥, 𝑦)) > υ((𝑥', 𝑦'))` holds:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.png
+    :alt: Theorem 6.3.3
 
 This last section concludes the proof: in the step 2 we showed that a derived
 variable `υ` is a strictly decreasing derived variable whose range is
@@ -321,6 +324,7 @@ This is a three-dimensional function `𝑧 = 𝑦 + 𝑥 / (𝑥 + 1)`
 so we will need a 3D plot to visualize this function:
 
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/Academo-Annotated.jpg
+    :alt: Plot (Academo)
 
 Let's assume that the robot is jumping from (5, 5) coordinate to either (4, 5)
 with its "unit distance West move" or (8, 4) with its "unit distance South
@@ -347,6 +351,7 @@ it even better that the function is decreasing to 0 both along `𝑥` and `𝑦`
     <summary>3D Plot by Wolfram</summary>
 
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/Wolfram.jpg
+    :alt: Plot (Wolfram)
 
 .. raw:: html
 
@@ -354,6 +359,7 @@ it even better that the function is decreasing to 0 both along `𝑥` and `𝑦`
     <details>
     <summary>3D Plot by Academo (Front)</summary>
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/AcademoFront.jpg
+    :alt: Plot – Front (Academo)
 
 .. raw:: html
 
@@ -361,6 +367,7 @@ it even better that the function is decreasing to 0 both along `𝑥` and `𝑦`
     <details>
     <summary>3D Plot by Academo (Back)</summary>
 .. figure:: {static}/images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg
+    :alt: Plot – Back (Academo)
 
 .. raw:: html
 

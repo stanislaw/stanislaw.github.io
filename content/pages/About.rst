@@ -27,16 +27,16 @@ What is in this blog?
 ---------------------
 
 This blog features updates from my spare-time activities as an open-source
-software developer. Since my day job is separate from my open-source and
-blogging activities, I mostly write about topics related to software
-development, such as how-tos, tool notes, testing, and other miscellaneous
-things.
+software developer. My daily work is pretty well separated from my open source
+and blogging activities, so in this blog, I mostly write about general software
+development-related topics like how-to guides, tool notes, testing and other
+miscellaneous things.
 
 StrictDoc project
 -----------------
 
-Some time ago, when I was deciding which topics to work on in my spare time for
-open-source projects, I chose to focus on Requirements Engineering. My latest
+Some time ago, when I was deciding which topics to work on in my spare time,
+I chose to focus on Requirements Engineering. My most recent
 open-source project is called `StrictDoc
 <https://github.com/strictdoc-project/strictdoc>`_. The goal of the StrictDoc
 project is to create a free and open-source tool for writing, analyzing, and
