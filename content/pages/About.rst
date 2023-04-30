@@ -12,7 +12,7 @@ About
 Intro
 -----
 
-Hello, my name is Stanislav! I am a software engineer who has specialized in
+Hello, my name is Stanislav! I am a software engineer who specializes in
 spacecraft avionics software in the space industry for the past few years. Prior
 to that, I worked as a web and mobile application developer.
 
