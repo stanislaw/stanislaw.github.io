@@ -99,16 +99,16 @@ Ordering Principle" as
 
     Every nonempty set of nonnegative integers has a smallest element.
 
-    While the Well Ordering Principle may seem obvious, it’s hard to see offhand
+    While the Well Ordering Principle may seem obvious, it's hard to see offhand
     why it is useful. But in fact, it provides one of the most important proof
     rules in discrete mathematics...
 
     Well ordering commonly comes up in computer science as a method for proving
-    that computations won’t run forever. The idea is to assign a value to each
+    that computations won't run forever. The idea is to assign a value to each
     successive step of a computation so that the values get smaller at every
     step. If the values are all from a well ordered set, then the computation
-    can’t run forever, because if it did, the values assigned to its successive
-    steps would define a subset with no minimum element. You’ll see several
+    can't run forever, because if it did, the values assigned to its successive
+    steps would define a subset with no minimum element. You'll see several
     examples of this technique applied in Chapter 6 to prove that various state
     machines will eventually terminate.
 
@@ -140,12 +140,12 @@ which is the smallest element of `\{ 𝑓 ∈ 𝔽\ |\ 𝑛_𝑠 + 𝑓 ∈ S \}
 
 Let's group members of the equation 1A:
 `𝑛_𝑠` with `𝑛_𝑠'` to the left side of the equation and
-`𝑓_𝑠` with `𝑓_𝑠’` to the right side:
+`𝑓_𝑠` with `𝑓_𝑠'` to the right side:
 
-.. math:: 𝑛_𝑠’ - 𝑛_𝑠 < 𝑓_𝑠 - 𝑓_𝑠’\ \text{(2A)}
+.. math:: 𝑛_𝑠' - 𝑛_𝑠 < 𝑓_𝑠 - 𝑓_𝑠'\ \text{(2A)}
 
 By definition of `𝑛_𝑠`, it is the smallest of `\{ 𝑛 ∈ ℕ\ |\ 𝑛 + 𝑓 ∈ S, for\ 𝑓 ∈ 𝔽 \}`
-which means that `𝑛_𝑠’` is greater than `𝑛_𝑠`
+which means that `𝑛_𝑠'` is greater than `𝑛_𝑠`
 i.e. `𝑛_𝑠' - 𝑛_𝑠 ≥ 1`.
 
 Let's obtain the contradiction by proving that the right side of the equation 2A
@@ -189,7 +189,7 @@ block for proof of Lemma 2.4.6.
 
 Let's actually check the following statement:
 
-    Now it’s easy to check that if `(𝑥, 𝑦) → (𝑥', 𝑦')` is a legitimate robot
+    Now it is easy to check that if `(𝑥, 𝑦) → (𝑥', 𝑦')` is a legitimate robot
     move, then `υ((𝑥', 𝑦')) < υ((𝑥, 𝑦))`. In particular, v is a strictly
     decreasing derived variable...
 
@@ -297,7 +297,7 @@ strictly less than 1 per column so vertical sequences decrease faster**.
 When robot jumps to the West it changes the column bucket which means that
 the `𝑦` stays the same, but `𝑥` changes to `𝑥 - 1` , for example:
 
-.. math:: (5, 5, 5 + 5/6) ⟶ (4, 5, 5 + 4/5)\  # 5 + 5 / 6 > 5 + 4/5
+.. math:: (5, 5, 5 + 5/6) ⟶ (4, 5, 5 + 4/5)\  \text{# 5 + 5 / 6 > 5 + 4/5}
 
 When robot jumps to the South East it changes the column and row buckets which
 means that
