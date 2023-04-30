@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>How to find the slowest XCTest</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="A command-line snippet for finding the slowest XCTest." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-08-04-how-to-find-the-slowest-xctest.html"
+    rel="bookmark"
+    title="Permalink to How to find the slowest XCTest">
+    How to find the slowest XCTest
+  </a>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>How to find the slowest XCTest</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-08-04T19:05:00+02:00">
+                2016-08-04
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/xcode.html">Xcode</a> <a class="tag" href="./tag/testing.html">Testing</a> </div>
+</aside>
+    <p>We can distinguish between performance of different kinds of tests in the
+context of iOS development: unit tests are expected to run very fast because
+they should not touch any I/O do network calls or fire timers, integration tests
+are slower since they involve I/O or network or interaction between multiple
+components including external parties, acceptance tests are the slowest since a
+whole system is under test. Functional or UI snapshot tests are somewhere in
+between.</p>
+<p>Whatever the tests you're working on, there might be room for improvements. The
+following is simple but useful command based on <tt class="docutils literal">awk</tt> that can help you to
+identify the slowest tests in your XCTest-based test suite.</p>
+<p>First, you need to get the output log produced by your XCTest-based test target
+and store it to a file. You can either copy and paste the build log from Xcode,
+after you have run <tt class="docutils literal">Command + U</tt>, or use the following command that runs
+<tt class="docutils literal">xcodebuild test</tt>:</p>
+<div class="highlight"><pre><span></span>xcodebuild<span class="w"> </span>-project<span class="w"> </span>YourProject.xcodeproj<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-scheme<span class="w"> </span>YourProject<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-destination<span class="w"> </span><span class="s1">'platform=iOS Simulator,name=iPhone 6s Plus,OS=9.3'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">           </span><span class="nb">test</span><span class="w"> </span><span class="se">\</span>
+<span class="w">           </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>./xcodebuild.log
+</pre></div>
+<p>When you have <tt class="docutils literal">xcodebuild.log</tt> in place, run:</p>
+<div class="highlight"><pre><span></span>cat<span class="w"> </span>xcodebuild.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">'TestCase.*seconds'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s1">'[()]'</span><span class="w"> </span><span class="s1">'{print $2 " -&gt; " $1}'</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sort<span class="w"> </span>-rn<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-5
+</pre></div>
+<p>The output you'll receive will look like this (these are the 5 slowest tests in
+a suite):</p>
+<div class="highlight"><pre><span></span>1.957 seconds -&gt; Test Case 'A...' passed
+0.279 seconds -&gt; Test Case 'B...' passed
+0.274 seconds -&gt; Test Case 'C...' passed
+0.248 seconds -&gt; Test Case 'D...' passed
+0.201 seconds -&gt; Test Case 'E...' passed
+</pre></div>
+<p>The trick is to use <tt class="docutils literal">awk</tt> to capture time using regular expression <tt class="docutils literal"><span class="pre">[()]</span></tt>
+(left or right brace) that matches round braces in an original string produced
+by <tt class="docutils literal">xcodebuild</tt> like:</p>
+<div class="highlight"><pre><span></span>Test Case 'E...' passed (0.201 seconds).
+</pre></div>
+<p><tt class="docutils literal">awk</tt> puts numbers to be the first symbols in a resulting string, skips the
+braces, and that makes resulting string available for numeric sort, the rest is
+self-explanatory.</p>
+<p>I found this command particularly useful when I was looking at how to optimize
+the running time of a unit test suite I was working on. I found that some of the
+tests were taking 300 milliseconds to run which was unacceptable for a unit test
+suite of several hundreds of tests.</p>
+<p>Hopefully, someone will also benefit from this simple solution. Let your tests
+be fast!</p>
+<p><strong>Note:</strong> Perl can also be used instead of awk:</p>
+<div class="highlight"><pre><span></span>perl<span class="w"> </span>-ne<span class="w"> </span><span class="s1">'/(TestCase.*)\((.*)\)/ &amp;&amp; print $2 . " -&gt; " . $1 . "\n"'</span><span class="w"> </span>xcodebuild.log<span class="sb">`</span>.
+</pre></div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

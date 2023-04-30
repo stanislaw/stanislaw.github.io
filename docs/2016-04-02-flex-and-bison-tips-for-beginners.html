@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Flex and Bison: tips for beginners</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="Unordered collection of Flex and Bison tips for beginners." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-04-02-flex-and-bison-tips-for-beginners.html"
+    rel="bookmark"
+    title="Permalink to Flex and Bison: tips for beginners">
+    Flex and Bison: tips for beginners
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#disable-default-rule" title="Disable default rule">Disable default rule</a></li><li><a 'debug'="" be="" can="" class="toc-href" helpful'="" href="#enabling-lexers-debug-option-can-be-quite-helpful" option="" quite="" s="" title="Enabling lexer">Enabling lexer's 'debug' option can be quite helpful</a></li><li><a class="toc-href" href="#flex-can-be-very-sensitive-to-syntax" title="Flex can be very sensitive to syntax">Flex can be very sensitive to syntax</a><ul><li><a class="toc-href" href="#comments" title="Comments">Comments</a></li><li><a class="toc-href" href="#start-condition-scopes" title="Start condition scopes">Start condition scopes</a></li></ul></li><li><a class="toc-href" href="#advanced-tips_1" title="Advanced tips">Advanced tips</a><ul><li><a class="toc-href" href="#reentrant-aka-thread-safe-parser" title="Reentrant aka thread-safe parser">Reentrant aka thread-safe parser</a></li><li><a class="toc-href" href="#working-with-continous-scanning-stream-like-socket" title="Working with continous scanning stream (like socket)">Working with continous scanning stream (like socket)</a></li></ul></li><li><a class="toc-href" href="#examples_1" title="Examples">Examples</a></li><li><a class="toc-href" href="#conclusion" title="Conclusion">Conclusion</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Flex and Bison: tips for beginners</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-04-02T22:50:21+02:00">
+                2016-04-02
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/flexbison.html">Flex/Bison</a> <a class="tag" href="./tag/parsing.html">Parsing</a> <a class="tag" href="./tag/xcode.html">Xcode</a> </div>
+</aside>
+    <p>This is unordered collection of Flex and Bison tips which might be helpful for
+beginners. Each problem is unique so this collection, derived from my experience
+with Flex and Bison, is not comprehensive, anyway I want to share these tips as
+something that I would like to have learned in first place when I started
+learning Flex and Bison myself.</p>
+<p>This post complements another post: <a class="reference external" href="/2016-03-29-reentrant-parser-using-flex-and-bison.html">Reentrant parser using Flex and Bison</a>. If you need
+reentrant Flex and Bison and especially if you use Xcode, make sure to read that
+post as well.</p>
+<p>So let's start!</p>
+<div class="section" id="disable-default-rule">
+<h2 id="disable-default-rule">Disable default rule</h2>
+<p>Taken from <a class="reference external" href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>, this one is
+must:</p>
+<blockquote>
+Die with an error message on unmatched characters instead of echoing them.
+We advise you not to rely on the default rule for sake of completeness,
+therefore, you should always use it to find holes in your rules.</blockquote>
+</div>
+<div class="section" id="enabling-lexer-s-debug-option-can-be-quite-helpful">
+<h2 id="enabling-lexers-debug-option-can-be-quite-helpful">Enabling lexer's 'debug' option can be quite helpful</h2>
+<p>Taken from <a class="reference external" href="http://people.cs.aau.dk/~marius/sw/flex/Flex-Directives.html">Flex Directives</a>. The author
+recommends avoiding printf however I still use it quite often, this probably
+depends on grammar:</p>
+<p><tt class="docutils literal">%option debug</tt></p>
+<blockquote>
+<p>Produce a scanner which can be traced. This introduce a variable,
+yy_flex_debug, which, when set to a non zero value, triggers tracing
+messages on the standard error output.</p>
+<p>You are encouraged to use this option, in particular when developing your
+scanner, and to have some option to set yy_flex_debug. In particular, never
+write printf-like tracing code in your scanner: that's an absolute waste of
+time.</p>
+</blockquote>
+</div>
+<div class="section" id="flex-can-be-very-sensitive-to-syntax">
+<h2 id="flex-can-be-very-sensitive-to-syntax">Flex can be very sensitive to syntax</h2>
+<p>There are places where Flex is very strict on syntax. I now have it as a rule of
+thumb: if I am getting Flex errors over and over on something that should work I
+always double-check syntax or experiment with it.</p>
+<div class="section" id="comments">
+<h3 id="comments">Comments</h3>
+<p>In Flex you cannot have comments starting from the beginning of line. This is
+vaguely described in <a class="reference external" href="http://flex.sourceforge.net/manual/Comments-in-the-Input.html">5.4 Comments in the Input</a>, I now always
+use 2 spaces indentation.</p>
+</div>
+<div class="section" id="start-condition-scopes">
+<h3 id="start-condition-scopes">Start condition scopes</h3>
+<p>This aspect of Flex's sensitivity to syntax is not documented in <a class="reference external" href="http://flex.sourceforge.net/manual/Start-Conditions.html">10 Start
+Conditions</a>: if you
+want to have start condition scope, you must not have space between
+<tt class="docutils literal">&lt;YOUR_CONDITION&gt;</tt> and opening {:</p>
+<div class="highlight"><pre><span></span>%x YOUR_CONDITION
+
+  //    no space!
+  //       \/
+&lt;YOUR_CONDITION&gt;{
+    "\\n"   return '\n';
+    "\\r"   return '\r';
+    "\\f"   return '\f';
+    "\\0"   return '\0';
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-tips">
+<h2 id="advanced-tips_1">Advanced tips</h2>
+<div class="section" id="reentrant-aka-thread-safe-parser">
+<h3 id="reentrant-aka-thread-safe-parser">Reentrant aka thread-safe parser</h3>
+<p>I have written the whole post around this topic: <a class="reference external" href="/2016-03-29-reentrant-parser-using-flex-and-bison.html">Reentrant parser using Flex
+and Bison</a>.</p>
+</div>
+<div class="section" id="working-with-continous-scanning-stream-like-socket">
+<h3 id="working-with-continous-scanning-stream-like-socket">Working with continous scanning stream (like socket)</h3>
+<p><strong>TLDR;</strong> redefine <tt class="docutils literal">YY_INPUT</tt> macro.</p>
+<p>For details see these two topics: <a class="reference external" href="http://stackoverflow.com/questions/36242886/how-to-detect-partial-unfinished-token-and-join-its-pieces-that-are-obtained-fro?lq=1">How to detect partial unfinished token and
+join its pieces that are obtained from two consequent portions of input?</a>
+and <a class="reference external" href="http://stackoverflow.com/questions/23979378/flex-continuous-scanning-stream-from-socket-did-i-miss-something-using-yywra?lq=1">Flex, continuous scanning stream (from socket). Did I miss something using
+yywrap()?</a>.</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2 id="examples_1">Examples</h2>
+<p>Examples that I found especially helpful can be found at the end of <a class="reference external" href="/2016-03-29-reentrant-parser-using-flex-and-bison.html">Reentrant
+parser using Flex and Bison</a>.</p>
+<p>There is one that I created myself.</p>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion">Conclusion</h2>
+<p>I hope this knowledge will help someone who might be learning the same topics as
+I do.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

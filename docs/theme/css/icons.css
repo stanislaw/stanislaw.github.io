@@ -1,0 +1,115 @@
+/*
+ *
+ * Works by adding line
+ * <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+ * to the <head> of the base template.
+ *
+ * Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license (Commercial License)
+ * Copyright 2023 Fonticons, Inc.
+ *
+ */
+
+.social {
+  --social-icon-size: 16px;
+}
+
+.social a {
+  display: inline-block;
+  line-height: var( --social-icon-size, 16px);
+  height: var( --social-icon-size, 16px);
+  background-size: cover !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.social a:hover {
+  background-color: transparent;
+  color: unset;
+}
+
+.social a::before {
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  margin-right: var( --base-rhythm, 8px);
+  font: var(--fa-font-brands);
+}
+
+/* Icons */
+
+.social a[href*='bitbucket.org']::before {
+  content: "\f171";
+}
+
+.social a[href*='delicious.com']::before {
+  content: "\f1a5";
+}
+
+.social a[href*='facebook.com']::before {
+  content: "\f09a";
+}
+
+.social a[href*='github.com']::before,
+.social a[href*='git.io']::before {
+  content: "\f09b";
+}
+
+
+.social a[href*='plus.google.com']::before {
+  content: "\f2b3";
+}
+
+.social a[href*='news.ycombinator.com']::before,
+.social a[href*='hackernewsers.com']::before {
+  content: "\f23b";
+}
+
+.social a[href*='last.fm']::before,
+.social a[href*='lastfm.']::before {
+  content: "\f202";
+  /* content: "\f203"; */
+}
+
+.social a[href*='linkedin.com']::before {
+  content: "\f08c";
+  /* content: "\f0e1"; */
+}
+
+.social a[href*='reddit.com']::before {
+  content: "\f1a1";
+  /* content: "\f281"; */
+  /* content: "\f1a2"; */
+}
+
+.social a[type$='atom+xml']::before,
+.social a[type$='rss+xml']::before {
+  content: "\f143";
+}
+
+.social a[href*='slideshare.net']::before {
+  content: "\f1e7";
+}
+
+.social a[href*='speakerdeck.com']::before {
+  content: "\f83c";
+}
+
+.social a[href*='stackoverflow.com']::before {
+  content: "\f16c";
+}
+
+.social a[href*='twitter.com']::before {
+  content: "\f099";
+  /* content: "\f081"; */
+}
+
+.social a[href*='vimeo.com']::before {
+  content: "\f40a";
+  /* content: "\f27d"; */
+}
+
+.social a[href*='youtube.com']::before {
+  content: "\f167";
+}
+

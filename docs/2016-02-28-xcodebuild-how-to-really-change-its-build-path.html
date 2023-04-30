@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>xcodebuild: how to really change its build path</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="A one-solution-post that is a longer version of my answer to one StackOverflow topic." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-02-28-xcodebuild-how-to-really-change-its-build-path.html"
+    rel="bookmark"
+    title="Permalink to xcodebuild: how to really change its build path">
+    xcodebuild: how to really change its build path
+  </a>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>xcodebuild: how to really change its build path</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-02-28T21:16:21+01:00">
+                2016-02-28
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/xcode.html">Xcode</a> </div>
+</aside>
+    <p>This is short one-solution-post that is a longer version of my answer to this
+StackOverflow topic: <a class="reference external" href="http://stackoverflow.com/questions/4969932/separate-build-directory-using-xcodebuild">Separate build directory using xcodebuild</a>.</p>
+<p><strong>Background:</strong> I build my tests from both Xcode and command line.</p>
+<p><strong>Problem:</strong> If I run my tests with <tt class="docutils literal">Command + U</tt> and then I run them with
+<tt class="docutils literal">make test</tt>, the build artifacts of test suite built from Xcode become
+overriden so that next time I run <tt class="docutils literal">Command + U</tt> my test target will be built
+from scratch again. The benefits of incremental compilation are lost for both
+modes as both kinds of test runs override each other.</p>
+<p><strong>Solution:</strong> Completely isolate build artefacts that are created by
+command-line builds from corresponding build artefacts created by Xcode when
+tests are run from within Xcode.</p>
+<hr class="docutils"/>
+<p>My naive approach to solve this problem was to redirect xcodebuild to another
+<tt class="docutils literal">CONFIGURATION_BUILD_DIR</tt> like:</p>
+<div class="highlight"><pre><span></span>xcodebuild<span class="w"> </span>...<span class="w"> </span><span class="nv">CONFIGURATION_BUILD_DIR</span><span class="o">=</span>./Build-command-line
+</pre></div>
+<p>However it turned out that xcodebuild had some build settings that were not
+controlled by this variable i.e. Xcode was still building some of its artefacts
+to its default <tt class="docutils literal">./Build</tt> folder. So I needed to investigate on details of
+<tt class="docutils literal">xcodebuild <span class="pre">-showBuildSettings</span></tt> to understand how to make xcodebuild to build
+everything to desired <tt class="docutils literal"><span class="pre">./Build-command-line</span></tt> folder. I used</p>
+<div class="highlight"><pre><span></span>xcodebuild<span class="w"> </span>-scheme<span class="w"> </span>MyScheme<span class="w"> </span>-showBuildSettings<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>Build<span class="se">\/</span>
+</pre></div>
+<p>to find all build settings that correspond to all build paths and by
+trial-end-error I found "the generative" build settings that are enough to
+redirect all build artefacts produced by xcodebuild to custom folder.</p>
+<p>I ended up using the following command:</p>
+<div class="highlight"><pre><span></span><span class="nv">BUILD_DIR</span><span class="o">=</span>./Build-command-line
+<span class="nv">DERIVED_DATA_DIR</span><span class="o">=</span><span class="k">$(</span>BUILD_DIR<span class="k">)</span>/DerivedData
+
+xcodebuild<span class="w"> </span>-project<span class="w"> </span>MyProject.xcodeproj<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-IDEBuildOperationMaxNumberOfConcurrentCompileTasks<span class="o">=</span><span class="sb">`</span>sysctl<span class="w"> </span>-n<span class="w"> </span>hw.ncpu<span class="sb">`</span><span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-scheme<span class="w"> </span>MyScheme<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-sdk<span class="w"> </span>iphonesimulator<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-destination<span class="w"> </span><span class="s1">'platform=iOS Simulator,name=iPhone 6S Plus,OS=latest'</span><span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-xcconfig<span class="w"> </span>command-line-build.xcconfig<span class="w"> </span><span class="se">\</span>
+<span class="w">           </span>-derivedDataPath<span class="w"> </span><span class="k">$(</span>DERIVED_DATA_DIR<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">           </span><span class="nb">test</span>
+</pre></div>
+<p>Where <tt class="docutils literal"><span class="pre">command-line-build.xcconfig</span></tt> is:</p>
+<div class="highlight"><pre><span></span>/// This xcconfig is used to make Xcode build all of its artefacts to a
+/// custom folder. Use it for command line builds so that their caches
+/// do not interfere with the caches of normal builds from inside Xcode.
+///
+/// To make most sense of the following configuration you should also redirect
+/// path to derived data using xcodebuild parameter:
+/// xcodebuild ...-derivedDataPath $(DERIVED_DATA_DIR)...
+/// where $(DERIVED_DATA_DIR) also points to Build-command-line/DerivedData
+///
+/// Tested against Xcode 7.3.1 (7D1014)
+///
+/// Source: xcodebuild: how to really change its build path
+/// http://stanislaw.github.io/2016/02/28/xcodebuild-how-to-really-change-its-build-path.html
+
+HERE_BUILD=$(SRCROOT)/Build-command-line
+HERE_INTERMEDIATES=$(HERE_BUILD)/Intermediates
+
+/// Paths
+/// the following paths are enough to redirect everything to $HERE_BUILD
+MODULE_CACHE_DIR    = $(HERE_BUILD)/DerivedData/ModuleCache
+OBJROOT             = $(HERE_INTERMEDIATES)
+SHARED_PRECOMPS_DIR = $(HERE_INTERMEDIATES)/PrecompiledHeaders
+SYMROOT             = $(HERE_BUILD)/Products
+</pre></div>
+<p>Having this setup I can now use both <tt class="docutils literal">Command + U</tt> and <tt class="docutils literal">make test</tt> (which is
+<tt class="docutils literal">make test_unit &amp;&amp; make test_integration &amp;&amp; make test_functional</tt> done by
+Make) - they are now built in two separate directories and that makes a very
+good speed-up in build time of both.</p>
+<p>P.S. Of course <tt class="docutils literal">xcodebuild</tt>'s build settings are subject to change however as
+of <tt class="docutils literal">Xcode Version 7.3.1 (7D1014)</tt> this solution works very well.</p>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

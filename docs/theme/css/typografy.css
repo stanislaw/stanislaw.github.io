@@ -1,0 +1,236 @@
+:root {
+	--font-body: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+	--font-head: 'Arial Black', Arial, sans-serif;
+	--font-mono: monospace;
+
+	--font-size-xxl: calc(var(--base-rhythm, 8px)*6);
+	--font-size-xl: calc(var(--base-rhythm, 8px)*4);
+	--font-size-l: calc(var(--base-rhythm, 8px)*3);
+	--font-size-main: calc(var(--base-rhythm, 8px)*2.25);
+	--font-size-m: calc(var(--base-rhythm, 8px)*2);
+  --font-size-s: calc(var(--base-rhythm, 8px)*1.625);
+  --font-size-xs: calc(var(--base-rhythm, 8px)*1.375);
+	--line-height: 1.5;
+
+	--text-margin: calc(3 * var(--base-rhythm, .5rem));
+
+	--font-size: 16px;
+
+	/* constants */
+	--font-min: 16;
+	--font-max: 20;
+	--screen-min: 400;
+	--screen-max: 1200;
+}
+
+/* Setup */
+html {
+  -webkit-font-smoothing: antialiased;
+	line-height: var(--line-height);
+	text-align: left;
+	font-family: var(--font-body);
+
+	font-size: var(--font-size);
+}
+
+/* https://www.smashingmagazine.com/2016/05/fluid-typography/ */
+@media screen and (min-width: 25em){
+  html { font-size: calc(
+			var(--font-min) * 1px
+		+ (var(--font-max) - var(--font-min))
+		* (100vw - var(--screen-min) * 1px)
+		/ (var(--screen-max) - var(--screen-min))
+		); }
+}
+
+.site_name {
+	font-family: var(--font-mono);
+	font-weight: 900;
+	font-size: 2.2em;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.site_subname {
+	font-family: var(--font-mono);
+	font-weight: 900;
+	font-size: 1em;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.article_toc {
+	font-size: var(--font-size);
+}
+
+.article_url {
+	font-size: var(--font-size);
+	font-weight: 900;
+	display: block;
+}
+
+time,
+article[data-display="index"]::before {
+	font-family: var(--font-mono);
+	font-weight: bold;
+}
+
+/* Paragraphs */
+
+article p {
+	max-width: 900px;
+}
+
+p,
+details {
+  margin-top: var(--text-margin);
+  margin-bottom: 0;
+}
+
+details[open] summary,
+summary:hover {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+details[open] summary {
+	margin-bottom: var(--text-margin);
+}
+
+strong, b {font-weight: bold;}
+em, i {font-style: italic;}
+
+/* Copy & Lists */
+
+li, li * {
+	vertical-align: top;
+	max-width: 100%;
+}
+
+blockquote {
+  margin: var(--text-margin);
+	margin-inline-start: 0;
+	margin-inline-end: 0;
+	padding-inline-start: var(--text-margin);
+	border-left: solid var(--base-rhythm, 8px);
+}
+
+hr {
+  border: none;
+  border-top: solid var(--base-rhythm, 8px);
+	margin: calc(2*var(--text-margin)) 0;
+}
+
+dl {margin: 0 0 1.5em 0;}
+dt {font-weight: bold;}
+dd {margin-left: 1.5em;}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 1.2em;
+  margin-bottom: 1em;
+  line-height: 1.4;
+	font-family: var(--font-head);
+}
+
+h1 {
+  font-size: 3em;
+  margin-top: 1em;
+	line-height: 1.1;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.75em;
+}
+
+h4 {
+  font-size: 1.5em;
+}
+
+h5 {
+  font-size: 1.25em;
+}
+
+h6 {
+  font-size: 1em;
+}
+
+footer h3,
+footer h4 {
+	margin-top: 0;
+}
+
+/* Tables */
+
+table {
+  margin-top: var(--text-margin);
+  margin-bottom: var(--text-margin);
+	/* margin-left: auto;
+	margin-right: auto; */
+  border-spacing: 0px;
+  border-collapse: collapse;
+	width: 98%;
+}
+table td,
+table th {
+  padding: 0;
+  line-height: 33px;
+}
+
+	/* Thead */
+	thead th {padding: .5em .4em; text-align: left;}
+	thead td {text-align: left;}
+
+	/* Tbody */
+	tbody td {padding: .5em .4em;}
+	tbody th {text-align: left;}
+
+	/* Tfoot */
+	tfoot th {text-align: left;}
+	tfoot td {text-align: left;}
+
+	/* span.formula, code, tt */
+
+code, tt {
+	/* vertical-align: text-top; */
+	line-height: inherit;
+	font-size: smaller;
+	font-weight: bolder;
+}
+
+span.formula {
+	line-height: 1;
+	/* font-weight: bolder; */
+	white-space: nowrap;
+}
+
+.formula {
+	font-family: serif;
+	font-size: larger;
+	letter-spacing: 2px;
+}
+
+.formula .mbox,
+.formula .text {
+	letter-spacing: 0;
+	font-style: italic;
+	font-size: 1rem;
+}
+
+.formula,
+.formula * {
+	vertical-align: unset;
+}
+
+.formula i {
+	font-weight: bolder;
+}

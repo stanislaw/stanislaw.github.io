@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>How to test command-line programs with Python tools: LIT and FileCheck</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="One great way of testing command-line programs with LIT and FileCheck." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2020-11-20-how-to-test-command-line-programs-with-python.html"
+    rel="bookmark"
+    title="Permalink to How to test command-line programs with Python tools: LIT and FileCheck">
+    How to test command-line programs with Python tools: LIT and FileCheck
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#where-litfilecheck-can-be-used" title="Where LIT/FileCheck can be used">Where LIT/FileCheck can be used</a><ul><li><a class="toc-href" href="#use-case-1-testing-a-command-line-tool-with-a-large-number-of-test-inputs" title="Use case 1: Testing a command-line tool with a large number of test inputs">Use case 1: Testing a command-line tool with a large number of test inputs</a></li><li><a class="toc-href" href="#use-case-2-grep-on-steroids" title='Use case 2: "Grep on steroids"'>Use case 2: "Grep on steroids"</a></li><li><a class="toc-href" href="#use-case-3-test-input-run-commands-and-checks-in-a-single-file" title="Use case 3: Test input, run commands and checks in a single file">Use case 3: Test input, run commands and checks in a single file</a></li></ul></li><li><a class="toc-href" href="#what-is-lit_1" title="What is LIT?">What is LIT?</a></li><li><a class="toc-href" href="#what-is-llvm-filecheck" title="What is LLVM FileCheck?">What is LLVM FileCheck?</a></li><li><a class="toc-href" href="#real-world-litfilecheck-test-suites" title="Real-world LIT/FileCheck test suites">Real-world LIT/FileCheck test suites</a></li><li><a class="toc-href" href="#conclusion" title="Conclusion">Conclusion</a></li><li><a class="toc-href" href="#litfilecheck-documentation" title="LIT/FileCheck documentation">LIT/FileCheck documentation</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>How to test command-line programs with Python tools: LIT and FileCheck</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2020-11-20T10:00:00+01:00">
+                2020-11-20
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/python.html">Python</a> </div>
+</aside>
+    <p>In this post, I would like to share how one can test command-line programs using
+a combination of LIT and FileCheck tools.</p>
+<p>While both tools are mainly used by the LLVM compiler infrastructure developers,
+they can be also used for testing any kinds of programs, not necessarily the
+compiler tools.</p>
+<p>This post is not a tutorial on how to use LIT/FileCheck. Instead, I will provide
+a few examples of what both tools can do and focus on their use cases and
+situations where they can be exceptionally useful.</p>
+<p>At the bottom of this post, I provide several helpful links about LIT/FileCheck,
+some of which point to the practical step-by-step tutorials.</p>
+<div class="section" id="where-lit-filecheck-can-be-used">
+<h2 id="where-litfilecheck-can-be-used">Where LIT/FileCheck can be used</h2>
+<div class="section" id="use-case-1-testing-a-command-line-tool-with-a-large-number-of-test-inputs">
+<h3 id="use-case-1-testing-a-command-line-tool-with-a-large-number-of-test-inputs">Use case 1: Testing a command-line tool with a large number of test inputs</h3>
+<p>You have a command-line tool that you want to test against
+tens/hundreds/thousands of scenarios and combinations of input arguments. LIT is
+a test runner which gives you a DSL for writing your tests, something that is
+more advanced than writing your custom Shell scripts.</p>
+<p>Example of a LIT test text file:</p>
+<div class="highlight"><pre><span></span>RUN: command_line_program --flag1 --flag2 --flag3
+</pre></div>
+<p>LIT has a test discovery mechanism, so it is possible to specify a folder where
+LIT will find all of the tests and execute them one by one or in parallel
+depending on the configuration.</p>
+</div>
+<div class="section" id="use-case-2-grep-on-steroids">
+<h3 id="use-case-2-grep-on-steroids">Use case 2: "Grep on steroids"</h3>
+<p>Your command-line tool produces some output to the console, and you want to
+write a test case that should match the output against a list of checks that you
+define.</p>
+<p>You would like to simply redirect the input of your program to a file and then
+use <tt class="docutils literal">diff</tt> against a pre-defined expectation file but the output of your
+program contains variable lines, such as timestamps or unique identifiers, so
+you cannot simply use <tt class="docutils literal">diff</tt> because it will not understand what your program
+is doing.</p>
+<p>FileCheck is a "grep on steroids" kind of tool. You write your checks in a check
+file and then run FileCheck against your program's input. FileCheck supports
+several matchers, regular expressions syntax and many other features.</p>
+<p>Example of a FileCheck check text file that matches against the output of <tt class="docutils literal">git
+<span class="pre">--version</span></tt> command, e.g., <tt class="docutils literal">git version 2.37.1 (Apple <span class="pre">Git-137.1)</span></tt>.</p>
+<div class="highlight"><pre><span></span>CHECK: git version {{\d+\.\d+\.\d+}} (Apple Git-{{.*}})
+</pre></div>
+</div>
+<div class="section" id="use-case-3-test-input-run-commands-and-checks-in-a-single-file">
+<h3 id="use-case-3-test-input-run-commands-and-checks-in-a-single-file">Use case 3: Test input, run commands and checks in a single file</h3>
+<p>From the test maintainability perspective, it can be very convenient to
+combine test runner commands, check commands, and test input in one file.</p>
+<p>An example is better than a long explanation. Let's assume we want to test
+that our C program produces a given output. Here's how a
+LIT/FileCheck test could look like:</p>
+<div class="highlight"><pre><span></span>// RUN: clang -o hello_program %s
+// RUN: ./hello_program | filecheck %s
+// CHECK: Hello world!
+
+#include &lt;stdio.h&gt;
+
+int main() {
+  printf("Hello world!\n");
+  return 0;
+}
+</pre></div>
+<p>This file is a C program and a LIT/FileCheck test at the same time:</p>
+<ul class="simple">
+<li>The C compiler ignores the // comments.</li>
+<li>LIT/FileCheck are only interested in RUN/CHECK statements.</li>
+</ul>
+<p>The RUN statements are run by LIT which interprets the <tt class="docutils literal">%s</tt> as "this file".
+The RUN statements do the following:</p>
+<ul class="simple">
+<li>Run the <tt class="docutils literal">clang</tt> command</li>
+<li>Execute the compiled <tt class="docutils literal">hello_program</tt> program whose output is piped to
+the input of <tt class="docutils literal">filecheck</tt>.</li>
+</ul>
+<p>FileCheck receives the output from the <tt class="docutils literal">hello_program</tt> and matches it against
+its only <tt class="docutils literal">CHECK:</tt> which is <tt class="docutils literal">Hello world!</tt>.</p>
+<div class="highlight"><pre><span></span>lit .
+-- Testing: 1 tests, 1 workers --
+PASS: &lt;unnamed&gt; :: hello.test.c (1 of 1)
+
+Testing Time: 0.50s
+  Passed: 1
+</pre></div>
+<p>The rest of this post explains in more detail what are LIT and FileCheck.</p>
+</div>
+</div>
+<div class="section" id="what-is-lit">
+<h2 id="what-is-lit_1">What is LIT?</h2>
+<p>LLVM LIT is a testing tool developed for <a class="reference external" href="https://llvm.org/">LLVM</a>, a
+collection of modular and reusable compiler and toolchain technologies. LIT
+stands for LLVM Integrated Tester and was created to provide a flexible and
+lightweight testing framework for LLVM.</p>
+<p>LIT is a flexible and extensible test runner program. It can run any kinds of
+command-line programs, without any limitations or requirements of connection to
+the LLVM ecosystem.</p>
+<p>LIT works with text files, and it executes commands that are prefixed with
+<tt class="docutils literal">RUN:</tt> keyword. Each command is run by LIT in a sub-shell process.</p>
+<div class="highlight"><pre><span></span>RUN:<span class="w"> </span>command_line_program<span class="w"> </span>--some-flag1
+RUN:<span class="w"> </span>command_line_program<span class="w"> </span>--some-flag2
+RUN:<span class="w"> </span>command_line_program<span class="w"> </span>--some-flag3
+</pre></div>
+<p>When LIT runs such a test, each <tt class="docutils literal">RUN</tt>-command must exit with <tt class="docutils literal">0</tt>, otherwise
+the test will fail.</p>
+<p>LIT can be configured to work with files of any extension but let's say, the
+above test file is called <tt class="docutils literal">test.itest</tt>.</p>
+<p>When LIT is minimally configured (see <a class="reference external" href="https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html">Tutorial: LIT and FileCheck</a>
+for more details), the following command will run the above test:</p>
+<div class="highlight"><pre><span></span>lit<span class="w"> </span>test.itest
+</pre></div>
+<p>The output produced by LIT should be as follows:</p>
+<div class="highlight"><pre><span></span>lit test.itest
+
+-- Testing: 1 tests, single process --
+PASS: &lt;unnamed&gt; :: test.itest (1 of 1)
+Testing Time: 0.10s
+  Expected Passes    : 1
+</pre></div>
+<p>An example of a LIT test that will always fail:</p>
+<div class="highlight"><pre><span></span>RUN: false
+</pre></div>
+<p>A typical failed test output:</p>
+<div class="highlight"><pre><span></span>lit -v test.itest
+-- Testing: 1 tests, 1 workers --
+FAIL: &lt;unnamed&gt; :: test.itest (1 of 1)
+******************** TEST '&lt;unnamed&gt; :: test.itest' FAILED ********************
+Script:
+--
+: 'RUN: at line 1';   false
+--
+Exit Code: 1
+
+********************
+********************
+Failed Tests (1):
+  &lt;unnamed&gt; :: test.itest
+
+Testing Time: 0.17s
+  Failed: 1
+</pre></div>
+</div>
+<div class="section" id="what-is-llvm-filecheck">
+<h2 id="what-is-llvm-filecheck">What is LLVM FileCheck?</h2>
+<p>LLVM FileCheck is an utility tool that is part of the LLVM project. It is used
+for checking the contents of files against expected patterns or contents, and it
+is often used for testing LLVM components and tools.</p>
+<p>FileCheck works by reading a file and searching for patterns that match certain
+regular expressions. It can be configured to check for the presence or absence
+of specific strings or patterns, and it can be used to check for specific
+numbers, variables, or other types of data.</p>
+<p>Let's consider a LIT test that uses <tt class="docutils literal">filecheck</tt> to assert that a program
+produces expected output.</p>
+<div class="highlight"><pre><span></span>RUN: command_line_program --say-hello-world | filecheck %s
+CHECK: Hello World
+</pre></div>
+<p><tt class="docutils literal">filecheck</tt> acts as a more advanced version of <tt class="docutils literal">grep</tt>. It consumes the
+output of the <tt class="docutils literal">command_line_program</tt> via stdin and reads the <tt class="docutils literal">CHECK:</tt> checks
+from a file that is specified as <tt class="docutils literal">%s</tt> input argument. The <tt class="docutils literal">%s</tt> is translated
+to "a full path to this file" by LIT, see <a class="reference external" href="https://llvm.org/docs/CommandGuide/lit.html#substitutions">lit - LLVM Integrated Tester -
+Substitutions</a>.</p>
+<p>Under the hood, <tt class="docutils literal">filecheck</tt> reads the test file and finds all the CHECK:
+statements. <tt class="docutils literal">filecheck</tt> enumerates over a list of checks and for every input
+line received via stdin, <tt class="docutils literal">filecheck</tt> tries to match the input line with a
+current <tt class="docutils literal">CHECK</tt> statement. If a <tt class="docutils literal">CHECK</tt> statement can be matched, this check
+is removed from the list of checks, and the enumeration continues further.</p>
+<p>If all <tt class="docutils literal">CHECK</tt> statements could be matched with the lines from the <tt class="docutils literal">stdin</tt>
+input, <tt class="docutils literal">filecheck</tt> exits with <tt class="docutils literal">0</tt> producing no output to the console.
+Otherwise, it exists with non-zero code and reports an error.</p>
+<p>Here's an example of how a LIT test can fail because of a failed check by
+FileCheck:</p>
+<div class="highlight"><pre><span></span>-- Testing: 1 tests, single process --
+FAIL: &lt;unnamed&gt; :: test.itest (1 of 1)
+******************** TEST '&lt;unnamed&gt; :: 02-fail.c' FAILED ********************
+test.itest:2:8: error: CHECK: expected string not found in input
+CHECK: Hello World
+       ^
+&lt;stdin&gt;:1:1: note: scanning from here
+Something else
+...
+********************
+Testing Time: 0.11s
+********************
+Failing Tests (1):
+    &lt;unnamed&gt; :: test.itest
+
+  Unexpected Failures: 1
+</pre></div>
+</div>
+<div class="section" id="real-world-lit-filecheck-test-suites">
+<h2 id="real-world-litfilecheck-test-suites">Real-world LIT/FileCheck test suites</h2>
+<p>Here are some examples of the LIT/FileCheck test suites found on GitHub:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/llvm/llvm-project/tree/main/llvm/test">LLVM's integration tests</a></li>
+<li><a class="reference external" href="https://github.com/WebAssembly/binaryen/tree/main/test/lit">WebAssembly/binaryen</a></li>
+<li><a class="reference external" href="https://github.com/mull-project/mull/tree/main/tests-lit">Mull, mutation testing system</a></li>
+<li><a class="reference external" href="https://github.com/strictdoc-project/strictdoc/tree/main/tests/integration">StrictDoc, documentation tool</a></li>
+</ul>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion">Conclusion</h2>
+<p>LIT can serve as a perfect replacement for a bunch of hand-crafted Shell
+scripts. The simple DSL of <tt class="docutils literal">RUN:</tt> commands and LIT's Substitutions such as
+<tt class="docutils literal">%s</tt> help to organize the test commands.</p>
+<p>FileCheck serves as "grep on steroids" kind of tool. It helps to match tested
+program output against user-defined checks stored in a text file.</p>
+<p>As explained above in <a class="reference internal" href="#use-case-3-test-input-run-commands-and-checks-in-a-single-file">Use case 3: Test input, run commands and checks in a
+single file</a>, the option of combining LIT/FileCheck's RUN/CHECK statements with
+test inputs increases the maintainability of the test suites.</p>
+</div>
+<div class="section" id="lit-filecheck-documentation">
+<h2 id="litfilecheck-documentation">LIT/FileCheck documentation</h2>
+<ul class="simple">
+<li><a class="reference external" href="https://llvm.org/docs/CommandGuide/lit.html">LLVM documentation - lit - LLVM Integrated Tester</a></li>
+<li><a class="reference external" href="https://llvm.org/docs/CommandGuide/FileCheck.html">LLVM documentation - FileCheck - Flexible pattern matching file verifier</a></li>
+<li><a class="reference external" href="https://llvm.org/docs/TestingGuide.html">LLVM Testing Infrastructure Guide</a></li>
+<li><a class="reference external" href="https://filecheck.readthedocs.io/en/stable/04-tutorial-lit-and-filecheck.html">Tutorial: LIT and FileCheck</a></li>
+<li><a class="reference external" href="https://medium.com/@mshockwave/using-llvm-lit-out-of-tree-5cddada85a78">Using LLVM LIT Out-Of-Tree</a></li>
+<li><a class="reference external" href="https://github.com/mull-project/FileCheck.py">FileCheck.py, A Python port of LLVM FileCheck</a></li>
+</ul>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

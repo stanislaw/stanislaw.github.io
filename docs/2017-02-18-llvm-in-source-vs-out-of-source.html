@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>LLVM-based project and CMake: choosing between in-source and out-of-source hosting</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="LLVM-based project and CMake: in-source vs out-of-source hosting." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2017-02-18-llvm-in-source-vs-out-of-source.html"
+    rel="bookmark"
+    title="Permalink to LLVM-based project and CMake: choosing between in-source and out-of-source hosting">
+    LLVM-based project and CMake: choosing between in-source and out-of-source hosting
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#tldr" title="TL;DR">TL;DR</a></li><li><a class="toc-href" href="#access-to-llvm-source-code" title="Access to LLVM source code">Access to LLVM source code</a></li><li><a class="toc-href" href="#cmake-generation" title="CMake generation">CMake generation</a></li><li><a class="toc-href" href="#project-structure-and-navigation" title="Project structure and navigation">Project structure and navigation</a></li><li><a class="toc-href" href="#first-build-time" title="First build time">First build time</a></li><li><a class="toc-href" href="#indexing" title="Indexing">Indexing</a></li><li><a class="toc-href" href="#cmake-api" title="CMake API">CMake API</a></li><li><a class="toc-href" href="#dependencies" title="Dependencies">Dependencies</a></li><li><a class="toc-href" href="#continuous-integration" title="Continuous Integration">Continuous Integration</a></li><li><a class="toc-href" href="#distribution" title="Distribution">Distribution</a></li><li><a class="toc-href" href="#summary" title="Summary">Summary</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>LLVM-based project and CMake: choosing between in-source and out-of-source hosting</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2017-02-18T20:05:00+01:00">
+                2017-02-18
+        </time>
+        <time class="modified" title="2017-05-05T19:20:00+02:00">
+                / updated
+                2017-02-18
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/llvm.html">LLVM</a> <a class="tag" href="./tag/cmake.html">CMake</a> </div>
+</aside>
+    <p><strong>Disclaimer:</strong> the following summary is based on our limited experience with
+<a class="reference external" href="https://github.com/mull-project">Mull project</a> and some other smaller
+research projects and is only applicable to the projects that can live outside
+of LLVM source tree. If you intend your project to become a part of LLVM source
+tree you obviously have no choice other than hosting your project in-source.</p>
+<div class="section" id="tl-dr">
+<h2 id="tldr">TL;DR</h2>
+<style>
+table {
+  border:none;
+  border-collapse: collapse;
+  border-spacing: 0px;
+  table-layout : fixed;
+}
+
+table td {
+  border: 1px solid #ddd;
+  margin: 0px;
+  padding: 4px;
+}
+
+table th {
+  margin: 0px;
+  padding: 4px;
+}
+
+table td:first-child { border-left: none; }
+td:first-child + td { text-align: center; }
+td:first-child + td + td { text-align: center; }
+
+table tr:nth-child(even) {
+    background-color: #eee;
+}
+table tr:nth-child(odd) {
+    background-color: #fff;
+}
+table th {
+    color: white;
+    background-color: gray;
+}
+
+.green {
+  color: #009966;
+  font-weight: bold;
+}
+
+</style>
+<table style="width: 100%;">
+<tr>
+<th>Criteria</th>
+<th>In-source</th>
+<th>Out-of-source</th>
+</tr>
+<tr>
+<td>Access to LLVM source code</td>
+<td><span class="green">Full access</span></td>
+<td>Limited access</td>
+</tr>
+<tr>
+<td>CMake generation</td>
+<td>Slower</td>
+<td>Faster</td>
+</tr>
+<tr>
+<td>Project structure, navigation</td>
+<td>Your code and LLVM code</td>
+<td>Only your code</td>
+</tr>
+<tr>
+<td>First build time</td>
+<td>Slow</td>
+<td><span class="green">Very fast</span></td>
+</tr>
+<tr>
+<td>Indexing</td>
+<td>Slow</td>
+<td><span class="green">Much faster</span></td>
+</tr>
+<tr>
+<td>CMake API</td>
+<td>CMake API, LLVM CMake API</td>
+<td>CMake API</td>
+</tr>
+<tr>
+<td>Project dependencies</td>
+<td>Might be implicit</td>
+<td>Explicit</td>
+</tr>
+<tr>
+<td>Continuous Integration</td>
+<td>Might be slower</td>
+<td><span class="green">Much faster</span></td>
+</tr>
+<tr>
+<td>Distribution</td>
+<td>Might be harder</td>
+<td>Might be easier.</td>
+</tr>
+</table><p>For the scope of this post, these are the simple explanations of in-source and
+out-of-source kinds of hosting.</p>
+<p><strong>In-source:</strong></p>
+<ul class="simple">
+<li>You clone LLVM sources.</li>
+<li>In LLVM source code there are specific folders provided where you can embed
+your project so that you can develop your project inside of LLVM source code.</li>
+<li>You run CMake which generates a project structure which includes both your
+project's code and LLVM.</li>
+<li><strong>When you build project you also build LLVM source code that your project
+depends on.</strong></li>
+</ul>
+<p>The greatest example of an in-source project is Clang. This article demonstrates
+it very well how to build Clang inside of the LLVM source tree: <a class="reference external" href="https://lowlevelbits.org/getting-started-with-llvm/clang-on-os-x/">Getting Started
+With LLVM/Clang on OS X</a> (by the
+way, this was my very first tutorial I followed to get started with LLVM).</p>
+<p><strong>Out-of-source:</strong></p>
+<ul class="simple">
+<li>You have only your project's source code based on CMake.</li>
+<li>You configure your CMake to link against LLVM's libraries already prebuilt by
+you or someone else before (the easiest way to obtain LLVM binaries on Mac OS
+is to just type: <tt class="docutils literal">brew install llvm</tt> and find them in
+<tt class="docutils literal">/usr/local/opt/llvm</tt>).</li>
+<li><strong>You don't build LLVM source code but only link with LLVM libraries that you
+or someone else have built already outside of your source tree.</strong></li>
+</ul>
+</div>
+<div class="section" id="access-to-llvm-source-code">
+<h2 id="access-to-llvm-source-code">Access to LLVM source code</h2>
+<p>With in-source hosting you have a full access to LLVM source code. This might be
+useful if you have to explore LLVM source code and required if you want to
+change LLVM source code itself.</p>
+<p>With out-of-source hosting you only have access to a public API of LLVM code, it
+is not easy to debug and is not possible to change LLVM internals.</p>
+<p>This is the major and probably the only advantage of an in-source way of hosting
+over its out-of-source counterpart.</p>
+</div>
+<div class="section" id="cmake-generation">
+<h2 id="cmake-generation">CMake generation</h2>
+<p>CMake generation is what happens when you run <tt class="docutils literal">cmake</tt> with your favorite
+generator like Xcode, Ninja or Make to create a <tt class="docutils literal">Build</tt> folder with your
+project.</p>
+<p>The difference in generation time for in-source and out-of-source project is not
+significant but is still very noticeable especially if you happen to change a
+layout of your CMakeLists files often.</p>
+</div>
+<div class="section" id="project-structure-and-navigation">
+<h2 id="project-structure-and-navigation">Project structure and navigation</h2>
+<p>With in-source hosting your project's structure carries your code and the code
+from the whole LLVM source tree. It is likely that your project uses only a
+subset of LLVM API so you will have a lot of code that you will never use.</p>
+<p>In Xcode CMake generator doesn't populate schemes by default so that you can
+select them manually, however all of the build targets and their folders are
+there and that makes a navigation harder (<tt class="docutils literal">LLVM.xcodeproj</tt> of LLVM 3.9 has
+something around 170 targets).</p>
+<p>With out-of-source hosting a project structure is entirely yours: only your
+source code and a few targets of your project.</p>
+</div>
+<div class="section" id="first-build-time">
+<h2 id="first-build-time">First build time</h2>
+<p>The difference in build time is the most significant. With in-source, if your
+project has 50 files you additionally build a few hundreds of LLVM source files
+(Mull dependencies make up to 800 of LLVM files). With out-of-source, you only
+build your 50 files and then link a number of pre-built LLVM libraries.</p>
+<p>With a newly-generated in-source Xcode project it is also harder to switch
+between DEBUG/RELEASE configurations. You use DEBUG when you develop, but then
+you want to test your project in RELEASE configuration and that makes you wait
+another round of RELEASE compilation which takes even more time because of
+optimizations.</p>
+</div>
+<div class="section" id="indexing">
+<h2 id="indexing">Indexing</h2>
+<p>After you open your CMake-generated project Xcode needs to index your project so
+that it can do a number of things for you, to name a few:</p>
+<ul class="simple">
+<li>syntax highlighting</li>
+<li>auto-completion</li>
+<li>interactive code analysis</li>
+<li>"jump to definition" (Command + click)</li>
+<li>"open quickly" (Command + Alt + O).</li>
+</ul>
+<p>For Xcode it takes longer to index an in-source project (remember: it is 50
+files of your project and ~3500 files of LLVM). It is not clear whether Xcode is
+smart enough to index only the targets that you actually use however even with
+that the difference in speed is very noticeable.</p>
+</div>
+<div class="section" id="cmake-api">
+<h2 id="cmake-api">CMake API</h2>
+<p>With an in-source approach, an integration with LLVM CMake macros is another
+level of complexity you have to maintain on top of native CMake API. For
+newcomers who are new to LLVM/CMake this might extend their learning curve as
+instead of learning just CMake docs they have to also learn the
+<tt class="docutils literal">llvm/cmake/modules/*</tt> scripts.</p>
+<p>With an out-of-source hosting you have a direct access to CMake API without any
+overhead of LLVM's CMake infrastructure. Of course the maintainers of LLVM CMake
+API evolved their scripts to address a number of issues on various platforms so
+you will still have to learn from their experience.</p>
+</div>
+<div class="section" id="dependencies">
+<h2 id="dependencies">Dependencies</h2>
+<p>With an in-source project, when you use LLVM CMake scripts, they do a number of
+good things for you, but this comes at cost of additional magic that is
+sometimes hard to see. Switch of your project from in-source to out-of-source
+might reveal these issues like missing <tt class="docutils literal">@rpath</tt> settings or missing linkage to
+<tt class="docutils literal">zlib</tt> and <tt class="docutils literal">ncurses</tt>. <tt class="docutils literal"><span class="pre">llvm-config</span></tt> tool is very useful if you want to
+learn about what actually LLVM's dependencies are.</p>
+</div>
+<div class="section" id="continuous-integration">
+<h2 id="continuous-integration">Continuous Integration</h2>
+<p>With in-source project, CI process that includes building LLVM code cannot be
+anything but slower: cloning LLVM sources and building them takes time.</p>
+<p>Of course, if your project gets into LLVM source tree, you will get CI "out of
+the box" because LLVM CI setup is maintained by LLVM community and so is very
+well-engineered.</p>
+<p>With out-of-source tree project a CI build process will probably be must faster,
+something like:</p>
+<ul class="simple">
+<li><tt class="docutils literal">brew install llvm@x.x</tt> (just fetching the binaries to a build machine, no
+clone, no build)</li>
+<li>clone and build your project with CMake</li>
+<li>run tests</li>
+</ul>
+</div>
+<div class="section" id="distribution">
+<h2 id="distribution">Distribution</h2>
+<p>Whatever distribution type you plan for your project it will probably be
+dependent on the criteria described above: build times, continuous integration
+and dependencies.</p>
+<p>With an out-of-source tree project, its distribution might be a bit easier: its
+LLVM dependencies are already outside and that makes this setup closer to what
+the users will have to deal with in the wild.</p>
+</div>
+<div class="section" id="summary">
+<h2 id="summary">Summary</h2>
+<p>Our conclusion is that the only real advantage an in-source hosting has over its
+out-of-source counterpart is the full access to LLVM source code while the main
+advantage of out-of-source hosting is a much faster build process.</p>
+<p>When you develop inside LLVM source tree, you project "is LLVM" in a way. When
+you develop it outside, you are "a client of LLVM", of its public API.</p>
+<p>One reason why a developer might have to choose in-source hosting for a project
+can be that this project requires changes of LLVM source code for the project to
+work. Author of <a class="reference external" href="https://github.com/mull-project">Mull</a> project originally
+started it as in-source project because he expected problems with running the
+code of test suites based on GoogleTest via LLVM ORC JIT, however with time it
+became clear that Mull worked perfectly against stable versions of LLVM API
+without any modifications so now we are now transforming Mull into an
+out-of-source project.</p>
+<p>One open question that we still have is how to combine the advantages of both
+approaches in the same source tree. It is not clear how to make two parallel
+CMake hierarchies: custom one and LLVM-based to co-exist together. We are going
+to clarify this with time.</p>
+<p>I will be happy to learn about your experience with in-source vs out-of-source
+tree projects, feel free to <a class="reference external" href="mailto:s.pankevich@gmail.com">drop me a line</a>.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

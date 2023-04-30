@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>LLVM JIT, Objective-C and Swift on macOS: knowledge dump</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="Short summary" />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2018-09-03-llvm-jit-objc-and-swift-knowledge-dump.html"
+    rel="bookmark"
+    title="Permalink to LLVM JIT, Objective-C and Swift on macOS: knowledge dump">
+    LLVM JIT, Objective-C and Swift on macOS: knowledge dump
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#tldr" title="TL;DR">TL;DR</a></li><li><a class="toc-href" href="#why-does-anyone-want-to-run-swift-with-llvm-jit" title="Why does anyone want to run Swift with LLVM JIT?">Why does anyone want to run Swift with LLVM JIT?</a></li><li><a class="toc-href" href="#related-sources" title="Related Sources">Related Sources</a></li><li><a class="toc-href" href="#what-is-a-registered-objective-c-code" title="What is a registered Objective-C code?">What is a registered Objective-C code?</a></li><li><a class="toc-href" href="#mach-o-binary-with-objective-c-code" title="Mach-O binary with Objective-C code">Mach-O binary with Objective-C code</a></li><li><a class="toc-href" href="#llvm-jit-and-section-memory-manager" title="LLVM JIT and Section Memory Manager">LLVM JIT and Section Memory Manager</a><ul><li><a class="toc-href" href="#objcenabledmemorymanager-collecting-objective-c-related-sections" title="ObjCEnabledMemoryManager: collecting Objective-C related sections">ObjCEnabledMemoryManager: collecting Objective-C related sections</a></li><li><a class="toc-href" href="#allocated-sections" title="Allocated sections">Allocated sections</a></li><li><a class="toc-href" href="#objcenabledmemorymanager-register-objective-c-and-finalize-the-memory" title="ObjCEnabledMemoryManager: register Objective-C and finalize the memory">ObjCEnabledMemoryManager: register Objective-C and finalize the memory</a></li></ul></li><li><a class="toc-href" href="#registration-of-selectors_1" title="Registration of Selectors">Registration of Selectors</a></li><li><a class="toc-href" href="#registration-of-classes" title="Registration of Classes">Registration of Classes</a></li><li><a class="toc-href" href="#registration-of-categories" title="Registration of Categories">Registration of Categories</a></li><li><a class="toc-href" href="#known-issues" title="Known issues">Known issues</a><ul><li><a class="toc-href" href="#known-issue-1-duplicate-definition-of-class" title="Known issue 1: duplicate definition of class">Known issue 1: duplicate definition of class</a></li><li><a class="toc-href" href="#known-issue-2-objc_readclasspair-works-objc_allocateclasspair-doesnt" t'="" title="Known issue 2: objc_readClassPair works, objc_allocateClassPair doesn">Known issue 2: objc_readClassPair works, objc_allocateClassPair doesn't</a></li></ul></li><li><a class="toc-href" href="#conclusion_1" title="Conclusion">Conclusion</a></li><li><a class="toc-href" href="#appendix-a-example-of-a-mach-o-file-with-a-simple-objective-c-code" title="Appendix A: Example of a Mach-O file with a simple Objective-C code">Appendix A: Example of a Mach-O file with a simple Objective-C code</a></li><li><a class="toc-href" href="#appendix-b-altenative-approach-objective-c-registration-using-clang" title="Appendix B: Altenative approach: Objective-C Registration using Clang">Appendix B: Altenative approach: Objective-C Registration using Clang</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>LLVM JIT, Objective-C and Swift on macOS: knowledge dump</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2018-09-03T10:00:00+02:00">
+                2018-09-03
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/mull.html">Mull</a> <a class="tag" href="./tag/llvm.html">LLVM</a> </div>
+</aside>
+    <p>This post is the counterpart of another post: <a class="reference external" href="2018-09-03-mull-and-swift-how-it-almost-works.html">Mutation testing for Swift with
+Mull: how it could work. Looking for contributors</a>.</p>
+<div class="section" id="tl-dr">
+<h2 id="tldr">TL;DR</h2>
+<p>It is possible to run Objective-C and Swift code with LLVM JIT on macOS system.
+One way to make it work is to subclass a <tt class="docutils literal">SectionMemoryManager</tt> used by LLVM
+JIT engine, intercept memory sections related to Objective-C as they get
+allocated in memory, find the Objective-C metadata in these sections, parse the
+Objective-C class information from this metadata, use a number of Objective-C
+Runtime API methods to register found Objective-C classes in Objective-C
+runtime.</p>
+<p>Although this approach only targets Objective-C code and the Objective-C
+Runtime, it also seems to enable support for combined Swift and Objective-C
+code: given that the Objective-C classes are registered, Swift code with enabled
+Objective-C interoperability seems to run without any major issues in LLVM JIT.</p>
+<p>This information is actual as of Summer 2018 and is based on the details of LLVM
+JIT 3.9 - 6.0 and Objective-C Runtime as it is found in the <a class="reference external" href="https://opensource.apple.com/source/objc4/objc4-723/">objc4-723</a>.</p>
+</div>
+<div class="section" id="why-does-anyone-want-to-run-swift-with-llvm-jit">
+<h2 id="why-does-anyone-want-to-run-swift-with-llvm-jit">Why does anyone want to run Swift with LLVM JIT?</h2>
+<p>We want LLVM JIT to run Swift and Objective-C code, because we want <a class="reference external" href="https://github.com/mull-project/mull">Mull</a>, the mutation testing tool, to support
+these programming languages. Mull accepts an input program which is precompiled
+to LLVM bitcode, finds and performs mutations in this program and then runs the
+program and its numerous modified (or "mutated") clones using LLVM JIT. Running
+the program and its mutations in memory with LLVM JIT saves time because Mull
+does not have to recompile and relink all of the programs from scratch: Mull
+finds and performs mutations on LLVM IR level and never goes back to the AST
+level. This approach gives a great advantage in performance but also imposes a
+constraint: Mull supports a programming language only if it can be run with LLVM
+JIT. In this case, it is important that LLVM JIT runs Swift and Objective-C.</p>
+</div>
+<div class="section" id="related-sources">
+<h2 id="related-sources">Related Sources</h2>
+<p>The prototype code can be found here: <a class="reference external" href="https://github.com/mull-project/llvm-jit-objc">mull-project/llvm-jit-objc</a>.</p>
+<p>My own research on this topic started from this StackOverflow topic: <a class="reference external" href="https://stackoverflow.com/questions/10375324/all-selectors-unrecognised-when-invoking-objective-c-methods-using-the-llvm-exec">All
+selectors unrecognised when invoking Objective-C methods using the LLVM
+ExecutionEngine</a>.</p>
+<p>Most of the information can be found in an llvm-dev thread that I created in
+2016: <a class="reference external" href="https://groups.google.com/forum/#!topic/llvm-dev/pqeeY9zUhzg">[llvm-dev] Is it possible to execute Objective-C code via LLVM JIT?</a> or the same via
+mailing lists:</p>
+<p><a class="reference external" href="http://lists.llvm.org/pipermail/llvm-dev/2016-October/106218.html">1</a>, <a class="reference external" href="http://lists.llvm.org/pipermail/llvm-dev/2016-November/106995.html">2</a>, <a class="reference external" href="http://lists.llvm.org/pipermail/llvm-dev/2018-February/121198.html">3</a>, <a class="reference external" href="http://lists.llvm.org/pipermail/llvm-dev/2018-April/122452.html">4</a> and <a class="reference external" href="http://lists.llvm.org/pipermail/llvm-dev/2018-May/122887.html">5</a>.</p>
+</div>
+<div class="section" id="what-is-a-registered-objective-c-code">
+<h2 id="what-is-a-registered-objective-c-code">What is a registered Objective-C code?</h2>
+<p>The Objective-C code not known to Objective-C runtime is a code that is not
+activated. You can almost run it but there will always be something in
+Objective-C Runtime that does not like this kind of code.</p>
+<p>The following are the most popular errors that you can get about unregistered
+Objective-C code:</p>
+<p>1) If the Objective-C selectors are not registered you get an exception about
+them:</p>
+<details>
+<summary>Unregistered selector: selector for message does not match selector
+known to Objective C runtime </summary>
+<img src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/TypicalCrash_1_Selectors.jpg"/>
+</details>
+<br/><p>2) If you don't register Objective-C classes, the code can even execute but
+then, when the program exits, you will get the crash in
+<tt class="docutils literal">libobjc/cache_erase_nolock</tt>:</p>
+<details>
+<summary>Unregistered class: something is wrong with Objective-C runtime
+internal cache</summary>
+<img src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/TypicalCrash_2_Classes.jpg"/>
+</details>
+<br/><p>3) If the class's category methods are not registered there is an exception
+about unrecognized selector:</p>
+<details>
+<summary>
+  Unregistered category method: unrecognized selector sent to instance
+</summary>
+<img src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/TypicalCrash_3_Categories.jpg"/>
+</details>
+<br/><p>4) Unregistered class also means it might execute without errors but it will not
+be possible to obtain it with things like <tt class="docutils literal">NSStringFromClass</tt>:</p>
+<div class="highlight"><pre><span></span><span class="c1">// nil because UnregisteredClass is not known to Objective-C Runtime</span>
+<span class="n">NSClassFromString</span><span class="p">(</span><span class="s">@"UnregisteredClass"</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="nb">nil</span>
+</pre></div>
+</div>
+<div class="section" id="mach-o-binary-with-objective-c-code">
+<h2 id="mach-o-binary-with-objective-c-code">Mach-O binary with Objective-C code</h2>
+<p>When Objective-C code is compiled to an object file, compiler also emits special
+Objective-C-related sections to this object file. When an executable (or a
+library) with this Objective-C code is loaded to the memory, a <tt class="docutils literal">dyld</tt> loader
+reads the loaded code and triggers callbacks that register the Objective-C
+classes in the Objective-C runtime of a running process.</p>
+<p>Objective-C-related sections have names that start from <tt class="docutils literal">__objc_</tt>. For
+example, <tt class="docutils literal">__objc_selrefs</tt> contains information about selectors,
+<tt class="docutils literal">__objc_classlist</tt> contains references to the Objective-C class declarations,
+<tt class="docutils literal">__objc_catlist</tt> contains references to the Objective-C class categories and a
+few others.</p>
+<p>With LLVM JIT there is no <tt class="docutils literal">dyld</tt> to trigger the code that does Objective-C
+registration. The dynamic loader implementation, that LLVM JIT uses:
+<a class="reference external" href="http://llvm.org/doxygen/classllvm_1_1RuntimeDyld.html">llvm::RuntimeDyld</a>
+class (and its related classes for Mach-O), is not aware of Objective-C, so a
+special code that does the Objective-C registration is needed and the approach
+described below is the one way to accomplish this.</p>
+<p>If you don't know how Objective-C sections looks like in a Mach-O object file,
+see the <a class="reference external" href="#appendix-a-example">Appendix A: Example of a Mach-O file with a simple Objective-C code</a>.</p>
+</div>
+<div class="section" id="llvm-jit-and-section-memory-manager">
+<h2 id="llvm-jit-and-section-memory-manager">LLVM JIT and Section Memory Manager</h2>
+<p>When LLVM JIT is given some object files for the execution, it allocates memory
+for them and then loads their contents into the allocated memory.</p>
+<p>When all of the memory is allocated, one of the important tasks that LLVM JIT
+does - it applies relocations: each symbol had some relative offset in the
+original object file, now LLVM JIT uses these relative offsets to calculate and
+resolve the real symbol addresses in the allocated memory of the running
+process.</p>
+<p>When all of the relocations are finished, LLVM JIT marks the code sections of
+allocated memory as executable so that it can execute the code contained in
+these sections.</p>
+<p><tt class="docutils literal">SectionMemoryManager</tt> is one of the memory management classes provided by
+LLVM. It has two important methods:</p>
+<div class="highlight"><pre><span></span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="nf">allocateDataSection</span><span class="p">(</span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span>
+<span class="w">                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">Alignment</span><span class="p">,</span>
+<span class="w">                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">SectionID</span><span class="p">,</span><span class="w"> </span><span class="n">StringRef</span><span class="w"> </span><span class="n">SectionName</span><span class="p">,</span>
+<span class="w">                             </span><span class="kt">bool</span><span class="w"> </span><span class="n">isReadOnly</span><span class="p">)</span><span class="w"> </span><span class="n">override</span><span class="p">;</span>
+</pre></div>
+<p>and</p>
+<div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">finalizeMemory</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">*</span><span class="n">ErrMsg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nullptr</span><span class="p">)</span><span class="w"> </span><span class="n">override</span><span class="p">;</span>
+</pre></div>
+<p>When <tt class="docutils literal">SectionMemoryManager</tt> is used for memory allocation, its
+<tt class="docutils literal">allocateDataSection</tt> method is called per each data section in an object
+file.</p>
+<p>Example: if an object file is a Mach-O binary and it has some Objective-C code
+in it, the section memory manager will have its <tt class="docutils literal">allocateDataSection</tt> called
+for each of the sections: <tt class="docutils literal">__objc_selrefs</tt>, <tt class="docutils literal">__objc_classlist</tt> etc.</p>
+<p>We can create a subclass <tt class="docutils literal">SectionMemoryManager</tt> called
+<tt class="docutils literal">ObjCEnabledMemoryManager</tt>, override the <tt class="docutils literal">allocateDataSection</tt> function and
+collect pointers to these sections:</p>
+<div class="section" id="objcenabledmemorymanager-collecting-objective-c-related-sections">
+<h3 id="objcenabledmemorymanager-collecting-objective-c-related-sections">ObjCEnabledMemoryManager: collecting Objective-C related sections</h3>
+<div class="highlight"><pre><span></span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span>
+<span class="nf">ObjCEnabledMemoryManager::allocateDataSection</span><span class="p">(</span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">Alignment</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">SectionID</span><span class="p">,</span>
+<span class="w">                                              </span><span class="n">StringRef</span><span class="w"> </span><span class="n">SectionName</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">isReadOnly</span><span class="p">)</span><span class="w"> </span><span class="n">override</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">pointer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">Size</span><span class="p">,</span>
+<span class="w">                                                               </span><span class="n">Alignment</span><span class="p">,</span>
+<span class="w">                                                               </span><span class="n">SectionID</span><span class="p">,</span>
+<span class="w">                                                               </span><span class="n">SectionName</span><span class="p">,</span>
+<span class="w">                                                               </span><span class="n">isReadOnly</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SectionName</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="s">"objc"</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">llvm</span><span class="o">::</span><span class="n">StringRef</span><span class="o">::</span><span class="n">npos</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">errs</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"SectionMemoryManager::allocateDataSection(objc) -- "</span>
+<span class="w">           </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">SectionName</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">" "</span>
+<span class="w">           </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"pointer: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">pointer</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">" "</span>
+<span class="w">           </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"size: "</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">Size</span>
+<span class="w">           </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">ObjectSectionEntry</span><span class="w"> </span><span class="n">entry</span><span class="p">(</span><span class="n">pointer</span><span class="p">,</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="n">SectionName</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">objcSections</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">entry</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">pointer</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="allocated-sections">
+<h3 id="allocated-sections">Allocated sections</h3>
+<div class="highlight"><pre><span></span><span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_const</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc000</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">224</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_data</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc0e0</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">144</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_selrefs</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc170</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">48</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_classrefs</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc1a0</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">16</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_classname</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc1b0</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">11</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_methtype</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc1bb</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">8</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_methname</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc1c3</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">17</span>
+<span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">allocateDataSection</span><span class="p">(</span><span class="n">objc</span><span class="p">)</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">__objc_classlist</span><span class="w"> </span><span class="n">pointer</span><span class="o">:</span><span class="w"> </span><span class="mh">0x101cbc1d8</span><span class="w"> </span><span class="n">size</span><span class="o">:</span><span class="w"> </span><span class="mi">16</span>
+</pre></div>
+<p>Given that the pointers to all of the Objective-C related sections in the
+allocated memory are collected it is possible to traverse these sections and do
+the Objective-C registration routine by hand. In our code, the right moment to
+do this is right before LLVM JIT finalizes the memory:</p>
+</div>
+<div class="section" id="objcenabledmemorymanager-register-objective-c-and-finalize-the-memory">
+<h3 id="objcenabledmemorymanager-register-objective-c-and-finalize-the-memory">ObjCEnabledMemoryManager: register Objective-C and finalize the memory</h3>
+<div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">ObjCEnabledMemoryManager::finalizeMemory</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">*</span><span class="n">ErrMsg</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">registerObjC</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SectionMemoryManager</span><span class="o">::</span><span class="n">finalizeMemory</span><span class="p">(</span><span class="n">ErrMsg</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="registration-of-selectors">
+<h2 id="registration-of-selectors_1">Registration of Selectors</h2>
+<p>The following is the very first crash to see when running unregistered
+Objective-C code with LLVM JIT:</p>
+<details>
+<summary>Selector does not match selector known to Objective-C runtime</summary><div class="highlight"><pre><span></span>2016-10-18 21:25:58.332 lli[12970:169282] *** NSForwarding: warning: selector
+(0x10356a38f) for message 'alloc' does not match selector known to Objective C
+runtime (0x7fff8e93afb5)-- abort
+2016-10-18 21:25:58.334 lli[12970:169282] +[NSAutoreleasePool alloc]:
+unrecognized selector sent to class 0x7fff7a562130
+2016-10-18 21:25:58.338 lli[12970:169282] *** Terminating app due to uncaught
+exception 'NSInvalidArgumentException', reason: '+[NSAutoreleasePool alloc]:
+unrecognized selector sent to class 0x7fff7a562130'
+</pre></div>
+</details><p><tt class="docutils literal">__objc_selrefs</tt> is the section that is responsible for selectors. Each entry
+of <tt class="docutils literal">__objc_selrefs</tt> is simply a selector i.e. a pointer to a <tt class="docutils literal">char *</tt>
+string. The reason for this exception is that a selector in the object file that
+has just been allocated by LLVM JIT is not the same as selector known to
+Objective-C runtime.</p>
+<p>Given that we have collected the information about the sections, we can get the
+access to the contents of the <tt class="docutils literal">__objc_selrefs</tt> section and register the
+selectors using our code. We do the registration by simply rewriting the
+selector entry of the <tt class="docutils literal">__objc_selrefs</tt> section to point to a selector
+registered by Objective-C runtime.</p>
+<div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">registerSelectors</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">selRefsSectionPtr</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">uintptr_t</span><span class="w"> </span><span class="n">selRefsSectionSize</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">sectionStart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">selRefsSectionPtr</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">// Memory padded/aligned by JIT: second half of the section's</span>
+<span class="w">  </span><span class="c1">// memory is empty so doing selRefsSectionSize / 2.</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">cursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sectionStart</span><span class="p">;</span>
+<span class="w">       </span><span class="n">cursor</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">sectionStart</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">selRefsSectionSize</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+<span class="w">       </span><span class="n">cursor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cursor</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">SEL</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">SEL</span><span class="w"> </span><span class="o">*</span><span class="n">selector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">SEL</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">cursor</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sel_getName</span><span class="p">(</span><span class="o">*</span><span class="n">selector</span><span class="p">);</span>
+<span class="w">    </span><span class="o">*</span><span class="n">selector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sel_registerName</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+<p>After this code is executed, selectors in the loaded code point to the selector
+entries in <tt class="docutils literal">__objc_selrefs</tt> section and these selector entries now point to
+the selectors known by Objective-C runtime.</p>
+<p>This makes the exception go away.</p>
+</div>
+<div class="section" id="registration-of-classes">
+<h2 id="registration-of-classes">Registration of Classes</h2>
+<p>Registration of classes is the most important part of this prototype. It is also
+hacky because it uses not a public but internal method of Objective-C Runtime
+API: <tt class="docutils literal">objc_readClassPair</tt>. It can be found in <tt class="docutils literal"><span class="pre">objc-internal.h</span></tt> header file
+of <tt class="docutils literal">libobjc</tt>:</p>
+<details>
+<summary>objc_registerClassPair() method as defined in objc/objc-internal.h</summary><div class="highlight"><pre><span></span><span class="c1">// Class and metaclass construction from a compiler-generated memory image.</span>
+<span class="c1">// cls and cls-&gt;isa must each be OBJC_MAX_CLASS_SIZE bytes.</span>
+<span class="c1">// Extra bytes not used the the metadata must be zero.</span>
+<span class="c1">// info is the same objc_image_info that would be emitted by a static compiler.</span>
+<span class="c1">// Returns nil if a class with the same name already exists.</span>
+<span class="c1">// Returns nil if the superclass is nil and the class is not marked as a root.</span>
+<span class="c1">// Returns nil if the superclass is under construction.</span>
+<span class="c1">// Do not call objc_registerClassPair().</span>
+<span class="cp">#if __OBJC2__</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">objc_image_info</span><span class="p">;</span>
+<span class="n">OBJC_EXPORT</span><span class="w"> </span><span class="kt">Class</span><span class="w"> </span><span class="n">_Nullable</span>
+<span class="n">objc_readClassPair</span><span class="p">(</span><span class="kt">Class</span><span class="w"> </span><span class="n">_Nonnull</span><span class="w"> </span><span class="n">cls</span><span class="p">,</span>
+<span class="w">                   </span><span class="k">const</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">objc_image_info</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">_Nonnull</span><span class="w"> </span><span class="n">info</span><span class="p">)</span>
+<span class="w">    </span><span class="n">OBJC_AVAILABLE</span><span class="p">(</span><span class="mf">10.10</span><span class="p">,</span><span class="w"> </span><span class="mf">8.0</span><span class="p">,</span><span class="w"> </span><span class="mf">9.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">);</span>
+<span class="cp">#endif</span>
+</pre></div>
+</details><p>As it has been done with <tt class="docutils literal">__objc_selrefs</tt> section, given that we have
+collected the information about the classes from the <tt class="docutils literal">__objc_classlist</tt>
+section, we can iterate over the classes and call <tt class="docutils literal">objc_registerClassPair()</tt>
+function on every class pointer.</p>
+<details>
+<summary>The code to register Objective-C class with objc_readClassPair() and
+objc_registerClassPair()</summary><div class="highlight"><pre><span></span><span class="kt">Class</span><span class="w"> </span><span class="nf">mull::objc::Runtime::registerOneClass</span><span class="p">(</span><span class="n">class64_t</span><span class="w"> </span><span class="o">**</span><span class="n">classrefPtr</span><span class="p">,</span>
+<span class="w">                                            </span><span class="kt">Class</span><span class="w"> </span><span class="n">superclass</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="n">class64_t</span><span class="w"> </span><span class="o">*</span><span class="n">classref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">classrefPtr</span><span class="p">;</span>
+<span class="w">  </span><span class="n">class64_t</span><span class="w"> </span><span class="o">*</span><span class="n">metaclassRef</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">classref</span><span class="o">-&gt;</span><span class="n">getIsaPointer</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">Class</span><span class="w"> </span><span class="n">runtimeClass</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">objc_readClassPair</span><span class="p">((</span><span class="kt">Class</span><span class="p">)</span><span class="n">classref</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">runtimeClass</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// The following might be wrong:</span>
+<span class="w">  </span><span class="c1">// The class is registered by objc_readClassPair but we still hack on its</span>
+<span class="w">  </span><span class="c1">// `flags` below and call objc_registerClassPair to make sure we can dispose</span>
+<span class="w">  </span><span class="c1">// it with objc_disposeClassPair when JIT deallocates.</span>
+<span class="w">  </span><span class="n">assert</span><span class="p">(</span><span class="n">objc_classIsRegistered</span><span class="p">((</span><span class="kt">Class</span><span class="p">)</span><span class="n">runtimeClass</span><span class="p">));</span>
+
+<span class="w">  </span><span class="n">here_objc_class</span><span class="w"> </span><span class="o">*</span><span class="n">runtimeClassInternal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">here_objc_class</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">runtimeClass</span><span class="p">;</span>
+<span class="w">  </span><span class="n">here_objc_class</span><span class="w"> </span><span class="o">*</span><span class="n">runtimeMetaclassInternal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">here_objc_class</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">runtimeClassInternal</span><span class="o">-&gt;</span><span class="n">ISA</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cp">#define RW_CONSTRUCTING       (1&lt;&lt;26)</span>
+<span class="w">  </span><span class="n">here_class_rw_t</span><span class="w"> </span><span class="o">*</span><span class="n">sourceClassData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runtimeClassInternal</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">();</span>
+<span class="w">  </span><span class="n">here_class_rw_t</span><span class="w"> </span><span class="o">*</span><span class="n">sourceMetaclassData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">here_class_rw_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">runtimeMetaclassInternal</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">();</span>
+<span class="w">  </span><span class="n">sourceClassData</span><span class="o">-&gt;</span><span class="n">flags</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">RW_CONSTRUCTING</span><span class="p">;</span>
+<span class="w">  </span><span class="n">sourceMetaclassData</span><span class="o">-&gt;</span><span class="n">flags</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">RW_CONSTRUCTING</span><span class="p">;</span>
+<span class="w">  </span><span class="n">objc_registerClassPair</span><span class="p">(</span><span class="n">runtimeClass</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">runtimeClass</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</details><p>If you have some experience with creating Objective-C classes using Objective-C
+Runtime you know that a pair of methods <tt class="docutils literal">objc_allocateClassPair</tt> and then
+<tt class="docutils literal">objc_registerClassPair</tt> must be used to create a new Objective-C class.</p>
+<p>The difference here is that we do not create a new class but rather activate
+existing class by reading the information from its definition that exists in
+<tt class="docutils literal">__objc_classlist</tt> section. This is why <tt class="docutils literal">objc_readClassPair()</tt> method is
+used instead of <tt class="docutils literal">objc_allocateClassPair()</tt> method. It turns out that
+<tt class="docutils literal">objc_readClassPair</tt> is not written to play well with
+<tt class="docutils literal">objc_registerClassPair</tt> method this is why we need to do a small hack to set
+<tt class="docutils literal">RW_CONSTRUCTING</tt> flag on a class struct to pretend that this is a new class
+that we want <tt class="docutils literal">objc_registerClassPair</tt> to register.</p>
+</div>
+<div class="section" id="registration-of-categories">
+<h2 id="registration-of-categories">Registration of Categories</h2>
+<p>Each category definition in <tt class="docutils literal">__objc_catlist</tt> section has a pointer to its
+class, so it is a trivial to connect the definition with the class it belongs
+to.</p>
+<p>Once all classes are registered with
+<tt class="docutils literal">objc_readClassPair/objc_registerClassPair</tt>, we read the information about
+categories and use a <tt class="docutils literal">class_addMethod</tt> method of public Objective-C Runtime
+API to add the category's instance and class methods to the registered classes.</p>
+</div>
+<div class="section" id="known-issues">
+<h2 id="known-issues">Known issues</h2>
+<div class="section" id="known-issue-1-duplicate-definition-of-class">
+<h3 id="known-issue-1-duplicate-definition-of-class">Known issue 1: duplicate definition of class</h3>
+<p>Calling <tt class="docutils literal">objc_registerClassPair()</tt> on a class pointer obtained with
+<tt class="docutils literal">objc_readClassPair()</tt> always triggers a warning:</p>
+<div class="highlight"><pre><span></span>objc[76234]: Class FirstClass is implemented in both
+?? (0x101cbc108) and ?? (0x101cbc108). One of the two will be used.
+Which one is undefined.
+</pre></div>
+<p>One detail to notice, however, is that the pointers to the both classes are
+equal and from looking at the code that causes this warning it seems that this
+code is just not built with the <tt class="docutils literal">objc_readClassPair</tt> case in mind. The
+exception is annoying but there is nothing criminal going under the hood.</p>
+<a name="known-issue-2"></a></div>
+<div class="section" id="known-issue-2-objc-readclasspair-works-objc-allocateclasspair-doesn-t">
+<h3 id="known-issue-2-objc_readclasspair-works-objc_allocateclasspair-doesnt">Known issue 2: objc_readClassPair works, objc_allocateClassPair doesn't</h3>
+<p>In the beginning, we thought that it was possible to register Objective-C
+classes with the public methods: <tt class="docutils literal">objc_allocateClassPair()</tt> and
+<tt class="docutils literal">objc_registerClassPair()</tt>. In contrast to <tt class="docutils literal">objc_readClassPair</tt> that reads
+existing Objective-C class definitions in the Mach-O and only registers them in
+Objective-C runtime, <tt class="docutils literal">objc_allocateClassPair</tt> creates a new class struct for a
+class and registers the class in the Objective-C Runtime. This approach creates
+some redundancy because for each definition in the Mach-O a new class struct is
+created so two copies of class structs exist in memory: unregistered structs in
+the memory allocated from Mach-O sections and the memory created by Objective-C
+Runtime methods. While this is not a problem for us, there is another problem
+that seems to be hard to fix: <tt class="docutils literal">objc_allocateClassPair</tt> is designed to create
+new classes and by doing this it breaks the Swift code that contains Objective-C
+classes. It turns out that the code that is generated from the files with Swift
+code with Objective-C-based classes is hardcoded against the Objective-C
+definitions as they are written in the Mach-O so creating a new parallel class
+hierarchy in Objective-C runtime does not work: we start to get crashes related
+to pointers pointing to the wrong offsets in the memory.</p>
+<details>
+<summary>Typical static offset-related crashes when using registering mixed Swift/Objective-C classes with objc_allocateClassPair() </summary>
+<img src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_allocateClassPair_swift-offset-crashes.jpg"/>
+</details>
+<br/><p>Another issue: with <tt class="docutils literal">objc_allocateClassPair</tt> it is not possible to specify
+that you want to create a Swift-enhanced Objective-C class because
+<tt class="docutils literal">objc_allocateClassPair()</tt> decides on whether it creates a struct with a
+normal Objective-C or Swift-enhanced class layout based on the superclass (this
+is weird but do check the source code) so it is not possible to create a Swift
+class that is a subclass of an Objective-C class because
+<tt class="docutils literal">objc_allocateClassPair()</tt> will create an Objective-C class, not a Swift
+class.</p>
+<p>Example: If you want to use <tt class="docutils literal">objc_allocateClassPair()</tt> to register a Swift
+class that is a subclass of <tt class="docutils literal">XCTestCase</tt> Objective-C class, it will create a
+class struct for Objective-C class instead of Swift class.</p>
+</div>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion_1">Conclusion</h2>
+<p>In this post I have shared the most important parts of what I have learned about
+the "LLVM JIT and Objective-C" topic.</p>
+<p>The prototype code <a class="reference external" href="https://github.com/mull-project/llvm-jit-objc">llvm-jit-objc</a> is very raw and contains only
+a few basic test cases. It can be that the approach described here has some
+flaws that we overlooked or some parts of Objective-C that we did not implement
+but we still believe that the framework for reading Objective-C sections as they
+are loaded by <tt class="docutils literal">RuntimeDyld</tt> and using the methods from Objective-C runtime to
+register the Objective-C contents such as classes, selectors, categories is the
+right approach.</p>
+<p>We also believe that with a rather small joint effort by developers of LLVM JIT
+and Swift / Objective-C Runtime this approach could be implemented so that we
+would not have to hack on the internals of the Objective-C Runtime. Another
+approaches also exist, see <a class="reference external" href="#appendix-b-clang">Appendix B: Altenative approach: Objective-C
+Registration using Clang</a>.</p>
+<hr class="docutils"/>
+<a name="appendix-a-example"></a></div>
+<div class="section" id="appendix-a-example-of-a-mach-o-file-with-a-simple-objective-c-code-1">
+<h2 id="appendix-a-example-of-a-mach-o-file-with-a-simple-objective-c-code">Appendix A: Example of a Mach-O file with a simple Objective-C code</h2>
+<p>The following illustrates how Objective-C-related sections appear in the Mach-O
+object file.</p>
+<div class="highlight"><pre><span></span><span class="c1">// Compile this file with:</span>
+<span class="c1">// clang -fobjc-arc objc.m</span>
+
+<span class="cp">#import &lt;Foundation/Foundation.h&gt;</span>
+
+<span class="k">@interface</span> <span class="nc">SomeClass</span>: <span class="bp">NSObject</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">hello</span><span class="p">;</span>
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">SomeClass</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">hello</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">printf</span><span class="p">(</span><span class="s">"Hello from SomeClass</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">@end</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">SomeClass</span><span class="w"> </span><span class="o">*</span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">SomeClass</span><span class="w"> </span><span class="n">new</span><span class="p">];</span>
+<span class="w">  </span><span class="p">[</span><span class="n">obj</span><span class="w"> </span><span class="n">hello</span><span class="p">];</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>There are many ways to see Objective-C sections in the Mach-O file, including
+these:</p>
+<details>
+<summary>Listing section headers using otool</summary><div class="highlight"><pre><span></span>otool -l a.out
+a.out:
+Mach header
+      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
+ 0xfeedfacf 16777223          3  0x80           2    17       2072 0x00200085
+...
+Section
+  sectname __objc_classlist
+   segname __DATA
+      addr 0x0000000100001028
+      size 0x0000000000000008
+    offset 4136
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x10000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __objc_imageinfo
+   segname __DATA
+      addr 0x0000000100001030
+      size 0x0000000000000008
+    offset 4144
+     align 2^2 (4)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __objc_const
+   segname __DATA
+      addr 0x0000000100001038
+      size 0x00000000000000b0
+    offset 4152
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __objc_selrefs
+   segname __DATA
+      addr 0x00000001000010e8
+      size 0x0000000000000010
+    offset 4328
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x10000005
+ reserved1 0
+ reserved2 0
+Section
+  sectname __objc_classrefs
+   segname __DATA
+      addr 0x00000001000010f8
+      size 0x0000000000000008
+    offset 4344
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x10000000
+ reserved1 0
+ reserved2 0
+Section
+  sectname __objc_data
+   segname __DATA
+      addr 0x0000000100001100
+      size 0x0000000000000050
+    offset 4352
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+     flags 0x00000000
+ reserved1 0
+ reserved2 0
+...
+</pre></div>
+</details>
+<details>
+<summary>Listing section headers using llvm-objdump</summary><div class="highlight"><pre><span></span>/opt/llvm-6.0.0/bin/llvm-objdump -section-headers a.out
+
+a.out:  file format Mach-O 64-bit x86-64
+
+Sections:
+Idx Name          Size      Address          Type
+  0 __text        0000008c 0000000100000eb0 TEXT
+  1 __stubs       00000012 0000000100000f3c TEXT
+  2 __stub_helper 0000002e 0000000100000f50 TEXT
+  3 __cstring     00000016 0000000100000f7e DATA
+  4 __objc_classname 0000000a 0000000100000f94 DATA
+  5 __objc_methname 0000000a 0000000100000f9e DATA
+  6 __objc_methtype 00000008 0000000100000fa8 DATA
+  7 __unwind_info 00000048 0000000100000fb0 DATA
+  8 __nl_symbol_ptr 00000010 0000000100001000 DATA
+  9 __la_symbol_ptr 00000018 0000000100001010 DATA
+ 10 __objc_classlist 00000008 0000000100001028 DATA
+ 11 __objc_imageinfo 00000008 0000000100001030 DATA
+ 12 __objc_const  000000b0 0000000100001038 DATA
+ 13 __objc_selrefs 00000010 00000001000010e8 DATA
+ 14 __objc_classrefs 00000008 00000001000010f8 DATA
+ 15 __objc_data   00000050 0000000100001100 DATA
+</pre></div>
+</details>
+<details>
+<summary>Listing section headers using MachOView</summary><div class="figure">
+<img alt="Listing section headers using MachOView" src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/ListingObjCSectionsWithMachOView.jpg">
+</img></div>
+</details><p>With Hopper it is also possible to see and navigate the content of the
+Objective-C sections:</p>
+<p>This is how <tt class="docutils literal">__objc_classlist</tt> section with the pointer to the <tt class="docutils literal">SomeClass</tt>
+class data looks like:</p>
+<details>
+<summary>__objc_classlist section with a pointer to SomeClass metadata</summary><div class="figure">
+<img alt="__objc_classlist section with a pointer to SomeClass metadata" src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_classlist_with_SomeClass.jpg">
+</img></div>
+</details><p>The metadata for the <tt class="docutils literal">SomeClass</tt> class is contained in another section called
+<tt class="docutils literal">__objc_data</tt>.</p>
+<details>
+<summary>__objc_data section with a struct with SomeClass metadata</summary><div class="figure">
+<img alt="__objc_data section with a struct with SomeClass metadata" src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_data_with_SomeClass.jpg">
+</img></div>
+</details><p>The actual data of <tt class="docutils literal">SomeClass</tt> such as <tt class="docutils literal">hello</tt> method can be found in the
+<tt class="docutils literal">__objc_const</tt> section through a <tt class="docutils literal">data</tt> field of the struct which is
+rendered as <tt class="docutils literal">__objc_class_SomeClass_data</tt>.</p>
+<details>
+<summary>__objc_const section with a struct with the metadata for SomeClass
+</summary><div class="figure">
+<img alt="__objc_const section with a struct with the metadata for SomeClass" src="./images/2018-09-03-llvm-jit-objc-and-swift-knowledge-dump/objc_const_with_SomeClass.jpg">
+</img></div>
+</details>
+<a name="appendix-b-clang"></a></div>
+<div class="section" id="appendix-b-altenative-approach-objective-c-registration-using-clang-1">
+<h2 id="appendix-b-altenative-approach-objective-c-registration-using-clang">Appendix B: Altenative approach: Objective-C Registration using Clang</h2>
+<p>On the llvm-dev forums, David Chisnall proposed what he called the best way of
+doing the Objective-C registration, the following quotes from David can be found
+on the llvm-dev threads:</p>
+<blockquote>
+<ol class="arabic simple">
+<li>A few years ago, I put together a proof-of-concept implementation of
+CGObjCRuntime that emitted a load function that called out to the
+runtime&rsquo;s functions for registering selectors, generating classes, adding
+methods, and so on. I don&rsquo;t have the code anymore (and it&rsquo;s probably
+bitrotted to the extent that a clean reimplementation would probably be
+easier), but it was only a few hundred lines of code and would work with
+any Objective-C runtime in a JIT context.</li>
+<li>As I said in the earlier thread, the best way of doing this is to add a
+new subclass of CGObjCRuntime that generates the code using the public
+APIs...</li>
+<li>Create a new CGObjCRuntime subclass that creates a module init function
+that constructs all of the classes using the public APIs, by adding
+something like -fobjc-runtime=jit to the clang flags. This is not
+particularly difficult and means that the same code can be used with any
+Objective-C runtime.</li>
+</ol>
+</blockquote>
+<p>The reason we didn't go with this CGObjCRuntime approach because it was easier
+to go with RuntimeDyld to solve one problem at a time: <tt class="docutils literal">SectionMemoryManager</tt>
+already gave us Objective-C sections so we could focus on how to register
+Objective-C Runtime with LLVM JIT without having to figure out how hack on Clang
+to emit these sections to LLVM IR which would be additional challenge.</p>
+<p>Also it is still not clear which public Objective-C Runtime API would the
+emitted code use given the limitation of the public method
+<tt class="docutils literal">objc_allocateClassPair()</tt> as described in: <a class="reference external" href="#known-issue-2">Known issue 2: objc_readClassPair
+works, objc_allocateClassPair doesn't</a>.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

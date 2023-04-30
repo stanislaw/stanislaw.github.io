@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>One easy way to estimate Swift vs Objective-C code ratio in iOS project</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="A code snippet for estimating Swift vs Objective-C code ratio in iOS project." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-12-06-one-easy-way-to-estimate-swift-vs-objc-ratio.html"
+    rel="bookmark"
+    title="Permalink to One easy way to estimate Swift vs Objective-C code ratio in iOS project">
+    One easy way to estimate Swift vs Objective-C code ratio in iOS project
+  </a>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>One easy way to estimate Swift vs Objective-C code ratio in iOS project</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-12-06T21:53:34+01:00">
+                2016-12-06
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/swift.html">Swift</a> <a class="tag" href="./tag/objective-c.html">Objective-C</a> </div>
+</aside>
+    <p>The following finding is a result of a 5-minute brainstorm we did with <a class="reference external" href="http://lowlevelbits.org">Alex
+Denisov</a>. We were thinking of the fastest way to
+estimate Swift vs Objective-C code ratio in an iOS application. Transitioning to
+Swift can be very slow for a project which has a lot of Objective-C code, so we
+want to have at least a rough understanding of how much of its code has to be
+migrated from Objective-C to Swift.</p>
+<p>We came up with a very simple heuristic: grep through the codebase and find
+<tt class="docutils literal">@implementation</tt> and <tt class="docutils literal">^class</tt> declarations for Objective-C and Swift
+declarations respectively and divide Swift value by Objective-C value. Of course
+this heuristic is very rough however we can make enough sense out of it in the
+context of the app we are currently working on.</p>
+<p>I have split original one-liner to be a more readable .sh script:</p>
+<div class="highlight"><pre><span></span><span class="nv">project</span><span class="o">=</span>./YourProject<span class="p">;</span>
+
+<span class="nv">objc</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">"^@implementation "</span><span class="w"> </span><span class="nv">$project</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">' '</span><span class="sb">`</span><span class="p">;</span>
+<span class="nv">swift</span><span class="o">=</span><span class="sb">`</span>grep<span class="w"> </span>-r<span class="w"> </span><span class="s2">"^class "</span><span class="w"> </span><span class="nv">$project</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">' '</span><span class="sb">`</span><span class="p">;</span>
+
+<span class="nv">ratio</span><span class="o">=</span><span class="k">$(</span>bc<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">"scale=3; </span><span class="nv">$swift</span><span class="s2"> / </span><span class="nv">$objc</span><span class="s2">"</span><span class="k">)</span><span class="p">;</span>
+<span class="nv">ratio_perc</span><span class="o">=</span><span class="k">$(</span>bc<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">"</span><span class="nv">$ratio</span><span class="s2"> * 100"</span><span class="k">)</span><span class="p">;</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Swift classes: </span><span class="nv">$swift</span><span class="s2">"</span><span class="p">;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Objective-C classes: </span><span class="nv">$objc</span><span class="s2">"</span><span class="p">;</span>
+<span class="nb">printf</span><span class="w"> </span><span class="s2">"Ratio: %0.3g%%\n"</span><span class="w"> </span><span class="nv">$ratio_perc</span><span class="p">;</span>
+</pre></div>
+<div class="highlight"><pre><span></span>$<span class="w"> </span>./swift_vs_objc.sh
+Swift<span class="w"> </span>classes:<span class="w"> </span><span class="m">142</span>
+Objective-C<span class="w"> </span>classes:<span class="w"> </span><span class="m">749</span>
+Ratio:<span class="w"> </span><span class="m">19</span>%
+</pre></div>
+<p>This script is very simple however I would love to have found it written by
+someone else before I started looking for it a few hours ago today. So why not
+keep in on this blog?</p>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

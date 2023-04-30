@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="Статья предназначена для начинающих разработчиков и описывает рабочий сценарий процесса подготовки приложения к App Store." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-04-04-how-to-app-store.html"
+    rel="bookmark"
+    title="Permalink to Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?">
+    Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#vstuplenie" title="&Vcy;&scy;&tcy;&ucy;&pcy;&lcy;&iecy;&ncy;&icy;&iecy;">&Vcy;&scy;&tcy;&ucy;&pcy;&lcy;&iecy;&ncy;&icy;&iecy;</a></li><li><a class="toc-href" href="#walking-skeleton-khodiachii-skelet" title="Walking skeleton (&khcy;&ocy;&dcy;&yacy;&chcy;&icy;&jcy; &scy;&kcy;&iecy;&lcy;&iecy;&tcy;)">Walking skeleton (&khcy;&ocy;&dcy;&yacy;&chcy;&icy;&jcy; &scy;&kcy;&iecy;&lcy;&iecy;&tcy;)</a></li><li><a class="toc-href" href="#protsess-podgotovki-prilozheniia-k-app-store" title="&Pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; App Store">&Pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; App Store</a></li><li><a class="toc-href" href="#walking-skeleton-i-protsess-publikatsii-v-app-store" title="Walking Skeleton &icy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy; App Store">Walking Skeleton &icy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy; App Store</a></li><li><a class="toc-href" href="#zakliuchenie" title="&Zcy;&acy;&kcy;&lcy;&yucy;&chcy;&iecy;&ncy;&icy;&iecy;">&Zcy;&acy;&kcy;&lcy;&yucy;&chcy;&iecy;&ncy;&icy;&iecy;</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Re: Что необходимо для того, чтобы iOS-приложение попало в App Store?</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-04-04T20:59:39+02:00">
+                2016-04-04
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/app-store.html">App Store</a> <a class="tag" href="./tag/xcode.html">Xcode</a> </div>
+</aside>
+    <p><strong>TL;DR</strong> &Ecy;&tcy;&acy; &scy;&tcy;&acy;&tcy;&softcy;&yacy; - &ocy;&tcy;&vcy;&iecy;&tcy; &ncy;&acy; &mcy;&ocy;&jcy; &scy;&ocy;&bcy;&scy;&tcy;&vcy;&iecy;&ncy;&ncy;&ycy;&jcy; &vcy;&ocy;&pcy;&rcy;&ocy;&scy;, &zcy;&acy;&dcy;&acy;&ncy;&ncy;&ycy;&jcy; &mcy;&ncy;&ocy;&jcy; 3 &gcy;&ocy;&dcy;&acy;
+&ncy;&acy;&zcy;&acy;&dcy; &ncy;&acy; &scy;&acy;&jcy;&tcy;&iecy; Stack Overflow &ncy;&acy; &rcy;&ucy;&scy;&scy;&kcy;&ocy;&mcy;: <a class="reference external" href="http://ru.stackoverflow.com/questions/196420/%D0%A7%D1%82%D0%BE-%D0%BD%D0%B5%D0%BE%D0%B1%D1%85%D0%BE%D0%B4%D0%B8%D0%BC%D0%BE-%D0%B4%D0%BB%D1%8F-%D1%82%D0%BE%D0%B3%D0%BE-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-ios-%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B5-%D0%BF%D0%BE%D0%BF%D0%B0%D0%BB%D0%BE-%D0%B2-app-store-app-store-subm">&CHcy;&tcy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &dcy;&lcy;&yacy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy;&bcy;&ycy;
+iOS-&pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &pcy;&ocy;&pcy;&acy;&lcy;&ocy; &vcy; App Store (App Store Submission)?</a></p>
+<p>&Scy;&tcy;&acy;&tcy;&softcy;&yacy; &pcy;&rcy;&iecy;&dcy;&ncy;&acy;&zcy;&ncy;&acy;&chcy;&iecy;&ncy;&acy; &dcy;&lcy;&yacy; &ncy;&acy;&chcy;&icy;&ncy;&acy;&yucy;&shchcy;&icy;&khcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&chcy;&icy;&kcy;&ocy;&vcy; &icy; &ocy;&pcy;&icy;&scy;&ycy;&vcy;&acy;&iecy;&tcy; &rcy;&acy;&bcy;&ocy;&chcy;&icy;&jcy; &scy;&tscy;&iecy;&ncy;&acy;&rcy;&icy;&jcy;
+&pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&acy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; App Store. &IEcy;&scy;&lcy;&icy; &vcy;&ycy; &ncy;&acy;&chcy;&icy;&ncy;&acy;&yucy;&shchcy;&icy;&jcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&chcy;&icy;&kcy; iOS,
+&icy; &vcy;&acy;&scy; &icy;&ncy;&tcy;&iecy;&rcy;&iecy;&scy;&ucy;&iecy;&tcy; &pcy;&rcy;&ocy;&bcy;&lcy;&iecy;&mcy;&acy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &vcy; App Store, &vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy;:</p>
+<p>1. &ncy;&iecy; &dcy;&ocy;&zhcy;&icy;&dcy;&acy;&yacy;&scy;&softcy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ncy;&icy;&khcy; &ncy;&iecy;&dcy;&iecy;&lcy;&icy;-&dcy;&vcy;&ucy;&khcy;-&mcy;&iecy;&scy;&yacy;&tscy;&acy; &pcy;&iecy;&rcy;&iecy;&dcy; &rcy;&iecy;&lcy;&icy;&zcy;&ocy;&mcy;, &pcy;&ocy;&pcy;&rcy;&ocy;&bcy;&ocy;&vcy;&acy;&tcy;&softcy; &scy;&ocy;&bcy;&rcy;&acy;&tcy;&softcy;
+&pcy;&rcy;&ocy;&dcy;&acy;&kcy;&shcy;&ncy;-&bcy;&icy;&lcy;&dcy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &vcy; &iecy;&gcy;&ocy; &ncy;&ycy;&ncy;&iecy;&shcy;&ncy;&iecy;&mcy; &scy;&ocy;&scy;&tcy;&ocy;&yacy;&ncy;&icy;&icy; <strong>&pcy;&rcy;&yacy;&mcy;&ocy; &scy;&iecy;&jcy;&chcy;&acy;&scy;</strong> &icy;
+&ocy;&tcy;&pcy;&rcy;&acy;&vcy;&icy;&tcy;&softcy; &iecy;&gcy;&ocy; &ncy;&acy; iTunesConnect [&vcy;&acy;&rcy;&icy;&acy;&ncy;&tcy; &bcy;&ocy;&lcy;&iecy;&iecy; &scy;&lcy;&ocy;&zhcy;&ncy;&ycy;&jcy;, &rcy;&iecy;&acy;&lcy;&icy;&scy;&tcy;&icy;&chcy;&ncy;&ycy;&jcy;].</p>
+<p>&icy;/&icy;&lcy;&icy;</p>
+<p>2. &chcy;&tcy;&ocy;&bcy;&ycy; &pcy;&ocy;&lcy;&ucy;&chcy;&icy;&tcy;&softcy; &ocy;&bcy;&shchcy;&iecy;&iecy; &pcy;&rcy;&iecy;&dcy;&scy;&tcy;&acy;&vcy;&lcy;&iecy;&ncy;&icy;&iecy; &ocy; &scy;&ucy;&tcy;&icy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&acy;, &vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &scy;&ocy;&zcy;&dcy;&acy;&tcy;&softcy; &pcy;&ucy;&scy;&tcy;&ocy;&iecy;
+&ocy;&dcy;&ncy;&ocy;&ecy;&kcy;&rcy;&acy;&ncy;&ncy;&ocy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &pcy;&ocy; iOS-&shcy;&acy;&bcy;&lcy;&ocy;&ncy;&ucy; &vcy; Xcode, &dcy;&ocy;&bcy;&acy;&vcy;&icy;&tcy;&softcy; &vcy; &ncy;&iecy;&gcy;&ocy; &fcy;&iecy;&jcy;&kcy;&ocy;&vcy;&ycy;&iecy;, &ncy;&ocy;
+&scy;&tcy;&rcy;&ocy;&gcy;&ocy; &pcy;&ocy; &gcy;&acy;&jcy;&dcy;&lcy;&acy;&jcy;&ncy;&acy;&mcy;, &icy;&zcy;&ocy;&bcy;&rcy;&acy;&zhcy;&iecy;&ncy;&icy;&yacy; &icy; &mcy;&iecy;&tcy;&acy;-&dcy;&acy;&ncy;&ncy;&ycy;&iecy; &icy; &ocy;&tcy;&pcy;&rcy;&acy;&vcy;&icy;&tcy;&softcy; &ecy;&tcy;&ocy; &pcy;&ucy;&scy;&tcy;&ocy;&iecy;
+&pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &vcy; iTunesConnect [&vcy;&acy;&rcy;&icy;&acy;&ncy;&tcy; &bcy;&ocy;&lcy;&iecy;&iecy; &pcy;&rcy;&ocy;&scy;&tcy;&ocy;&jcy;, &tcy;&rcy;&iecy;&ncy;&icy;&rcy;&ocy;&vcy;&ocy;&chcy;&ncy;&ycy;&jcy;].</p>
+<p><strong>&Ocy;&bcy;&acy; &vcy;&acy;&rcy;&icy;&acy;&ncy;&tcy;&acy; &ncy;&iecy; &pcy;&rcy;&iecy;&dcy;&pcy;&ocy;&lcy;&acy;&gcy;&acy;&yucy;&tcy; &pcy;&ocy;&dcy;&acy;&chcy;&ucy; &zcy;&acy;&yacy;&vcy;&kcy;&icy; &ncy;&acy; &rcy;&acy;&scy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&ncy;&icy;&iecy; App Store Review,
+&tcy;&ocy; &iecy;&scy;&tcy;&softcy; &vcy;&ycy; &icy;&mcy;&iecy;&iecy;&tcy;&iecy; &vcy;&ocy;&zcy;&mcy;&ocy;&zhcy;&ncy;&ocy;&scy;&tcy;&softcy; &pcy;&rcy;&ocy;&jcy;&tcy;&icy; &vcy;&scy;&iecy; &fcy;&acy;&zcy;&ycy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &kcy;&rcy;&ocy;&mcy;&iecy; &scy;&acy;&mcy;&ocy;&jcy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ncy;&iecy;&jcy;,
+&kcy;&ocy;&gcy;&dcy;&acy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &ncy;&acy;&zhcy;&acy;&tcy;&softcy; "&kcy;&rcy;&acy;&scy;&ncy;&ucy;&yucy; &kcy;&ncy;&ocy;&pcy;&kcy;&ucy; submit for review".</strong> &IEcy;&scy;&lcy;&icy; &vcy;&ycy; &ncy;&iecy;
+&ncy;&acy;&zhcy;&icy;&mcy;&acy;&iecy;&tcy;&iecy; &ecy;&tcy;&ucy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ncy;&yucy;&yucy; "&kcy;&rcy;&acy;&scy;&ncy;&ucy;&yucy;" &kcy;&ncy;&ocy;&pcy;&kcy;&ucy;, &tcy;&ocy; &vcy;&acy;&shcy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &ncy;&iecy; &rcy;&acy;&scy;&scy;&mcy;&acy;&tcy;&rcy;&icy;&vcy;&acy;&iecy;&tcy;&scy;&yacy;
+Apple, &acy; &pcy;&rcy;&ocy;&scy;&tcy;&ocy; &vcy;&icy;&scy;&icy;&tcy; &vcy; &bcy;&iecy;&tcy;&acy;-&scy;&ocy;&scy;&tcy;&ocy;&yacy;&ncy;&icy;&icy; &scy;&kcy;&ocy;&lcy;&softcy;&kcy;&ocy; &ucy;&gcy;&ocy;&dcy;&ncy;&ocy; &dcy;&ocy;&lcy;&gcy;&ocy;. &Scy;&tcy;&acy;&tcy;&softcy;&yacy; &ocy;&pcy;&icy;&scy;&ycy;&vcy;&acy;&iecy;&tcy;
+&ecy;&tcy;&ocy;&tcy; &pcy;&ocy;&dcy;&khcy;&ocy;&dcy; &vcy; &dcy;&iecy;&tcy;&acy;&lcy;&yacy;&khcy;.</p>
+<div class="section" id="section-1">
+<h2 id="vstuplenie">&Vcy;&scy;&tcy;&ucy;&pcy;&lcy;&iecy;&ncy;&icy;&iecy;</h2>
+<p>&Vcy;&mcy;&iecy;&scy;&tcy;&ocy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy;&bcy;&ycy; &pcy;&icy;&scy;&acy;&tcy;&softcy; &ocy;&chcy;&iecy;&rcy;&iecy;&dcy;&ncy;&ocy;&jcy; &gcy;&acy;&jcy;&dcy;&lcy;&acy;&jcy;&ncy; &ocy; &gcy;&acy;&jcy;&dcy;&lcy;&acy;&jcy;&ncy;&acy;&khcy; &icy;&lcy;&icy; &iecy;&shchcy;&iocy; &ocy;&dcy;&icy;&ncy; App Store
+checklist, &yacy; &khcy;&ocy;&chcy;&ucy; &pcy;&ocy;&dcy;&iecy;&lcy;&icy;&tcy;&softcy;&scy;&yacy; &icy;&ncy;&fcy;&ocy;&rcy;&mcy;&acy;&tscy;&icy;&iecy;&jcy;, &kcy;&ocy;&tcy;&ocy;&rcy;&acy;&yacy;, &kcy;&acy;&kcy; &mcy;&ncy;&iecy; &kcy;&acy;&zhcy;&iecy;&tcy;&scy;&yacy;, &dcy;&acy;&iecy;&tcy;
+&vcy;&ocy;&zcy;&mcy;&ocy;&zhcy;&ncy;&ocy;&scy;&tcy;&softcy; &pcy;&ocy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&tcy;&softcy; &ncy;&acy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &ncy;&iecy;&mcy;&ncy;&ocy;&gcy;&ocy; &scy; &dcy;&rcy;&ucy;&gcy;&ocy;&jcy; &scy;&tcy;&ocy;&rcy;&ocy;&ncy;&ycy;, &scy;&dcy;&iecy;&lcy;&acy;&tcy;&softcy;
+&iecy;&gcy;&ocy; &bcy;&ocy;&lcy;&iecy;&iecy; &pcy;&rcy;&ocy;&scy;&tcy;&ycy;&mcy; &icy; &dcy;&ocy;&scy;&tcy;&ucy;&pcy;&ncy;&ycy;&mcy;. &Dcy;&acy;&ncy;&ncy;&acy;&yacy; &scy;&tcy;&acy;&tcy;&softcy;&yacy; &pcy;&rcy;&iecy;&dcy;&lcy;&acy;&gcy;&acy;&iecy;&tcy; &ncy;&acy;&chcy;&icy;&ncy;&acy;&yucy;&shchcy;&icy;&mcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&chcy;&icy;&kcy;&acy;&mcy;
+&ocy;&zcy;&ncy;&acy;&kcy;&ocy;&mcy;&icy;&tcy;&softcy;&scy;&yacy; &scy; <strong>&pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&ocy;&jcy; Walking Skeleton (&khcy;&ocy;&dcy;&yacy;&chcy;&icy;&jcy; &scy;&kcy;&iecy;&lcy;&iecy;&tcy;)</strong> &icy; &pcy;&rcy;&icy;&scy;&tcy;&ucy;&pcy;&icy;&tcy;&softcy; &kcy;
+&tcy;&acy;&kcy; &ncy;&acy;&zcy;&ycy;&vcy;&acy;&iecy;&mcy;&ocy;&jcy; &rcy;&acy;&ncy;&ncy;&iecy;&jcy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&icy; &icy;&khcy; &pcy;&rcy;&ocy;&gcy;&rcy;&acy;&mcy;&ncy;&ycy;&khcy; &pcy;&rcy;&ocy;&dcy;&ucy;&kcy;&tcy;&ocy;&vcy; (Early Integration). &Vcy;
+&kcy;&ocy;&ncy;&tcy;&iecy;&kcy;&scy;&tcy;&iecy; iOS &rcy;&acy;&ncy;&ncy;&yacy;&yacy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&yacy; &pcy;&ocy;&mcy;&icy;&mcy;&ocy; &rcy;&acy;&ncy;&ncy;&iecy;&jcy; &dcy;&ocy;&kcy;&ucy;&mcy;&iecy;&ncy;&tcy;&acy;&tscy;&icy;&icy;, &tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&ncy;&icy;&yacy; &ncy;&acy;&pcy;&iecy;&rcy;&iecy;&dcy;
+&tcy;.&iecy;. Test-Driven Development, &ocy;&zcy;&ncy;&acy;&chcy;&acy;&iecy;&tcy; &rcy;&acy;&ncy;&ncy;&icy;&iecy; &scy;&bcy;&ocy;&rcy;&kcy;&icy; &pcy;&rcy;&ocy;&dcy;&acy;&kcy;&shcy;&ncy;-&vcy;&iecy;&rcy;&scy;&icy;&jcy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;
+&dcy;&lcy;&yacy; &icy;&khcy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ucy;&yucy;&shchcy;&iecy;&gcy;&ocy; &bcy;&iecy;&tcy;&acy;-&tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&ncy;&icy;&yacy; &scy; &icy;&scy;&pcy;&ocy;&lcy;&softcy;&zcy;&ocy;&vcy;&acy;&ncy;&icy;&iecy;&mcy; Apple TestFlight &icy;&lcy;&icy;
+&dcy;&rcy;&ucy;&gcy;&icy;&khcy; &scy;&iecy;&rcy;&vcy;&icy;&scy;&ocy;&vcy;.</p>
+</div>
+<div class="section" id="walking-skeleton">
+<h2 id="walking-skeleton-khodiachii-skelet">Walking skeleton (&khcy;&ocy;&dcy;&yacy;&chcy;&icy;&jcy; &scy;&kcy;&iecy;&lcy;&iecy;&tcy;)</h2>
+<p>&Pcy;&ocy;&dcy;&rcy;&ocy;&bcy;&ncy;&ocy;&iecy; &ocy;&pcy;&icy;&scy;&acy;&ncy;&icy;&iecy; &ecy;&tcy;&ocy;&jcy; &ocy;&chcy;&iecy;&ncy;&softcy; &vcy;&acy;&zhcy;&ncy;&ocy;&jcy; &icy;&ncy;&zhcy;&iecy;&ncy;&iecy;&rcy;&ncy;&ocy;&jcy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&icy; &chcy;&icy;&tcy;&acy;&tcy;&iecy;&lcy;&softcy; &mcy;&ocy;&zhcy;&iecy;&tcy; &ncy;&acy;&jcy;&tcy;&icy;
+&scy;&acy;&mcy;&ocy;&scy;&tcy;&ocy;&yacy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy;, &dcy;&lcy;&yacy; &dcy;&acy;&ncy;&ncy;&ocy;&jcy; &scy;&tcy;&acy;&tcy;&softcy;&icy; &vcy;&pcy;&ocy;&lcy;&ncy;&iecy; &dcy;&ocy;&scy;&tcy;&acy;&tcy;&ocy;&chcy;&ncy;&ocy; &icy;&scy;&khcy;&ocy;&dcy;&ncy;&ocy;&gcy;&ocy; &ocy;&pcy;&rcy;&iecy;&dcy;&iecy;&lcy;&iecy;&ncy;&icy;&yacy;:</p>
+<blockquote>
+<p>A Walking Skeleton is a tiny implementation of the system that performs a
+small end-to-end function. It need not use the final architecture, but it
+should link together the main architectural components. The architecture and
+the functionality can then evolve in parallel.</p>
+<p>(&vcy;&zcy;&yacy;&tcy;&ocy; &scy; <a class="reference external" href="http://alistair.cockburn.us/Walking+skeleton">Alistair Cockburn: Walking skeleton</a>)</p>
+</blockquote>
+<p>&Mcy;&ocy;&jcy; &vcy;&ocy;&lcy;&softcy;&ncy;&ycy;&jcy; &pcy;&iecy;&rcy;&iecy;&vcy;&ocy;&dcy;:</p>
+<p>"Walking Skeleton (&khcy;&ocy;&dcy;&yacy;&chcy;&icy;&jcy; &scy;&kcy;&iecy;&lcy;&iecy;&tcy;) &ecy;&tcy;&ocy; &mcy;&icy;&ncy;&icy;&mcy;&acy;&lcy;&softcy;&ncy;&acy;&yacy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy; &bcy;&ucy;&dcy;&ucy;&shchcy;&iecy;&jcy; &scy;&icy;&scy;&tcy;&iecy;&mcy;&ycy;,
+&kcy;&ocy;&tcy;&ocy;&rcy;&acy;&yacy; &vcy;&ycy;&pcy;&ocy;&lcy;&ncy;&yacy;&iecy;&tcy; &ncy;&iecy;&kcy;&ucy;&yucy; &pcy;&rcy;&ocy;&scy;&tcy;&iecy;&jcy;&shcy;&ucy;&yucy; &zcy;&acy;&dcy;&acy;&chcy;&ucy;. &Tcy;&acy;&kcy;&acy;&yacy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy; &ncy;&iecy; &tcy;&rcy;&iecy;&bcy;&ucy;&iecy;&tcy;
+&pcy;&ocy;&lcy;&ncy;&ocy;&tscy;&iecy;&ncy;&ncy;&ocy;&jcy; &acy;&rcy;&khcy;&icy;&tcy;&iecy;&kcy;&tcy;&ucy;&rcy;&ycy; &gcy;&ocy;&tcy;&ocy;&vcy;&ocy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;, &iecy;&iecy; &tscy;&iecy;&lcy;&softcy; - &pcy;&iecy;&rcy;&vcy;&ocy;&ncy;&acy;&chcy;&acy;&lcy;&softcy;&ncy;&acy;&yacy;
+&rcy;&acy;&bcy;&ocy;&tcy;&ocy;&scy;&pcy;&ocy;&scy;&ocy;&bcy;&ncy;&ocy;&scy;&tcy;&softcy; &kcy;&ocy;&mcy;&pcy;&ocy;&ncy;&iecy;&ncy;&tcy;&ocy;&vcy; &bcy;&ucy;&dcy;&ucy;&shchcy;&iecy;&jcy; &scy;&icy;&scy;&tcy;&iecy;&mcy;&ycy; &icy; &icy;&khcy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&yacy; &dcy;&rcy;&ucy;&gcy; &scy; &dcy;&rcy;&ucy;&gcy;&ocy;&mcy;.
+&Kcy;&ocy;&gcy;&dcy;&acy; &mcy;&icy;&ncy;&icy;&mcy;&acy;&lcy;&softcy;&ncy;&acy;&yacy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy; &gcy;&ocy;&tcy;&ocy;&vcy;&acy;, &acy;&rcy;&khcy;&icy;&tcy;&iecy;&kcy;&tcy;&ucy;&rcy;&acy; &icy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy; &mcy;&ocy;&gcy;&ucy;&tcy; &rcy;&acy;&zcy;&vcy;&icy;&vcy;&acy;&tcy;&softcy;&scy;&yacy;
+&pcy;&acy;&rcy;&acy;&lcy;&lcy;&iecy;&lcy;&softcy;&ncy;&ocy;."</p>
+<p>&Pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ocy;&vcy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy;&iecy; &pcy;&rcy;&icy;&mcy;&iecy;&ncy;&iecy;&ncy;&icy;&iecy; &ecy;&tcy;&ocy;&jcy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&icy; &vcy; &scy;&lcy;&ucy;&chcy;&acy;&iecy; iOS &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&icy;, &scy; &tcy;&ocy;&chcy;&ncy;&ocy;&scy;&tcy;&softcy;&yucy;
+&dcy;&ocy; &scy;&pcy;&iecy;&tscy;&icy;&fcy;&icy;&kcy;&icy; &kcy;&acy;&zhcy;&dcy;&ocy;&gcy;&ocy; &ocy;&tcy;&dcy;&iecy;&lcy;&softcy;&ncy;&ocy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;, &scy;&ocy;&scy;&tcy;&ocy;&icy;&tcy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy; &vcy;&mcy;&iecy;&scy;&tcy;&ocy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy;&bcy;&ycy;
+&ncy;&acy;&chcy;&icy;&ncy;&acy;&tcy;&softcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&ucy; &scy; &ncy;&acy;&pcy;&icy;&scy;&acy;&ncy;&icy;&yacy; &kcy;&ocy;&dcy;&acy; &bcy;&ucy;&dcy;&ucy;&shchcy;&iecy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;, &scy;&ncy;&acy;&chcy;&acy;&lcy;&acy; &pcy;&ocy;&lcy;&ncy;&ocy;&scy;&tcy;&softcy;&yucy;
+&pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&acy;&vcy;&lcy;&icy;&vcy;&acy;&iecy;&tcy;&scy;&yacy; &icy;&ncy;&fcy;&rcy;&acy;&scy;&tcy;&rcy;&ucy;&kcy;&tcy;&ucy;&rcy;&acy;: &dcy;&iecy;&lcy;&acy;&iecy;&tcy;&scy;&yacy; &ocy;&dcy;&ncy;&ocy;&ecy;&kcy;&rcy;&acy;&ncy;&ncy;&ocy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ocy;&iecy; &icy;&mcy;&iecy;&iecy;&tcy;
+&ocy;&tcy; &bcy;&ucy;&dcy;&ucy;&shchcy;&iecy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;, &pcy;&ocy;&zhcy;&acy;&lcy;&ucy;&jcy;, &lcy;&icy;&shcy;&softcy; &ncy;&acy;&zcy;&vcy;&acy;&ncy;&icy;&iecy;:</p>
+<ul class="simple">
+<li>&pcy;&ocy; &shcy;&acy;&bcy;&lcy;&ocy;&ncy;&ucy; Xcode &scy;&ocy;&zcy;&dcy;&acy;&iecy;&tcy;&scy;&yacy; &ocy;&dcy;&ncy;&ocy;&ecy;&kcy;&rcy;&acy;&ncy;&ncy;&ocy;&iecy; iOS &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; (Single View
+Application)</li>
+<li>&vcy; Xcode &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&iecy; NewApp.xcodeproj &scy;&ocy;&zcy;&dcy;&acy;&yucy;&tcy;&scy;&yacy; &pcy;&ucy;&scy;&tcy;&ycy;&iecy;, &ncy;&ocy; &rcy;&acy;&bcy;&ocy;&chcy;&icy;&iecy; &tcy;&iecy;&scy;&tcy;&ocy;&vcy;&ycy;&iecy; &tcy;&acy;&rcy;&gcy;&iecy;&tcy;&ycy;
+(&yucy;&ncy;&icy;&tcy;-, &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&ocy;&ncy;&ncy;&ocy;&iecy;, acceptance &icy; &dcy;&rcy;. &vcy;&icy;&dcy;&ycy; &tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&ncy;&icy;&yacy;)</li>
+<li>&pcy;&rcy;&ocy;&iecy;&kcy;&tcy; &scy;&tcy;&acy;&vcy;&icy;&tcy;&scy;&yacy; &pcy;&ocy;&dcy; &kcy;&ocy;&ncy;&tcy;&rcy;&ocy;&lcy;&softcy; &vcy;&iecy;&rcy;&scy;&icy;&jcy;: Git, Mercurial &icy;&lcy;&icy; &dcy;&rcy;.</li>
+<li>&scy;&ocy;&zcy;&dcy;&acy;&yucy;&tcy;&scy;&yacy; &pcy;&iecy;&rcy;&vcy;&ycy;&iecy; &fcy;&rcy;&acy;&gcy;&mcy;&iecy;&ncy;&tcy;&ycy; &bcy;&ucy;&dcy;&ucy;&shchcy;&iecy;&jcy; &dcy;&ocy;&kcy;&ucy;&mcy;&iecy;&ncy;&tcy;&acy;&tscy;&icy;&icy;</li>
+<li>&ncy;&acy;&lcy;&acy;&zhcy;&icy;&vcy;&acy;&iecy;&tcy;&scy;&yacy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; beta-&tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&ncy;&icy;&yacy; (&kcy;&acy;&kcy; &mcy;&ocy;&zhcy;&ncy;&ocy; &rcy;&acy;&ncy;&softcy;&shcy;&iecy;)</li>
+<li>&dcy;&ocy;&pcy;&ocy;&lcy;&ncy;&icy;&tcy;&iecy;&lcy;&softcy;&ncy;&acy;&yacy; &kcy;&ocy;&ncy;&fcy;&icy;&gcy;&ucy;&rcy;&acy;&tscy;&icy;&yacy; &icy;&ncy;&fcy;&rcy;&acy;&scy;&tcy;&rcy;&ucy;&kcy;&tcy;&ucy;&rcy;&ycy; &pcy;&ocy;&dcy; &scy;&pcy;&iecy;&tscy;&icy;&fcy;&icy;&kcy;&ucy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;</li>
+</ul>
+<p>&Zcy;&acy;&tcy;&iecy;&mcy; &pcy;&ocy;&lcy;&ncy;&ycy;&jcy; &tscy;&icy;&kcy;&lcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&icy; &rcy;&acy;&zcy;&vcy;&ocy;&rcy;&acy;&chcy;&icy;&vcy;&acy;&iecy;&tcy;&scy;&yacy; &vcy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ocy;&vcy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy;&scy;&tcy;&icy;:</p>
+<ul class="simple">
+<li>&dcy;&ocy;&kcy;&ucy;&mcy;&iecy;&ncy;&tcy;&acy;&tscy;&icy;&yacy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy; &bcy;&ucy;&dcy;&iecy;&tcy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&ocy;&vcy;&acy;&ncy;&ocy; (&pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&acy; documentation-first)</li>
+<li>&pcy;&icy;&shcy;&ucy;&tcy;&scy;&yacy; &scy;&ocy;&ocy;&tcy;&vcy;&iecy;&tcy;&scy;&tcy;&vcy;&ucy;&yucy;&shchcy;&icy;&jcy; &pcy;&acy;&dcy;&acy;&yucy;&shchcy;&icy;&iecy; &tcy;&iecy;&scy;&tcy;&ycy; (test-driven development)</li>
+<li>&zcy;&acy;&tcy;&iecy;&mcy; &icy; &lcy;&icy;&shcy;&softcy; &ncy;&acy; &ecy;&tcy;&ocy;&mcy; &ecy;&tcy;&acy;&pcy;&iecy; &ncy;&acy;&chcy;&icy;&ncy;&acy;&iecy;&tcy;&scy;&yacy; &scy;&ocy;&bcy;&scy;&tcy;&vcy;&iecy;&ncy;&ncy;&ocy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy;...</li>
+</ul>
+<p>&Scy;&tcy;&iecy;&pcy;&iecy;&ncy;&softcy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy;&scy;&tcy;&icy; &icy; &scy;&vcy;&ocy;&iecy;&vcy;&rcy;&iecy;&mcy;&iecy;&ncy;&ncy;&ocy;&scy;&tcy;&icy; &kcy;&acy;&zhcy;&dcy;&ocy;&gcy;&ocy; &shcy;&acy;&gcy;&acy; &ocy;&pcy;&rcy;&iecy;&dcy;&iecy;&lcy;&yacy;&iecy;&tcy;&scy;&yacy; &zcy;&acy;&dcy;&acy;&chcy;&acy;&mcy;&icy;
+&kcy;&ocy;&ncy;&kcy;&rcy;&iecy;&tcy;&ncy;&ocy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy; &icy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&ocy;&jcy; &kcy;&ocy;&ncy;&kcy;&rcy;&iecy;&tcy;&ncy;&ocy;&jcy; &kcy;&ocy;&mcy;&acy;&ncy;&dcy;&ycy;, &ncy;&ocy; &vcy; &tscy;&iecy;&lcy;&ocy;&mcy; &tscy;&icy;&kcy;&lcy; &rcy;&acy;&bcy;&ocy;&tcy;&ycy; &vcy;
+&zcy;&rcy;&iecy;&lcy;&ycy;&khcy; &kcy;&ocy;&mcy;&acy;&ncy;&dcy;&acy;&khcy;, &gcy;&dcy;&iecy; &tscy;&iecy;&ncy;&yacy;&tcy;&scy;&yacy; &kcy;&acy;&chcy;&iecy;&scy;&tcy;&vcy;&ocy; &icy; &ncy;&acy;&scy;&tcy;&rcy;&ocy;&jcy; &ncy;&acy; &dcy;&ocy;&lcy;&gcy;&ocy;&scy;&rcy;&ocy;&chcy;&ncy;&ucy;&yucy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&ucy;
+&pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;, &yacy;&vcy;&lcy;&yacy;&iecy;&tcy;&scy;&yacy; &icy;&mcy;&iecy;&ncy;&ncy;&ocy; &tcy;&acy;&kcy;&icy;&mcy;: &scy;&ncy;&acy;&chcy;&acy;&lcy;&acy; &icy;&ncy;&fcy;&rcy;&acy;&kcy;&scy;&tcy;&rcy;&ucy;&kcy;&tcy;&ucy;&rcy;&acy;, &pcy;&ocy;&tcy;&ocy;&mcy; &rcy;&iecy;&acy;&lcy;&icy;&zcy;&acy;&tscy;&icy;&yacy;.</p>
+</div>
+<div class="section" id="app-store">
+<h2 id="protsess-podgotovki-prilozheniia-k-app-store">&Pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; App Store</h2>
+<p>&Lcy;&iecy;&gcy;&kcy;&ocy; &scy;&dcy;&iecy;&lcy;&acy;&tcy;&softcy; &vcy;&ycy;&vcy;&ocy;&dcy;, &chcy;&tcy;&ocy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&acy; Walking Skeleton, &tcy;&ocy; &iecy;&scy;&tcy;&softcy; &kcy;&acy;&kcy; &mcy;&ocy;&zhcy;&ncy;&ocy; &bcy;&ocy;&lcy;&iecy;&iecy;
+&rcy;&acy;&ncy;&ncy;&icy;&iecy; &rcy;&acy;&bcy;&ocy;&tcy;&ocy;&scy;&pcy;&ocy;&scy;&ocy;&bcy;&ncy;&ocy;&scy;&tcy;&softcy; &icy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&yacy; &scy;&icy;&scy;&tcy;&iecy;&mcy;&ycy;, &mcy;&ocy;&zhcy;&iecy;&tcy; &vcy;&kcy;&lcy;&yucy;&chcy;&acy;&tcy;&softcy; &vcy; &scy;&iecy;&bcy;&yacy; &tcy;&acy;&kcy;&zhcy;&iecy; &icy; &kcy;&acy;&kcy;
+&mcy;&ocy;&zhcy;&ncy;&ocy; &bcy;&ocy;&lcy;&iecy;&iecy; &rcy;&acy;&ncy;&ncy;&iecy;&iecy; &tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&ncy;&icy;&iecy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&acy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy; App Store. &Ecy;&tcy;&ocy; &ocy;&zcy;&ncy;&acy;&chcy;&acy;&iecy;&tcy;,
+&chcy;&tcy;&ocy; &vcy;&mcy;&iecy;&scy;&tcy;&ocy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy;&bcy;&ycy; &ocy;&tcy;&kcy;&lcy;&acy;&dcy;&ycy;&vcy;&acy;&tcy;&softcy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&ucy; &kcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy; App Store &dcy;&ocy;
+&vcy;&rcy;&iecy;&mcy;&iecy;&ncy;&icy; &scy;&acy;&mcy;&ocy;&jcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;, &mcy;&ocy;&zhcy;&ncy;&ocy;, &icy; &dcy;&acy;&zhcy;&iecy; &rcy;&iecy;&kcy;&ocy;&mcy;&iecy;&ncy;&ucy;&iecy;&tcy;&scy;&yacy;, &scy;&dcy;&iecy;&lcy;&acy;&tcy;&softcy; &tcy;&iecy;&scy;&tcy;&ocy;&vcy;&ucy;&yucy;
+&pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&yucy; &kcy;&acy;&kcy; &mcy;&ocy;&zhcy;&ncy;&ocy; &rcy;&acy;&ncy;&softcy;&shcy;&iecy;, &chcy;&tcy;&ocy;&bcy;&ycy; &pcy;&ocy;&lcy;&ucy;&chcy;&icy;&tcy;&softcy; &pcy;&rcy;&iecy;&dcy;&scy;&tcy;&acy;&vcy;&lcy;&iecy;&ncy;&icy;&iecy; &ocy; &tcy;&ocy;&mcy;, &scy; &chcy;&iecy;&mcy; &vcy;&acy;&mcy;
+&pcy;&rcy;&icy;&dcy;&iecy;&tcy;&scy;&yacy; &scy;&tcy;&ocy;&lcy;&kcy;&ncy;&ucy;&tcy;&softcy;&scy;&yacy; &vcy; &rcy;&iecy;&acy;&lcy;&softcy;&ncy;&ocy;&scy;&tcy;&icy; &vcy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&iecy; &ncy;&acy;&scy;&tcy;&ocy;&yacy;&shchcy;&iecy;&jcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;.</p>
+<p>&Vcy; &rcy;&acy;&mcy;&kcy;&acy;&khcy; &ecy;&tcy;&ocy;&jcy; &scy;&tcy;&acy;&tcy;&softcy;&icy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; App Store &mcy;&ocy;&zhcy;&ncy;&ocy; &ucy;&scy;&lcy;&ocy;&vcy;&ncy;&ocy;
+&rcy;&acy;&zcy;&dcy;&iecy;&lcy;&icy;&tcy;&softcy; &ncy;&acy; &dcy;&vcy;&iecy; &chcy;&acy;&scy;&tcy;&icy; (&ocy;&bcy;&acy; &pcy;&iecy;&rcy;&iecy;&chcy;&ncy;&yacy; &ncy;&iecy;&icy;&scy;&chcy;&iecy;&rcy;&pcy;&ycy;&vcy;&acy;&yucy;&shchcy;&icy;&iecy;, &lcy;&icy;&shcy;&softcy; &dcy;&lcy;&yacy; &icy;&lcy;&lcy;&yucy;&scy;&tcy;&rcy;&acy;&tscy;&icy;&icy;):</p>
+<ol class="arabic simple">
+<li>&Pcy;&rcy;&icy;&gcy;&ocy;&tcy;&ocy;&vcy;&icy;&tcy;&softcy; &vcy;&scy;&iecy;, &chcy;&tcy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &dcy;&lcy;&yacy; &lcy;&yucy;&bcy;&ocy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;:</li>
+</ol>
+<ul class="simple">
+<li>100 &dcy;&ocy;&lcy;&lcy;&acy;&rcy;&ocy;&vcy;&ycy;&jcy; &acy;&kcy;&kcy;&acy;&ucy;&ncy;&tcy; &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&chcy;&icy;&kcy;&acy; Apple Developer</li>
+<li>Meta-data. &Pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&icy;&tcy;&softcy; &mcy;&iecy;&tcy;&acy;-&icy;&ncy;&fcy;&ocy;&rcy;&mcy;&acy;&tscy;&icy;&yucy;, &tcy;&acy;&kcy;&ucy;&yucy; &kcy;&acy;&kcy; bundle identifier &vcy;&acy;&shcy;&iecy;&gcy;&ocy;
+&pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;: com.mycompany.myapp, &vcy;&iecy;&rcy;&scy;&icy;&yacy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;: 0.1 &icy; &dcy;&rcy;.</li>
+<li>Code Signing. &Pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&icy;&tcy;&softcy; App ID, &kcy;&lcy;&yucy;&chcy;&icy; &icy; &scy;&iecy;&rcy;&tcy;&icy;&fcy;&icy;&kcy;&acy;&tcy;&ycy;: &gcy;&lcy;&acy;&vcy;&ncy;&ycy;&mcy; &ocy;&bcy;&rcy;&acy;&zcy;&ocy;&mcy;,
+production distribution certificate &icy; provisoning profile.</li>
+<li>&Icy;&zcy;&ocy;&bcy;&rcy;&acy;&zhcy;&iecy;&ncy;&icy;&yacy;. &Pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&icy;&tcy;&softcy; &kcy;&acy;&rcy;&tcy;&icy;&ncy;&kcy;&icy; &scy; &rcy;&acy;&zcy;&mcy;&iecy;&rcy;&acy;&mcy;&icy; &icy; &ncy;&acy;&zcy;&vcy;&acy;&ncy;&icy;&yacy;&mcy;&icy; &scy;&tcy;&rcy;&ocy;&gcy;&ocy; &pcy;&ocy;
+&gcy;&acy;&jcy;&dcy;&lcy;&acy;&jcy;&ncy;&acy;&mcy;, &gcy;&lcy;&acy;&vcy;&ncy;&ycy;&mcy; &ocy;&bcy;&rcy;&acy;&zcy;&ocy;&mcy; App Icons &icy; Launch Screens.</li>
+</ul>
+<ol class="arabic simple" start="2">
+<li>&Pcy;&rcy;&icy;&gcy;&ocy;&tcy;&ocy;&vcy;&icy;&tcy;&softcy; &vcy;&scy;&iecy;, &chcy;&tcy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &icy;&mcy;&iecy;&ncy;&ncy;&ocy; &dcy;&lcy;&yacy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;:</li>
+</ol>
+<ul class="simple">
+<li>&Ucy;&bcy;&iecy;&dcy;&icy;&tcy;&softcy;&scy;&yacy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy; &scy;&tcy;&ocy;&rcy;&ocy;&ncy;&ncy;&icy;&iecy; (3rd party) &bcy;&icy;&bcy;&lcy;&icy;&ocy;&tcy;&iecy;&kcy;&icy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&iecy; &vcy;&kcy;&lcy;&yucy;&chcy;&iecy;&ncy;&ycy; &vcy; &vcy;&acy;&shcy;
+&pcy;&rcy;&ocy;&iecy;&kcy;&tcy;, &ncy;&iecy; &icy;&scy;&pcy;&ocy;&lcy;&softcy;&zcy;&ucy;&yucy;&tcy; private API &fcy;&rcy;&iecy;&jcy;&mcy;&vcy;&ocy;&rcy;&kcy;&ocy;&vcy; Apple.</li>
+<li>&ZHcy;&iecy;&lcy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &ucy;&bcy;&iecy;&dcy;&icy;&tcy;&softcy;&scy;&yacy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy; &scy;&tcy;&ocy;&rcy;&ocy;&ncy;&ncy;&icy;&iecy; &bcy;&icy;&bcy;&lcy;&icy;&ocy;&tcy;&iecy;&kcy;&icy; &icy;&mcy;&iecy;&yucy;&tcy; &pcy;&rcy;&acy;&vcy;&icy;&lcy;&softcy;&ncy;&ycy;&iecy; &icy;
+&pcy;&ocy;&dcy;&khcy;&ocy;&dcy;&yacy;&shchcy;&icy;&iecy; &lcy;&icy;&tscy;&iecy;&ncy;&zcy;&icy;&icy;:<ul>
+<li><a class="reference external" href="http://ru.stackoverflow.com/questions/196446/%D0%92%D1%8B%D0%B1%D0%BE%D1%80-%D0%BF%D1%80%D0%B0%D0%B2%D0%B8%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9-%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D0%B8-%D0%B4%D0%BB%D1%8F-open-source-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B0-%D0%BD%D0%B0-objective-c-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-%D0%BD%D0%B5-%D0%B1%D1%8B%D0%BB%D0%BE/432726#432726">&Vcy;&ycy;&bcy;&ocy;&rcy; &pcy;&rcy;&acy;&vcy;&icy;&lcy;&softcy;&ncy;&ocy;&jcy; &lcy;&icy;&tscy;&iecy;&ncy;&zcy;&icy;&icy; &dcy;&lcy;&yacy; open-source &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy; &ncy;&acy; Objective-C, &chcy;&tcy;&ocy;&bcy;&ycy; &ncy;&iecy;
+&bcy;&ycy;&lcy;&ocy; &pcy;&rcy;&ocy;&bcy;&lcy;&iecy;&mcy; &scy; App Store?</a></li>
+<li><a class="reference external" href="https://www.quora.com/What-is-the-reason-for-some-of-the-Linux-tools-on-OS-X-being-so-old-Is-this-related-to-GPL-licensing">What is the reason for some of the Linux tools on OS X being so old? Is
+this related to GPL licensing?</a></li>
+</ul>
+</li>
+<li>&Vcy;&scy;&iecy; &dcy;&ocy;&pcy;&ocy;&lcy;&ncy;&icy;&tcy;&iecy;&lcy;&softcy;&ncy;&ycy;&iecy; &chcy;&acy;&scy;&tcy;&icy; &fcy;&ucy;&ncy;&kcy;&tscy;&icy;&ocy;&ncy;&acy;&lcy;&acy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &rcy;&acy;&bcy;&ocy;&tcy;&acy;&yucy;&tcy; &vcy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&icy;,
+&scy;&ocy;&bcy;&rcy;&acy;&ncy;&ncy;&ocy;&mcy; &vcy; Release-&kcy;&ocy;&ncy;&fcy;&icy;&gcy;&ucy;&rcy;&acy;&tscy;&icy;&icy; &scy; &pcy;&ocy;&mcy;&ocy;&shchcy;&softcy;&yucy; Archive. &Ncy;&acy;&pcy;&rcy;&icy;&mcy;&iecy;&rcy;, &dcy;&lcy;&yacy; &rcy;&acy;&bcy;&ocy;&tcy;&ycy;
+push-&ncy;&ocy;&tcy;&icy;&fcy;&icy;&kcy;&acy;&tscy;&icy;&jcy; &tcy;&rcy;&iecy;&bcy;&ucy;&iecy;&tcy;&scy;&yacy;, &chcy;&tcy;&ocy;&bcy;&ycy; Production APN certificate &bcy;&ycy;&lcy; &pcy;&rcy;&icy;&vcy;&yacy;&zcy;&acy;&ncy; &kcy;
+&vcy;&acy;&shcy;&iecy;&mcy;&ucy; App ID.</li>
+</ul>
+</div>
+<div class="section" id="walking-skeleton-app-store">
+<h2 id="walking-skeleton-i-protsess-publikatsii-v-app-store">Walking Skeleton &icy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy; App Store</h2>
+<p>&Vcy; &ncy;&acy;&chcy;&acy;&lcy;&iecy; &scy;&tcy;&acy;&tcy;&softcy;&icy; &bcy;&ycy;&lcy;&ocy; &pcy;&rcy;&iecy;&dcy;&lcy;&ocy;&zhcy;&iecy;&ncy;&ocy; &dcy;&vcy;&acy; &pcy;&ocy;&dcy;&khcy;&ocy;&dcy;&acy; &kcy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;
+&vcy; App Store: &pcy;&iecy;&rcy;&vcy;&ycy;&jcy;, &bcy;&ocy;&lcy;&iecy;&iecy; &pcy;&rcy;&ocy;&scy;&tcy;&ocy;&jcy;, &mcy;&ocy;&zhcy;&iecy;&tcy; &bcy;&ycy;&tcy;&softcy; &icy;&scy;&pcy;&ocy;&lcy;&softcy;&zcy;&ocy;&vcy;&acy;&ncy; &vcy; &lcy;&yucy;&bcy;&ocy;&iecy; &vcy;&rcy;&iecy;&mcy;&yacy;,
+&ncy;&iecy;&zcy;&acy;&vcy;&icy;&scy;&icy;&mcy;&ocy; &ocy;&tcy; &zhcy;&icy;&zcy;&ncy;&iecy;&ncy;&ncy;&ocy;&gcy;&ocy; &tscy;&icy;&kcy;&lcy;&acy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy; &icy; &ncy;&iecy;&zcy;&acy;&vcy;&icy;&scy;&icy;&mcy;&ocy; &ocy;&tcy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;
+&vcy;&ocy;&ocy;&bcy;&shchcy;&iecy;. <strong>&Ecy;&tcy;&ocy;&tcy; &pcy;&ocy;&dcy;&khcy;&ocy;&dcy; &pcy;&ocy;&zcy;&vcy;&ocy;&lcy;&yacy;&iecy;&tcy; &vcy;&acy;&mcy; &icy;&zcy;&ucy;&chcy;&icy;&tcy;&softcy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ycy;&jcy; &pcy;&iecy;&rcy;&iecy;&chcy;&iecy;&ncy;&softcy; &tcy;&ocy;&gcy;&ocy;, &chcy;&tcy;&ocy;
+&tcy;&rcy;&iecy;&bcy;&ucy;&iecy;&tcy;&scy;&yacy; &dcy;&lcy;&yacy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy;&ocy;&ocy;&bcy;&shchcy;&iecy; &lcy;&yucy;&bcy;&ocy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &vcy; App Store, &ncy;&iecy; &tcy;&ocy;&lcy;&softcy;&kcy;&ocy;
+&vcy;&acy;&shcy;&iecy;&gcy;&ocy;</strong>:</p>
+<ul class="simple">
+<li>&vcy;&ycy; &vcy;&ycy;&bcy;&icy;&rcy;&acy;&iecy;&tcy;&iecy; &pcy;&rcy;&ocy;&icy;&zcy;&vcy;&ocy;&lcy;&softcy;&ncy;&ocy;&iecy; &icy;&mcy;&yacy; &dcy;&lcy;&yacy; &shcy;&acy;&bcy;&lcy;&ocy;&ncy;&acy; Xcode &dcy;&lcy;&yacy; &ocy;&dcy;&ncy;&ocy;&ecy;&kcy;&rcy;&acy;&ncy;&ncy;&ocy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;
+(&ncy;&acy;&pcy;&rcy;&icy;&mcy;&iecy;&rcy;, Sandbox, &tcy;.&iecy;. "&pcy;&iecy;&scy;&ocy;&chcy;&ncy;&icy;&tscy;&acy;")</li>
+<li>&ncy;&iecy; &pcy;&icy;&shcy;&iecy;&tcy;&iecy; &ncy;&icy;&kcy;&acy;&kcy;&ocy;&gcy;&ocy; &kcy;&ocy;&dcy;&acy;!</li>
+<li>&scy;&ocy;&zcy;&dcy;&acy;&iecy;&tcy;&iecy; &kcy;&acy;&rcy;&tcy;&icy;&ncy;&kcy;&icy; &vcy;&scy;&iecy;&khcy; &rcy;&acy;&zcy;&rcy;&iecy;&shcy;&iecy;&ncy;&icy;&jcy; &vcy; &scy;&ocy;&ocy;&tcy;&vcy;&iecy;&tcy;&scy;&tcy;&vcy;&icy;&icy; &scy; &tcy;&rcy;&iecy;&bcy;&ocy;&vcy;&acy;&ncy;&icy;&yacy;&mcy;&icy; Guidelines,
+&kcy;&acy;&rcy;&tcy;&icy;&ncy;&kcy;&icy; &mcy;&ocy;&gcy;&ucy;&tcy; &bcy;&ycy;&tcy;&softcy; &pcy;&rcy;&ocy;&scy;&tcy;&ocy; &chcy;&iecy;&rcy;&ncy;&ycy;&mcy; &fcy;&ocy;&ncy;&ocy;&mcy; - &ncy;&ucy;&zhcy;&iecy;&ncy; &lcy;&icy;&shcy;&softcy; &fcy;&ocy;&rcy;&mcy;&acy;&lcy;&softcy;&ncy;&ycy;&jcy; &ncy;&acy;&bcy;&ocy;&rcy; &kcy;&acy;&rcy;&tcy;&icy;&ncy;&ocy;&kcy;
+&scy;&ocy;&ocy;&tcy;&vcy;&iecy;&tcy;&scy;&tcy;&vcy;&ucy;&yucy;&shchcy;&icy;&khcy; &rcy;&acy;&zcy;&rcy;&iecy;&shcy;&iecy;&ncy;&icy;&jcy;!</li>
+<li>&scy;&ocy;&zcy;&dcy;&acy;&iecy;&tcy;&iecy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ycy;&iecy; &mcy;&iecy;&tcy;&acy;-&dcy;&acy;&ncy;&ncy;&ycy;&iecy;, &vcy;&rcy;&ocy;&dcy;&iecy; com.mycompany.sandbox, &vcy;&iecy;&rcy;&scy;&icy;&icy; 0.1, &icy;
+&tcy;.&dcy;.</li>
+<li>&scy;&ocy;&zcy;&dcy;&acy;&iecy;&tcy;&iecy; Distribution Certificate &ncy;&acy; Apple Developer Portal &icy; &scy;&ocy;&ocy;&tcy;&vcy;&iecy;&tcy;&scy;&tcy;&vcy;&ucy;&yucy;&shchcy;&icy;&jcy;
+Provisioning Profile</li>
+<li>&scy;&ocy;&bcy;&icy;&rcy;&acy;&iecy;&tcy;&iecy; &vcy; iTunesConnect &vcy;&acy;&shcy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; Sandbox &scy; &vcy;&iecy;&rcy;&scy;&icy;&iecy;&jcy; 0.1</li>
+<li>&ncy;&acy;&zhcy;&icy;&mcy;&acy;&iecy;&tcy;&iecy; Archive &vcy; Xcode, &acy; &zcy;&acy;&tcy;&iecy;&mcy; Upload.</li>
+</ul>
+<p>&Scy;&ucy;&tcy;&softcy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy; &pcy;&rcy;&icy; &tcy;&acy;&kcy;&ocy;&mcy; &pcy;&ocy;&dcy;&khcy;&ocy;&dcy;&iecy; &vcy;&ycy; &scy;&ocy;&zcy;&ncy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &icy;&gcy;&ncy;&ocy;&rcy;&icy;&rcy;&ucy;&iecy;&tcy;&iecy; &scy;&pcy;&iecy;&tscy;&icy;&fcy;&icy;&kcy;&ucy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy;
+&pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&acy;: &ucy;&pcy;&rcy;&acy;&zhcy;&ncy;&iecy;&ncy;&icy;&iecy; &scy;&ocy;&scy;&tcy;&ocy;&icy;&tcy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy;&bcy;&ycy; &ncy;&acy;&bcy;&icy;&tcy;&softcy; &rcy;&ucy;&kcy;&ucy;, &rcy;&acy;&zcy;&ocy;&bcy;&rcy;&acy;&tcy;&softcy;&scy;&yacy; &vcy; &tcy;&ocy;&mcy;, &chcy;&tcy;&ocy;
+&mcy;&icy;&ncy;&icy;&mcy;&acy;&lcy;&softcy;&ncy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &dcy;&lcy;&yacy; &lcy;&yucy;&bcy;&ocy;&gcy;&ocy; &rcy;&iecy;&lcy;&icy;&zcy;&acy; &lcy;&yucy;&bcy;&ocy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;. &Pcy;&ocy;&scy;&lcy;&iecy; &tcy;&ocy;&gcy;&ocy;, &kcy;&acy;&kcy; &acy;&rcy;&khcy;&icy;&vcy;
+&vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; (&ncy;&acy;&pcy;&ocy;&mcy;&icy;&ncy;&acy;&yucy;: &ecy;&tcy;&ocy; &pcy;&ucy;&scy;&tcy;&ocy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy;, &scy;&ocy;&zcy;&dcy;&acy;&ncy;&ncy;&ocy;&iecy; &pcy;&ocy; &shcy;&acy;&bcy;&lcy;&ocy;&ncy;&ucy; Xcode
+&icy; &ncy;&acy;&zcy;&vcy;&acy;&ncy;&ncy;&ocy;&iecy; Sandbox!) &zcy;&acy;&gcy;&rcy;&ucy;&zcy;&icy;&tcy;&scy;&yacy; &vcy; iTunesConnect, &vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &pcy;&ocy;&jcy;&tcy;&icy; &tcy;&ucy;&dcy;&acy; &icy;
+&pcy;&ocy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&tcy;&softcy;, &kcy;&acy;&kcy;&ocy;&vcy;&ycy; &scy;&lcy;&iecy;&dcy;&ucy;&yucy;&shchcy;&icy;&iecy; &shcy;&acy;&gcy;&icy; &icy; &ocy;&pcy;&tscy;&icy;&icy;, &chcy;&tcy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy; &dcy;&lcy;&yacy; &ocy;&tcy;&pcy;&rcy;&acy;&vcy;&kcy;&icy;
+&pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &ncy;&acy; &rcy;&iecy;&vcy;&softcy;&yucy;. &Scy;&rcy;&iecy;&dcy;&icy; &pcy;&rcy;&ocy;&chcy;&iecy;&gcy;&ocy; &vcy;&ycy; &ucy;&vcy;&icy;&dcy;&icy;&tcy;&iecy; &fcy;&ocy;&rcy;&mcy;&ucy; &dcy;&lcy;&yacy; &zcy;&acy;&gcy;&rcy;&ucy;&zcy;&kcy;&icy; &scy;&kcy;&rcy;&icy;&ncy;&shcy;&ocy;&tcy;&ocy;&vcy;
+&pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &dcy;&lcy;&yacy; &vcy;&scy;&iecy;&khcy; &vcy;&icy;&dcy;&ocy;&vcy; &rcy;&acy;&zcy;&rcy;&iecy;&shcy;&iecy;&ncy;&icy;&jcy;, &dcy;&ocy;&pcy;&ocy;&lcy;&ncy;&icy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ycy;&iecy; &pcy;&ocy;&lcy;&yacy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&iecy;
+&ncy;&ucy;&zhcy;&ncy;&ocy; &zcy;&acy;&pcy;&ocy;&lcy;&ncy;&icy;&tcy;&softcy; &pcy;&iecy;&rcy;&iecy;&dcy; &ocy;&tcy;&pcy;&rcy;&acy;&vcy;&kcy;&ocy;&jcy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &ncy;&acy; &rcy;&acy;&scy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&ncy;&icy;&iecy; Apple. &Tcy;&acy;&kcy;&icy;&mcy; &ocy;&bcy;&rcy;&acy;&zcy;&ocy;&mcy;,
+&vcy;&ycy; &ucy;&vcy;&icy;&dcy;&icy;&tcy;&iecy; &vcy; &tcy;&rcy;&iecy;&ncy;&icy;&rcy;&ocy;&vcy;&ocy;&chcy;&ncy;&ocy;&mcy; &rcy;&iecy;&zhcy;&icy;&mcy;&iecy; &vcy;&scy;&iecy; &tcy;&ocy;, &scy; &chcy;&iecy;&mcy; &vcy;&acy;&mcy; &pcy;&rcy;&icy;&dcy;&iecy;&tcy;&scy;&yacy; &scy;&tcy;&ocy;&lcy;&kcy;&ncy;&ucy;&tcy;&softcy;&scy;&yacy; &pcy;&rcy;&icy;
+&rcy;&iecy;&acy;&lcy;&softcy;&ncy;&ocy;&jcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;. &Ecy;&tcy;&ocy; &ucy;&pcy;&rcy;&acy;&zhcy;&ncy;&iecy;&ncy;&icy;&iecy; &mcy;&ocy;&zhcy;&iecy;&tcy; &pcy;&ocy;&mcy;&ocy;&chcy;&softcy; &vcy;&acy;&mcy; &rcy;&acy;&zcy;&ocy;&bcy;&rcy;&acy;&tcy;&softcy;&scy;&yacy; &vcy; &dcy;&iecy;&tcy;&acy;&lcy;&yacy;&khcy; &lcy;&yucy;&bcy;&ocy;&jcy;
+&pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &icy; &ncy;&iecy; &vcy;&ocy;&lcy;&ncy;&ocy;&vcy;&acy;&tcy;&softcy;&scy;&yacy; &pcy;&rcy;&icy; &ecy;&tcy;&ocy;&mcy; &ocy; &tcy;&ocy;&mcy;, &ocy;&dcy;&ocy;&bcy;&rcy;&yacy;&tcy; &lcy;&icy; &vcy;&acy;&shcy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy;, &vcy;&scy;&iecy; &lcy;&icy;
+&scy;&dcy;&iecy;&lcy;&acy;&ncy;&ocy; &pcy;&rcy;&acy;&vcy;&icy;&lcy;&softcy;&ncy;&ocy; &icy; &tcy;.&pcy;., &vcy;&iecy;&dcy;&softcy; &ecy;&tcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &lcy;&icy;&shcy;&softcy; &ecy;&kcy;&scy;&pcy;&iecy;&rcy;&icy;&mcy;&iecy;&ncy;&tcy;. &Pcy;&ocy; &khcy;&ocy;&dcy;&ucy; &dcy;&iecy;&jcy;&scy;&tcy;&vcy;&icy;&jcy;
+&vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &scy;&dcy;&iecy;&lcy;&acy;&tcy;&softcy; &zcy;&acy;&mcy;&iecy;&tcy;&kcy;&icy;, &scy;&vcy;&ocy;&jcy; &scy;&ocy;&bcy;&scy;&tcy;&vcy;&iecy;&ncy;&ncy;&ycy;&jcy; &chcy;&iecy;&kcy;&lcy;&icy;&scy;&tcy;, &vcy; &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&khcy; &vcy;&ycy;
+&zcy;&acy;&dcy;&ocy;&kcy;&ucy;&mcy;&iecy;&ncy;&tcy;&icy;&rcy;&ucy;&iecy;&tcy;&iecy; &scy;&vcy;&ocy;&jcy; &ocy;&pcy;&ycy;&tcy; &pcy;&iecy;&rcy;&vcy;&ocy;&jcy; "&pcy;&iecy;&scy;&ocy;&chcy;&ncy;&ocy;&jcy;" &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;.</p>
+<p><strong>&Vcy;&tcy;&ocy;&rcy;&ocy;&jcy; &vcy;&acy;&rcy;&icy;&acy;&ncy;&tcy; &bcy;&ocy;&lcy;&iecy;&iecy; &rcy;&iecy;&acy;&lcy;&icy;&scy;&tcy;&icy;&chcy;&ncy;&ycy;&jcy;: &pcy;&rcy;&ocy;&dcy;&iecy;&lcy;&acy;&tcy;&softcy; &vcy;&scy;&iecy; &tcy;&ocy; &zhcy;&iecy; &scy;&acy;&mcy;&ocy;&iecy;, &ncy;&ocy; &pcy;&ocy; &ocy;&tcy;&ncy;&ocy;&shcy;&iecy;&ncy;&icy;&yucy;
+&kcy; &vcy;&acy;&shcy;&iecy;&mcy;&ucy; &rcy;&iecy;&acy;&lcy;&softcy;&ncy;&ocy;&mcy;&ucy; &pcy;&rcy;&ocy;&iecy;&kcy;&tcy;&ucy; &vcy; &iecy;&gcy;&ocy; &tcy;&iecy;&kcy;&ucy;&shchcy;&iecy;&mcy; &scy;&ocy;&scy;&tcy;&ocy;&yacy;&ncy;&icy;&icy;.</strong> &Pcy;&rcy;&ocy;&iecy;&kcy;&tcy; &mcy;&ocy;&zhcy;&iecy;&tcy; &bcy;&ycy;&tcy;&softcy; &gcy;&ocy;&tcy;&ocy;&vcy;
+&lcy;&icy;&shcy;&softcy; &ncy;&acy;&pcy;&ocy;&lcy;&ocy;&vcy;&icy;&ncy;&ucy;, &ncy;&ocy; &ecy;&tcy;&ocy; &scy;&ocy;&vcy;&iecy;&rcy;&shcy;&iecy;&ncy;&ncy;&ocy; &ncy;&iecy; &vcy;&acy;&zhcy;&ncy;&ocy; &dcy;&lcy;&yacy; &ecy;&tcy;&ocy;&gcy;&ocy; &ucy;&pcy;&rcy;&acy;&zhcy;&ncy;&iecy;&ncy;&icy;&yacy;: &vcy;&acy;&shcy;&acy; &zcy;&acy;&dcy;&acy;&chcy;&acy; -
+&lcy;&icy;&shcy;&softcy; &pcy;&ocy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&tcy;&softcy;, &kcy;&acy;&kcy;&icy;&iecy; &shcy;&acy;&gcy;&icy; &pcy;&ocy;&ncy;&acy;&dcy;&ocy;&bcy;&icy;&tcy;&scy;&yacy; &pcy;&rcy;&ocy;&jcy;&tcy;&icy; &icy; &scy; &chcy;&iecy;&mcy; &pcy;&rcy;&icy;&dcy;&iecy;&tcy;&scy;&yacy; &scy;&tcy;&ocy;&lcy;&kcy;&ncy;&ucy;&tcy;&softcy;&scy;&yacy;. &Kcy;&acy;&kcy;
+&icy; &vcy; &pcy;&iecy;&rcy;&vcy;&ocy;&mcy; &vcy;&acy;&rcy;&icy;&acy;&ncy;&tcy;&iecy;, &vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &tcy;&shchcy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &zcy;&acy;&dcy;&ocy;&kcy;&ucy;&mcy;&iecy;&ncy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&tcy;&softcy; &vcy;&scy;&iecy; &shcy;&acy;&gcy;&icy;, &chcy;&tcy;&ocy;&bcy;&ycy; &bcy;&ycy;&tcy;&softcy;
+&bcy;&ocy;&lcy;&iecy;&iecy; &ocy;&scy;&ncy;&ocy;&vcy;&acy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&lcy;&iecy;&ncy;&ncy;&ycy;&mcy;&icy; &kcy;&ocy; &vcy;&rcy;&iecy;&mcy;&iecy;&ncy;&icy; &ncy;&acy;&scy;&tcy;&ocy;&yacy;&shchcy;&iecy;&jcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy;.</p>
+<p>&Pcy;&rcy;&iecy;&icy;&mcy;&ucy;&shchcy;&iecy;&scy;&tcy;&vcy;&ocy; &vcy;&ycy;&pcy;&ocy;&lcy;&ncy;&iecy;&ncy;&icy;&yacy; &pcy;&iecy;&rcy;&vcy;&ocy;&gcy;&ocy; &ucy;&pcy;&rcy;&acy;&zhcy;&ncy;&iecy;&ncy;&icy;&yacy; &scy; &pcy;&ucy;&scy;&tcy;&ycy;&mcy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy;&mcy; &mcy;&ocy;&zhcy;&iecy;&tcy; &scy;&ocy;&scy;&tcy;&ocy;&yacy;&tcy;&softcy; &vcy;
+&tcy;&ocy;&mcy;, &chcy;&tcy;&ocy; &kcy;&ocy;&gcy;&dcy;&acy; &vcy;&ycy; &bcy;&ucy;&dcy;&iecy;&tcy;&iecy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&icy;&rcy;&ocy;&vcy;&acy;&tcy;&softcy; &scy;&vcy;&ocy;&iecy; &ncy;&acy;&scy;&tcy;&ocy;&yacy;&shchcy;&iecy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &icy; &scy;&tcy;&ocy;&lcy;&kcy;&ncy;&iecy;&tcy;&iecy;&scy;&softcy; &scy;
+&ncy;&iecy;&pcy;&rcy;&iecy;&dcy;&vcy;&icy;&dcy;&iecy;&ncy;&ncy;&ycy;&mcy;&icy; &pcy;&rcy;&ocy;&bcy;&lcy;&iecy;&mcy;&acy;&mcy;&icy;, &vcy;&ycy; &scy;&mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &lcy;&iecy;&gcy;&chcy;&iecy; &rcy;&acy;&scy;&pcy;&ocy;&zcy;&ncy;&acy;&tcy;&softcy;, &yacy;&vcy;&lcy;&yacy;&iecy;&tcy;&scy;&yacy; &lcy;&icy; &kcy;&ocy;&ncy;&kcy;&rcy;&iecy;&tcy;&ncy;&acy;&yacy;
+&pcy;&rcy;&ocy;&bcy;&lcy;&iecy;&mcy;&acy; &pcy;&rcy;&ocy;&scy;&tcy;&ocy; &vcy;&acy;&shcy;&iecy;&jcy; &ncy;&iecy;&dcy;&ocy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&ocy;&jcy; &pcy;&ocy; &shcy;&acy;&gcy;&acy;&mcy; &icy;&zcy; &pcy;&iecy;&rcy;&vcy;&ocy;&jcy; &gcy;&rcy;&ucy;&pcy;&pcy;&ycy;, &tcy;&ocy; &iecy;&scy;&tcy;&softcy; &ocy;&shcy;&icy;&bcy;&kcy;&ocy;&jcy; &vcy;
+&ocy;&bcy;&shchcy;&iecy;&mcy; &scy;&lcy;&iecy;&dcy;&ocy;&vcy;&acy;&ncy;&icy;&icy; &gcy;&acy;&jcy;&dcy;&lcy;&acy;&ncy;&acy;&mcy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&mcy; &pcy;&ocy;&dcy;&chcy;&icy;&ncy;&yacy;&iecy;&tcy;&scy;&yacy; &lcy;&yucy;&bcy;&ocy;&iecy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy;, &icy;&lcy;&icy; &ecy;&tcy;&ocy; &icy;&mcy;&iecy;&ncy;&ncy;&ocy;
+&scy;&pcy;&iecy;&tscy;&icy;&fcy;&icy;&kcy;&acy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;.</p>
+<p>&Lcy;&icy;&chcy;&ncy;&ocy; &ucy; &mcy;&iecy;&ncy;&yacy; 3 &gcy;&ocy;&dcy;&acy; &ncy;&acy;&zcy;&acy;&dcy;, &kcy; &scy;&ocy;&zhcy;&acy;&lcy;&iecy;&ncy;&icy;&yucy;, &ncy;&iecy; &bcy;&ycy;&lcy;&ocy; &zcy;&ncy;&acy;&ncy;&icy;&yacy; &ocy;&bcy; &ecy;&tcy;&ocy;&jcy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&iecy; &rcy;&acy;&ncy;&ncy;&iecy;&jcy;
+&icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&icy;, &pcy;&ocy;&ecy;&tcy;&ocy;&mcy;&ucy; &mcy;&ncy;&iecy; &pcy;&rcy;&icy;&shcy;&lcy;&ocy;&scy;&softcy; &pcy;&ocy;&vcy;&ocy;&zcy;&icy;&tcy;&softcy;&scy;&yacy; &scy; &rcy;&iecy;&lcy;&icy;&zcy;&ocy;&mcy; &mcy;&ocy;&iecy;&gcy;&ocy; &pcy;&iecy;&rcy;&vcy;&ocy;&gcy;&ocy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;
+&icy;&mcy;&iecy;&ncy;&ncy;&ocy; &vcy; &tcy;&ucy; "&scy;&acy;&mcy;&ucy;&yucy; &pcy;&ocy;&scy;&lcy;&iecy;&dcy;&ncy;&yucy;&yucy;" &rcy;&iecy;&lcy;&icy;&zcy;&ncy;&ucy;&yucy; &ncy;&iecy;&dcy;&iecy;&lcy;&yucy;. &Vcy;&scy;&iecy; &pcy;&rcy;&ocy;&khcy;&ocy;&dcy;&icy;&lcy;&ocy; &vcy; &bcy;&ocy;&lcy;&softcy;&shcy;&ocy;&jcy; &scy;&pcy;&iecy;&shcy;&kcy;&iecy; &icy;
+&pcy;&ocy;&tcy;&ocy;&mcy;&ucy; &vcy; &vcy;&ocy;&lcy;&ncy;&iecy;&ncy;&icy;&icy; &ocy; &tcy;&ocy;&mcy;, &pcy;&rcy;&ocy;&jcy;&dcy;&iecy;&tcy; &lcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&iecy; &pcy;&rcy;&ocy;&vcy;&iecy;&rcy;&kcy;&ucy; App Store, &icy;&lcy;&icy; &vcy;&ocy;&zcy;&ncy;&icy;&kcy;&ncy;&ucy;&tcy;
+&kcy;&acy;&kcy;&icy;&iecy;-&tcy;&ocy; &ncy;&iecy;&pcy;&rcy;&iecy;&dcy;&vcy;&icy;&dcy;&iecy;&ncy;&ncy;&ycy;&iecy; &pcy;&rcy;&iecy;&pcy;&yacy;&tcy;&scy;&tcy;&vcy;&icy;&yacy;.</p>
+<p>&Scy; &tcy;&iecy;&khcy; &pcy;&ocy;&rcy;, &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &scy;&tcy;&acy;&lcy; &ncy;&acy;&mcy;&ncy;&ocy;&gcy;&ocy; &lcy;&ucy;&chcy;&shcy;&iecy;:</p>
+<ul class="simple">
+<li>&Scy;&acy;&mcy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy; &scy;&tcy;&acy;&lcy; &bcy;&ocy;&lcy;&iecy;&iecy; &ocy;&tcy;&lcy;&acy;&zhcy;&iecy;&ncy;&ncy;&ycy;&mcy;: &scy;&tcy;&acy;&lcy;&ocy; &vcy; &tscy;&iecy;&lcy;&ocy;&mcy; &mcy;&iecy;&ncy;&softcy;&shcy;&iecy; &ocy;&shcy;&icy;&bcy;&ocy;&kcy;, &ocy;&shcy;&icy;&bcy;&kcy;&icy; &scy;&tcy;&acy;&lcy;&icy;
+&bcy;&ocy;&lcy;&iecy;&iecy; &pcy;&ocy;&ncy;&yacy;&tcy;&ncy;&ycy;&mcy;&icy; &icy; &dcy;&rcy;&ucy;&zhcy;&iecy;&lcy;&yucy;&bcy;&ncy;&ycy;&mcy;&icy;;</li>
+<li>&Vcy;&acy;&lcy;&icy;&dcy;&acy;&tscy;&icy;&icy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&iecy; &pcy;&rcy;&ocy;&icy;&zcy;&vcy;&ocy;&dcy;&yacy;&tcy;&scy;&yacy; Xcode &dcy;&ocy; &zcy;&acy;&gcy;&rcy;&ucy;&zcy;&kcy;&icy; &acy;&rcy;&khcy;&icy;&vcy;&acy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &ncy;&acy;
+iTunesConnect, &scy;&tcy;&acy;&lcy;&icy; &bcy;&ocy;&lcy;&iecy;&iecy; &kcy;&acy;&chcy;&iecy;&scy;&tcy;&vcy;&iecy;&ncy;&ncy;&ycy;&mcy;&icy;, &pcy;&ocy;&ecy;&tcy;&ocy;&mcy;&ucy; &mcy;&ncy;&ocy;&gcy;&icy;&iecy; &ocy;&shcy;&icy;&bcy;&kcy;&icy; &tcy;&iecy;&pcy;&iecy;&rcy;&softcy;
+&vcy;&ycy;&yacy;&vcy;&lcy;&yacy;&yucy;&tcy;&scy;&yacy; &dcy;&ocy; &scy;&ocy;&bcy;&scy;&tcy;&vcy;&iecy;&ncy;&ncy;&ocy; &pcy;&ocy;&dcy;&acy;&chcy;&icy; &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &ncy;&acy; &rcy;&acy;&scy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&ncy;&icy;&iecy;;</li>
+<li>Apple TestFlight, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&iecy; &pcy;&ocy;&zcy;&vcy;&ocy;&lcy;&yacy;&iecy;&tcy; &vcy;&acy;&mcy; &bcy;&iecy;&tcy;&acy;-&tcy;&iecy;&scy;&tcy;&icy;&rcy;&ocy;&vcy;&acy;&tcy;&softcy; &tcy;&iecy; &scy;&acy;&mcy;&ycy;&iecy; &bcy;&icy;&lcy;&dcy;&ycy; &vcy;&acy;&shcy;&iecy;&gcy;&ocy;
+&pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy;, &kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&iecy; &zcy;&acy;&tcy;&iecy;&mcy; &pcy;&ocy;&dcy;&acy;&yucy;&tcy;&scy;&yacy; &ncy;&acy; &rcy;&acy;&scy;&scy;&mcy;&ocy;&tcy;&rcy;&iecy;&ncy;&icy;&iecy; App Store Review.</li>
+</ul>
+<p>&Vcy;&scy;&iecy; &ecy;&tcy;&icy; &ucy;&lcy;&ucy;&chcy;&shcy;&iecy;&ncy;&icy;&yacy; &icy; &icy;&zcy;&mcy;&iecy;&ncy;&iecy;&ncy;&icy;&yacy; &ocy;&chcy;&iecy;&ncy;&softcy; &scy;&pcy;&ocy;&scy;&ocy;&bcy;&scy;&tcy;&vcy;&ucy;&yucy;&tcy; &tcy;&ocy;&mcy;&ucy;, &chcy;&tcy;&ocy;&bcy;&ycy; &dcy;&iecy;&lcy;&acy;&tcy;&softcy;
+&pcy;&rcy;&iecy;&dcy;&vcy;&acy;&rcy;&icy;&tcy;&iecy;&lcy;&softcy;&ncy;&ucy;&yucy; &ocy;&bcy;&kcy;&acy;&tcy;&kcy;&ucy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&acy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &lcy;&iecy;&gcy;&kcy;&ocy;&jcy; &icy; &icy;&ncy;&fcy;&ocy;&rcy;&mcy;&acy;&tcy;&icy;&vcy;&ncy;&ocy;&jcy;.</p>
+</div>
+<div class="section" id="section-2">
+<h2 id="zakliuchenie">&Zcy;&acy;&kcy;&lcy;&yucy;&chcy;&iecy;&ncy;&icy;&iecy;</h2>
+<p>&Vcy; &ecy;&tcy;&ocy;&jcy; &scy;&tcy;&acy;&tcy;&softcy;&iecy; &yacy; &pcy;&ocy;&scy;&tcy;&acy;&rcy;&acy;&lcy;&scy;&yacy; &pcy;&ocy;&dcy;&iecy;&lcy;&icy;&tcy;&softcy;&scy;&yacy; &scy;&vcy;&ocy;&icy;&mcy; &zcy;&ncy;&acy;&ncy;&icy;&iecy;&mcy; &ocy; &pcy;&rcy;&acy;&kcy;&tcy;&icy;&kcy;&iecy; Walking Skeleton
+&icy; &iecy;&iecy; &vcy;&ocy;&zcy;&mcy;&ocy;&zhcy;&ncy;&ocy;&mcy; &pcy;&rcy;&icy;&mcy;&iecy;&ncy;&iecy;&ncy;&icy;&icy; &kcy; &pcy;&rcy;&ocy;&tscy;&iecy;&scy;&scy;&ucy; &pcy;&ocy;&dcy;&gcy;&ocy;&tcy;&ocy;&vcy;&kcy;&icy; iOS &pcy;&rcy;&icy;&lcy;&ocy;&zhcy;&iecy;&ncy;&icy;&yacy; &kcy; &pcy;&ucy;&bcy;&lcy;&icy;&kcy;&acy;&tscy;&icy;&icy; &vcy;
+App Store. &Lcy;&icy;&chcy;&ncy;&ocy; &mcy;&ncy;&iecy; &ecy;&tcy;&ocy; &zcy;&ncy;&acy;&ncy;&icy;&iecy; &scy;&tcy;&acy;&lcy;&ocy; &dcy;&ocy;&scy;&tcy;&ucy;&pcy;&ncy;&ocy; &lcy;&icy;&shcy;&softcy; &ncy;&acy; &tcy;&rcy;&iecy;&tcy;&softcy;&iecy;&mcy; &gcy;&ocy;&dcy;&ucy; &mcy;&ocy;&iecy;&jcy; &kcy;&acy;&rcy;&softcy;&iecy;&rcy;&ycy;
+&rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&chcy;&icy;&kcy;&acy; iOS, &icy; &tcy;&acy;&kcy; &kcy;&acy;&kcy; &ecy;&tcy;&ocy; &zcy;&ncy;&acy;&ncy;&icy;&iecy; &ocy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy;&scy;&tcy;&icy; &rcy;&acy;&ncy;&ncy;&iecy;&jcy; &icy;&ncy;&tcy;&iecy;&gcy;&rcy;&acy;&tscy;&icy;&icy; &mcy;&ncy;&iecy;
+&kcy;&acy;&zhcy;&iecy;&tcy;&scy;&yacy; &ocy;&chcy;&iecy;&ncy;&softcy; &tscy;&iecy;&ncy;&ncy;&ycy;&mcy;, &yacy; &scy;&chcy;&icy;&tcy;&acy;&yucy; &scy;&vcy;&ocy;&icy;&mcy; &pcy;&rcy;&ocy;&fcy;&iecy;&scy;&scy;&icy;&ocy;&ncy;&acy;&lcy;&softcy;&ncy;&ycy;&mcy; &dcy;&ocy;&lcy;&gcy;&ocy;&mcy; &pcy;&ocy;&dcy;&iecy;&lcy;&icy;&tcy;&softcy;&scy;&yacy; &icy;&mcy; &scy;&ocy;
+&scy;&vcy;&ocy;&icy;&mcy;&icy; &mcy;&iecy;&ncy;&iecy;&iecy; &ocy;&pcy;&ycy;&tcy;&ncy;&ycy;&mcy;&icy; &vcy; iOS &rcy;&acy;&zcy;&rcy;&acy;&bcy;&ocy;&tcy;&kcy;&iecy; &kcy;&ocy;&lcy;&lcy;&iecy;&gcy;&acy;&mcy;&icy;. &Ncy;&acy;&dcy;&iecy;&yucy;&scy;&softcy;, &chcy;&tcy;&ocy; &scy;&tcy;&acy;&tcy;&softcy;&yacy;
+&dcy;&iecy;&jcy;&scy;&tcy;&vcy;&icy;&tcy;&iecy;&lcy;&softcy;&ncy;&ocy; &ocy;&kcy;&acy;&zhcy;&iecy;&tcy;&scy;&yacy; &pcy;&ocy;&lcy;&iecy;&zcy;&ncy;&ocy;&jcy; &ncy;&acy;&chcy;&icy;&ncy;&acy;&yucy;&shchcy;&icy;&mcy;.</p>
+<p>&Pcy;&rcy;&icy; &ncy;&iecy;&ocy;&bcy;&khcy;&ocy;&dcy;&icy;&mcy;&ocy;&scy;&tcy;&icy;, &dcy;&lcy;&yacy; &ocy;&bcy;&rcy;&acy;&tcy;&ncy;&ocy;&jcy; &scy;&vcy;&yacy;&zcy;&icy; &vcy;&ycy; &mcy;&ocy;&zhcy;&iecy;&tcy;&iecy; &scy;&vcy;&yacy;&zcy;&acy;&tcy;&softcy;&scy;&yacy; &scy;&ocy; &mcy;&ncy;&ocy;&jcy; &pcy;&ocy; email,
+&kcy;&ocy;&tcy;&ocy;&rcy;&ycy;&jcy; &mcy;&ocy;&zhcy;&ncy;&ocy; &ncy;&acy;&jcy;&tcy;&icy; &ncy;&acy; &mcy;&ocy;&iecy;&mcy; &pcy;&rcy;&ocy;&fcy;&icy;&lcy;&iecy; GitHub.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

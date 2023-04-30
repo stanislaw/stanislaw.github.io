@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Using mutation testing score to measure a reliability of a single function</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="This post describes interesting and unusual application of mutation testing method to a single function, not to a whole project." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2017-05-05-unbreakable-code.html"
+    rel="bookmark"
+    title="Permalink to Using mutation testing score to measure a reliability of a single function">
+    Using mutation testing score to measure a reliability of a single function
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#step-1-original-algorithm-with-mutation-score-100" title="Step 1: Original algorithm with mutation score: 100%">Step 1: Original algorithm with mutation score: 100%</a></li><li><a class="toc-href" href="#step-1-mutation-testing-report" title="Step 1: mutation testing report">Step 1: mutation testing report</a></li><li><a class="toc-href" href="#step-2-improved-algorithm-with-mutation-score-0" title="Step 2: Improved algorithm with mutation score: 0%">Step 2: Improved algorithm with mutation score: 0%</a></li><li><a class="toc-href" href="#step-3-mutation-testing-report" title="Step 3: Mutation testing report">Step 3: Mutation testing report</a></li><li><a class="toc-href" href="#observations" title="Observations">Observations</a></li><li><a class="toc-href" href="#conclusion" title="Conclusion">Conclusion</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Using mutation testing score to measure a reliability of a single function</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2017-05-05T19:20:00+02:00">
+                2017-05-05
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/mull.html">Mull</a> </div>
+</aside>
+    <p><a class="reference external" href="https://github.com/mull-project/mull">Mull project</a> is slowly transforming
+from an early-stage research project to a tool that allows us to do a mutation
+testing analysis on real-world projects. As we develop Mull further and apply
+mutation testing to different projects, we learn more about a behavior of a code
+and a test code.</p>
+<p>This post describes interesting and unusual application of mutation testing
+method to a single function, not to a whole project.</p>
+<p>In mutation testing theory there is a concept of "mutation score" which is
+defined as:</p>
+<div class="highlight"><pre><span></span>mutation score = number of mutants killed / total number of mutants
+</pre></div>
+<p>Mutation testing aims at achieving 100% mutation score on a codebase because
+this 100% means that code's tests are so good that they can detect all of the
+possible mutations that can be applied to that code. See <a class="reference external" href="https://en.wikipedia.org/wiki/Mutation_testing">Mutation Testing</a> on Wikipedia where this is
+fully explained.</p>
+<p>Let's now think about what mutation score means for a single function. Let's
+consider a function and with one test for it:</p>
+<div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">algorithm</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">result</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">algorithm</span><span class="p">,</span><span class="w"> </span><span class="n">calculates</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">algorithm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>Let's imagine that we have run a mutation testing tool on this one test and got
+10 mutants generated with a mutation score of 50%. Obviously, in this simple
+example, these 10 mutations were generated somewhere in <tt class="docutils literal">algorithm</tt> function.
+Our test failed on 5 mutations (these 5 "mutants were killed") and passed on the
+other 5 mutations (these 5 "mutants were not killed").</p>
+<p>If we think for a moment that each of these 10 mutations can substitute for some
+real-world problem like a hardware error, cosmic rays, malevolent interference,
+then we can read this mutation score as the following:</p>
+<p><strong>mutation score of 50% for 10 mutations in 1 function =&gt; 10 different bad
+things can happen to this function and 5 of these will make the final result
+incorrect.</strong></p>
+<p>Let's pretend that we do want our function to work somewhere where having the
+result of this function correct is super-critical. Then mutation score becomes
+an interesting metric that we can use to evaluate how reliable our function is:</p>
+<p><strong>If we can write our function in a way that mutation testing applied to its
+tests will always produce a mutation score of 0%, then we can consider our
+function tolerant to these errors.</strong></p>
+<p>Of course, the number of errors that we can simulate is limited by a number of
+mutation operators that a particular tool supports. In our case Mull supports</p>
+<ul class="simple">
+<li><tt class="docutils literal">AddMutation</tt>, replaces "+" with "-"</li>
+<li><tt class="docutils literal">NegateCondition</tt>, replaces "true" with "false", "==" with "!=", "&lt;" with
+"&gt;=", etc</li>
+<li><tt class="docutils literal">RemoveVoidFunctionCall</tt>, if your function has a
+<tt class="docutils literal">callToSomeVoidFunction()</tt>, this call is simply removed.</li>
+</ul>
+<p>Given this very limited number of mutation operators let's write such a function
+that would give us a mutation score of 0%.</p>
+<div class="section" id="step-1-original-algorithm-with-mutation-score-100">
+<h2 id="step-1-original-algorithm-with-mutation-score-100">Step 1: Original algorithm with mutation score: 100%</h2>
+<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"gtest/gtest.h"</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">safeAlgorithm</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">safeAlgorithm</span><span class="p">,</span><span class="w"> </span><span class="n">calculates</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">safeAlgorithm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>If we run Mull against this code, it finds only one mutation point:
+<tt class="docutils literal">AddMutation</tt> operator which for <tt class="docutils literal">a + b</tt> expression generates a mutation <tt class="docutils literal">a
+- b</tt>:</p>
+<div class="highlight"><pre><span></span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">         </span><span class="o">^</span>
+</pre></div>
+<p>Final report contains 1 mutation which is killed by <tt class="docutils literal">safeAlgorithm.calculates</tt>
+test:</p>
+<div class="highlight"><pre><span></span>Note: Google Test filter = safeAlgorithm.calculates
+[==========] Running 1 test from 1 test case.
+[----------] Global test environment set-up.
+[----------] 1 test from safeAlgorithm
+[ RUN      ] safeAlgorithm.calculates
+/usr/local/mull/mull/unbreakable/unbreakable.cpp:8: Failure
+    Expected: safeAlgorithm(2, 3)
+    Which is: -1
+To be equal to: 5
+[  FAILED  ] safeAlgorithm.calculates (0 ms)
+[----------] 1 test from safeAlgorithm (0 ms total)
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test case ran. (0 ms total)
+[ PASSED ] 0 tests.
+[ FAILED ] 1 test, listed below:
+[ FAILED ] safeAlgorithm.calculates
+
+1 FAILED TEST
+</pre></div>
+</div>
+<div class="section" id="step-1-mutation-testing-report">
+<h2 id="step-1-mutation-testing-report">Step 1: mutation testing report</h2>
+<img src="/images/2017-05-05-unbreakable/Unbreakable_1.png"/></div>
+<div class="section" id="step-2-improved-algorithm-with-mutation-score-0">
+<h2 id="step-2-improved-algorithm-with-mutation-score-0">Step 2: Improved algorithm with mutation score: 0%</h2>
+<p>Obviously, we cannot use the original algorithm code as is because
+<tt class="docutils literal">AddMutation</tt> will break it and we will not have a valid result of the
+algorithm. In my solution I found that I had to introduce a redundancy: 3
+versions of the same algorithm located in different functions so that
+<tt class="docutils literal">AddMutation</tt> can only break one of them. The number 3 comes from a minimal
+number of 2 required for "consensus": to decide on which 2 of 3 algorithms work
+as expected.</p>
+<div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">"gtest/gtest.h"</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">algorithm1</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">algorithm2</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">algorithm3</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">safeAlgorithm</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">alg1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">algorithm1</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">alg2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">algorithm2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">alg3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">algorithm3</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">alg1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">alg2</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="o">*</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alg1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">alg2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">alg3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="o">*</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alg2</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">alg1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">alg3</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="o">*</span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">alg1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">safeAlgorithm</span><span class="p">,</span><span class="w"> </span><span class="n">calculates</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">safeAlgorithm</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_TRUE</span><span class="p">(</span><span class="n">success</span><span class="p">);</span>
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="step-3-mutation-testing-report">
+<h2 id="step-3-mutation-testing-report">Step 3: Mutation testing report</h2>
+<img src="/images/2017-05-05-unbreakable/Unbreakable_2.png"/></div>
+<div class="section" id="observations">
+<h2 id="observations">Observations</h2>
+<p>1. Mull currently only supports 3 mutation operators: <tt class="docutils literal">AddMutation</tt>,
+<tt class="docutils literal">RemoveVoidFunctionCall</tt>, <tt class="docutils literal">NegateCondition</tt>. We saw that only
+<tt class="docutils literal">AddMutation</tt> and <tt class="docutils literal">NegateCondition</tt> contributed to the mutations. When Mull
+supports more mutation operators, this code will no longer have a mutation score
+of 0% because more mutations will find a way to fail the test.</p>
+<p>2. Only single mutations were applied. The code would be very different if we
+applied combinations of 2 and more mutations.</p>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion">Conclusion</h2>
+<p>Using mutation testing score as a metric for a reliability of a single function
+is an interesting application of mutation testing tool. I am looking forward to
+running Mull on this code when Mull supports much more mutation operators than
+it supports currently.</p>
+<p>I would be happy to learn about your experience with writing unbreakable
+functions or if you know if there are any white papers about attempts to measure
+a reliability of a source code. Feel free to <a class="reference external" href="mailto:s.pankevich@gmail.com">drop me a line</a>.</p>
+<p>See full reports here:</p>
+<ul class="simple">
+<li><a class="reference external" href="./files/2017-05-05-unbreakable/Unbreakable_1.zip">Mutation testing report for step 1</a></li>
+<li><a class="reference external" href="./files/2017-05-05-unbreakable/Unbreakable_2.zip">Mutation testing report for step 2</a></li>
+</ul>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

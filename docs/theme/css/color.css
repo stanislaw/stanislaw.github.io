@@ -1,0 +1,188 @@
+:root {
+
+  --color-fg--light: #000;
+  --color-bg--light: #FFF;
+
+  --color-fg--dark: #dddddd;
+  --color-bg--dark: #282828;
+
+  --scrollbarBG: var(--color-bg--dark);
+  --thumbBG: var(--color-fg--dark);
+
+  /* code & math */
+  --color-fg--code: var(--color-fg--dark);
+  --color-bg--code: var(--color-bg--dark);
+  --color-fg--math: #900000;
+  --color-bg--math: transparent;
+
+  /* elements */
+  /*
+  --color-fg--code-inline: var(--color-bg);
+  --color-bg--code-inline: var(--color-fg);
+
+  --color-fg--link: var(--color-fg);
+  --color-bg--link: var(--color-bg);
+  --color-fg--link-hover: var(--color-bg);
+  --color-bg--link-hover: var(--color-fg);
+  --color-fg--link-active: var(--color-bg);
+  --color-bg--link-active: var(--color-fg);
+
+  --color-fg--tag: var(--color-bg);
+  --color-bg--tag: var(--color-fg);
+  --color-fg--tag-hover: var(--color-fg);
+  --color-bg--tag-hover: var(--color-bg);
+  */
+}
+
+/*
+ * Base light scheme
+ */
+.color\:base,
+.color\:main {
+  --color-fg: var(--color-fg--light);
+  --color-bg: var(--color-bg--light);
+
+  /* Elements inherited from --color-bg/fg */
+  --color-fg--code-inline: var(--color-bg);
+  --color-bg--code-inline: var(--color-fg);
+
+  --color-fg--link: var(--color-fg);
+  --color-bg--link: var(--color-bg);
+  --color-fg--link-hover: var(--color-bg);
+  --color-bg--link-hover: var(--color-fg);
+  --color-fg--link-active: var(--color-bg);
+  --color-bg--link-active: var(--color-fg);
+
+  --color-fg--tag: var(--color-bg);
+  --color-bg--tag: var(--color-fg);
+  --color-fg--tag-hover: var(--color-fg);
+  --color-bg--tag-hover: var(--color-bg);
+
+  /* base */
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+}
+/*
+ * Base dark scheme
+ */
+@media (prefers-color-scheme: dark) {
+  .color\:base,
+  .color\:main {
+    --color-fg: var(--color-fg--dark);
+    --color-bg: var(--color-bg--dark);
+    --color-fg--math: #ff9900;
+  }
+
+  img {
+    filter: contrast(0.5);
+  }
+}
+
+/*
+ * Dark sidebar scheme
+ */
+/* Doesn't change the scheme when switching between dark and light */
+.color\:aside,
+.color\:footer {
+  --color-fg: var(--color-fg--dark);
+  --color-bg: var(--color-bg--dark);
+
+  /* Elements inherited from --color-bg/fg */
+  --color-fg--code-inline: var(--color-bg);
+  --color-bg--code-inline: var(--color-fg);
+
+  --color-fg--link: var(--color-fg);
+  --color-bg--link: var(--color-bg);
+  --color-fg--link-hover: var(--color-bg);
+  --color-bg--link-hover: var(--color-fg);
+  --color-fg--link-active: var(--color-bg);
+  --color-bg--link-active: var(--color-fg);
+
+  --color-fg--tag: var(--color-bg);
+  --color-bg--tag: var(--color-fg);
+  --color-fg--tag-hover: var(--color-fg);
+  --color-bg--tag-hover: var(--color-bg);
+
+  /* base */
+  color: var(--color-fg);
+  background-color: var(--color-bg);
+}
+
+/* scrollbar */
+
+::-webkit-scrollbar:horizontal,
+::-webkit-scrollbar:vertical,
+::-webkit-scrollbar {
+  background-color: var(--scrollbarBG);
+}
+* {
+	scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+	scrollbar-width: thin;
+}
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-track:horizontal,
+::-webkit-scrollbar-track:vertical,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-track-piece {
+  background-color: var(--scrollbarBG);
+}
+::-webkit-scrollbar-thumb:horizontal,
+::-webkit-scrollbar-thumb:vertical,
+::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border: 5px solid var(--scrollbarBG);
+  border-radius: 8px;
+}
+
+/* link */
+a:link, a:visited {
+	color: var(--color-fg--link);
+	background-color: var(--color-bg--link);
+}
+a:hover {
+	color: var(--color-fg--link-hover);
+	background-color: var(--color-bg--link-hover);
+}
+a:active {
+	color: var(--color-fg--link-active);
+	background-color: var(--color-bg--link-active);
+}
+
+/* tag */
+.tag,
+a.tag {
+	color: var(--color-fg--tag);
+	background-color: var(--color-bg--tag);
+  border: 1px solid;
+}
+.tag:hover,
+a.tag:hover {
+  color: var(--color-fg--tag-hover);
+	background-color: var(--color-bg--tag-hover);
+}
+
+/* code */
+pre *,
+code *,
+tt * {
+  color: unset;
+	background-color: unset;
+}
+pre {
+  color: var(--color-fg--code);
+	background-color: var(--color-bg--code);
+}
+code,
+tt {
+  color: var(--color-fg--code-inline);
+	background-color: var(--color-bg--code-inline);
+}
+
+/* math */
+.formula {
+	color: var(--color-fg--math);
+}
+.formula .mbox,
+.formula .text {
+	color: var(--color-fg);
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Assertions in Jinja templates</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="One way of implementing assertions in Jinja templates." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2023-03-22-jinja-assertions.html"
+    rel="bookmark"
+    title="Permalink to Assertions in Jinja templates">
+    Assertions in Jinja templates
+  </a>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Assertions in Jinja templates</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2023-03-22T10:20:00+01:00">
+                2023-03-22
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/python.html">Python</a> </div>
+</aside>
+    <p>This post captures one way of implementing assertions in Jinja templates. The
+assertion mechanism is inspired by this StackOverflow answer: <a class="reference external" href="https://stackoverflow.com/a/24789436/598057">How to raise an
+exception in a Jinja2 macro?</a> and
+is based on the <a class="reference external" href="https://jinja.palletsprojects.com/en/latest/extensions">Jinja Extensions feature</a>.</p>
+<p>The following code becomes possible in Jinja template:</p>
+<div class="highlight"><pre><span></span><span class="cp">{%</span>- <span class="k">assert</span> <span class="nv">variable</span> <span class="k">is</span> <span class="nf">string</span> -<span class="cp">%}</span>
+<span class="cp">{%</span>- <span class="k">assert</span>
+  <span class="nv">link.__class__.__name__</span> <span class="o">==</span> <span class="s2">"FileReference"</span><span class="o">,</span>
+  <span class="s2">"Expected FileReference, got: "</span><span class="o">~</span><span class="nv">link</span>
+-<span class="cp">%}</span>
+</pre></div>
+<p>Jinja <a class="reference external" href="https://jinja.palletsprojects.com/en/latest/templates/#list-of-builtin-tests">supports a number of checks</a>,
+all of which are usable with this approach.</p>
+<p>The code of the extension is as follows.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Environment</span><span class="p">,</span>
+    <span class="n">FileSystemLoader</span><span class="p">,</span>
+    <span class="n">StrictUndefined</span><span class="p">,</span>
+    <span class="n">TemplateRuntimeError</span><span class="p">,</span>
+    <span class="n">nodes</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">jinja2.ext</span> <span class="kn">import</span> <span class="n">Extension</span>
+
+<span class="kn">from</span> <span class="nn">strictdoc</span> <span class="kn">import</span> <span class="n">environment</span>
+
+
+<span class="c1"># The solution was inspired by the StackOverflow question:</span>
+<span class="c1"># How to raise an exception in a Jinja2 macro?</span>
+<span class="c1"># https://stackoverflow.com/questions/21778252</span>
+<span class="k">class</span> <span class="nc">AssertExtension</span><span class="p">(</span><span class="n">Extension</span><span class="p">):</span>
+    <span class="c1"># This is our keyword(s):</span>
+    <span class="n">tags</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"assert"</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environment</span><span class="p">):</span>  <span class="c1"># pylint: disable=redefined-outer-name</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">environment</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_line</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_file</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">):</span>
+        <span class="n">lineno</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">parser</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span><span class="o">.</span><span class="n">lineno</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_line</span> <span class="o">=</span> <span class="n">lineno</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_file</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">filename</span>
+
+        <span class="n">condition_node</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">parser</span><span class="o">.</span><span class="n">stream</span><span class="o">.</span><span class="n">skip_if</span><span class="p">(</span><span class="s2">"comma"</span><span class="p">):</span>
+            <span class="n">context_node</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_expression</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">context_node</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">Const</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nodes</span><span class="o">.</span><span class="n">CallBlock</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">call_method</span><span class="p">(</span>
+                <span class="s2">"_assert"</span><span class="p">,</span> <span class="p">[</span><span class="n">condition_node</span><span class="p">,</span> <span class="n">context_node</span><span class="p">],</span> <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span>
+            <span class="p">),</span>
+            <span class="p">[],</span>
+            <span class="p">[],</span>
+            <span class="p">[],</span>
+            <span class="n">lineno</span><span class="o">=</span><span class="n">lineno</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_assert</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">context_or_none</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">caller</span>
+    <span class="p">):</span>  <span class="c1"># pylint: disable=unused-argument</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">condition</span><span class="p">:</span>
+            <span class="n">error_message</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Assertion error in the Jinja template: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_file</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_line</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">context_or_none</span><span class="p">:</span>
+                <span class="n">error_message</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" Message: </span><span class="si">{</span><span class="n">context_or_none</span><span class="si">}</span><span class="s2">"</span>
+            <span class="k">raise</span> <span class="n">TemplateRuntimeError</span><span class="p">(</span><span class="n">error_message</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">""</span>
+
+
+<span class="n">jinja_environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+    <span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="s2">"path-to-templates"</span><span class="p">),</span>
+    <span class="n">undefined</span><span class="o">=</span><span class="n">StrictUndefined</span><span class="p">,</span>
+    <span class="n">extensions</span><span class="o">=</span><span class="p">[</span><span class="n">AssertExtension</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="c1"># use jinja_environment...</span>
+</pre></div>
+<p>Note that in this code, <tt class="docutils literal">StrictUndefined</tt> is also used to make Jinja raise
+exceptions when an undefined variable is referenced from a Jinja template. The
+assertions build the next level of more precise checks on top of
+<tt class="docutils literal">StrictUndefined</tt>.</p>
+<p>I have come to the idea of writing this extension because of several visual
+regressions that I found in <a class="reference external" href="https://github.com/strictdoc-project/strictdoc">my project</a>. Without assertions, a number
+of errors can be easily introduced in Jinja templates, and these errors can be
+quite difficult to detect.</p>
+<p>I would be happy to learn about your experience with making Jinja a safer markup
+language. Feel free to <a class="reference external" href="mailto:s.pankevich@gmail.com">drop me a line</a>.</p>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

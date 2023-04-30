@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Notes on "Test-Driven Development by Example" by Kent Beck</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="This is my notes on "Test-Driven Development by Example", book by Kent Beck published in 2004." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2016-01-25-notes-on-test-driven-development-by-example-by-kent-beck.html"
+    rel="bookmark"
+    title="Permalink to Notes on "Test-Driven Development by Example" by Kent Beck">
+    Notes on &quot;Test-Driven Development by Example&quot; by Kent Beck
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#clean-code-that-works" title="Clean code that works">Clean code that works</a></li><li><a class="toc-href" href="#two-rules-of-tdd" title="Two rules of TDD">Two rules of TDD</a></li><li><a class="toc-href" href="#tdd-cycle" title="TDD cycle">TDD cycle</a></li><li><a class="toc-href" href="#write-a-failing-automated-test-before-you-write-any-code" title="Write a failing automated test before you write any code">Write a failing automated test before you write any code</a></li><li><a class="toc-href" href="#three-techniques-for-quickly-getting-to-green" title="Three techniques for quickly getting to green">Three techniques for quickly getting to green</a><ul><li><a class="toc-href" href="#fake-it" title="Fake It">Fake It</a></li><li><a class="toc-href" href="#obvious-implementation" title="Obvious implementation">Obvious implementation</a></li><li><a class="toc-href" href="#triangulation" title="Triangulation">Triangulation</a></li></ul></li><li><a class="toc-href" href="#moving-at-different-speeds_1" title="Moving at different speeds">Moving at different speeds</a></li><li><a class="toc-href" href="#duplication" title="Duplication">Duplication</a></li><li><a class="toc-href" href="#test-is-an-object" title="Test is an Object">Test is an Object</a></li><li><a class="toc-href" href="#self-shunt" title="Self Shunt">Self Shunt</a></li><li><a class="toc-href" href="#broken-test-and-clean-check-in" title="Broken Test and Clean Check-in">Broken Test and Clean Check-in</a></li><li><a class="toc-href" href="#how-much-feedback-do-you-need" title="How much feedback do you need?">How much feedback do you need?</a></li><li><a class="toc-href" href="#xunit" title="xUnit">xUnit</a></li><li><a class="toc-href" href="#influence-diagrams" title="Influence diagrams">Influence diagrams</a><ul><li><a class="toc-href" href="#the-no-time-for-testing-death-spiral" title='The "no time for testing" death spiral'>The "no time for testing" death spiral</a></li><li><a class="toc-href" href="#not-enough-time-to-test-reduces-the-available-time" title="Not enough time to test reduces the available time">Not enough time to test reduces the available time</a></li></ul></li><li><a class="toc-href" href="#when-should-you-delete-tests_1" title="When should you delete tests?">When should you delete tests?</a></li><li><a class="toc-href" href="#fear-vs-confidence" title="Fear vs Confidence">Fear vs Confidence</a></li><li><a class="toc-href" href="#lesson-learned-move-slowly" title="Lesson learned: move slowly">Lesson learned: move slowly</a></li><li><a 1="" class="toc-href" href="#lesson-learned-dont-stay-red-longer-than-1-minute" longer="" minute'="" red="" stay="" t="" than="" title="Lesson learned: don">Lesson learned: don't stay red longer than 1 minute</a></li><li><a class="toc-href" href="#conclusion" title="Conclusion">Conclusion</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Notes on &quot;Test-Driven Development by Example&quot; by Kent Beck</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2016-01-25T09:40:04+01:00">
+                2016-01-25
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/testing.html">Testing</a> <a class="tag" href="./tag/tdd.html">TDD</a> <a class="tag" href="./tag/books.html">Books</a> </div>
+</aside>
+    <p>During the past year I have read quite a few books and some of them were related
+exclusively to the TDD topic, especially "Growing Object-Oriented Software
+guided by Tests" by Steve Freeman and Nat Pryce. After having that book read, I
+felt that my understanding of TDD was much better than it had been before, so I
+was going to read something else but then I watched a talk by Steve Freeman
+where he recommends reading "Test-Driven Development by Example" and also then
+recommends re-reading it every 1 or 2 years, so valuable and deep this book is.</p>
+<p>So I decided to follow Steve's advice and did read the book very thoroughly. Now
+I see how two books complement each other, so that it is hard to say where I
+learned what about TDD from, anyway the following is the summary of what makes
+Kent's book special for my understanding and practice of TDD.</p>
+<div class="section" id="clean-code-that-works">
+<h2 id="clean-code-that-works">Clean code that works</h2>
+<blockquote>
+"Clean code that works (Ron Jeffries)" - is the goal of Test-Driven
+Development. (preface, p.ix)</blockquote>
+</div>
+<div class="section" id="two-rules-of-tdd">
+<h2 id="two-rules-of-tdd">Two rules of TDD</h2>
+<ul class="simple">
+<li>Write new code only if an automated test has failed</li>
+<li>Eliminate duplication (preface, p.ix)</li>
+</ul>
+</div>
+<div class="section" id="tdd-cycle">
+<h2 id="tdd-cycle">TDD cycle</h2>
+<p>The two rules imply an order to the tasks of programming.</p>
+<blockquote>
+<ol class="arabic simple">
+<li>Red - Write a little test that doesn't work, and perhaps doesn't even
+compile at first.</li>
+<li>Green - Make the test work quickly, committing whatever sins necessary in
+process.</li>
+<li>Refactor - Eliminate all of the duplication created in merely getting the
+test to work.</li>
+</ol>
+<p>Red/green/refactor &ndash; the TDD mantra. (preface, p.x)</p>
+</blockquote>
+<p>In other chapter the same order is described as "general TDD cycle":</p>
+<blockquote>
+<p>The general TDD cycle goes as follows.</p>
+<ol class="arabic simple">
+<li>Write a test...</li>
+<li>Make it run...</li>
+<li>Make it right...</li>
+</ol>
+<p>The goal is clean code that works (thanks to Ron Jeffries for this pithy
+summary)... First we'll solve the "that works" part of the problem. Then
+we'll solve the "clean code" part. This is the opposite of
+architecture-driven development, where you solve "clean code" first, then
+scramble around trying to integrate into the design the things you learn as
+you solve the "that works" problem. (p.11)</p>
+</blockquote>
+<p>There is also a bit more detailed version which is called a "rhythm of TDD":</p>
+<blockquote>
+<ul class="simple">
+<li>Quickly add test</li>
+<li>Run all tests and see the new one fail</li>
+<li>Make a little change</li>
+<li>Run all tests and see them all succeed</li>
+<li>Refactor to remove duplication (p.1)</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="write-a-failing-automated-test-before-you-write-any-code">
+<h2 id="write-a-failing-automated-test-before-you-write-any-code">Write a failing automated test before you write any code</h2>
+<p>This quote appears to be a very famous one:</p>
+<blockquote>
+I taught Bethany, my oldest daughter, TDD as her first programming style
+when she was about age 12. She thinks you can't type in code unless there is
+a broken test. The rest of us have to muddle through reminding ourselves to
+write the tests.</blockquote>
+<p>I am the one who have been teaching himself to write tests and then write tests
+upfront during past 4 or 5 years however I still have to remind myself to follow
+this first rule of TDD. In iOS development it is sometimes tempting to skip
+"test first" part when you have to implement some UI feature on top of
+half-tested UI code: when I think about writing failing test for that new
+feature I know that I have to do quite a lot of exercises against iOS testing
+infrastructure (which is far from being mature yet) to make that UI test case to
+reflect my new feature and fail adequately and that makes me to procrastinate
+about writing that test first.</p>
+<p>Somewhere in the middle of the book and at the same time while I was working on
+bunch of UI features of that kind I saw a dream where I was listening to a
+lecture by some university professor who was talking about importance of writing
+failing test first even in complex cases such as legacy UI code or lack of
+proper testing tool and infrastructure support. I don't remember anything else
+from that dream anymore but memory of it now serves me very well as additional
+personal reminder of virtue of always following the first rule of TDD.</p>
+</div>
+<div class="section" id="three-techniques-for-quickly-getting-to-green">
+<h2 id="three-techniques-for-quickly-getting-to-green">Three techniques for quickly getting to green</h2>
+<ul class="simple">
+<li>Fake It</li>
+<li>Obvious Implementation</li>
+<li>Triangulation</li>
+</ul>
+<div class="section" id="fake-it">
+<h3 id="fake-it">Fake It</h3>
+<blockquote>
+Return a constant and gradually replace constants with variables until you
+have the real code. (p.13)</blockquote>
+</div>
+<div class="section" id="obvious-implementation">
+<h3 id="obvious-implementation">Obvious implementation</h3>
+<blockquote>
+<p>Type in the real implementation.</p>
+<p>When I use TDD in practice, I commonly shift between these two modes of
+implementation. When everything is going smoothly and I know what to type, I
+put in Obvious Implementation after Obvious Implementation (running the
+tests each time to ensure that what's obvious to me is still obvious to the
+computer). As soon as I get unexpected red bar, I back up, shift to faking
+implementations, and refactor to the right code. When my confidence returns,
+I go back to Obvious Implementations. (p.13)</p>
+<p>How do you implement simple operations? Just implement them.</p>
+<p>Fake It and Triangulation are teensy-weensy tiny steps. Sometimes you are
+sure you know how to implement an operation. Go ahead. For example, would I
+really use Fake It to implement something as simple as plus()? Not usually.
+I would just type in the Obvious Implementation. If I noticed I was getting
+surprised by red bars, then I would go to smaller steps... (p.154)</p>
+<p>...There's no particular virtue in the halfway nature of Fake It and
+Triangulation. If you know what to type, and you can do it quickly, then do
+it. (p.154)</p>
+</blockquote>
+</div>
+<div class="section" id="triangulation">
+<h3 id="triangulation">Triangulation</h3>
+<blockquote>
+<p>How do you most conservatively drive abstraction with tests? Abstract only
+when you have two or more examples. (p.153)</p>
+<p>If two receiving stations at a known distance from teach other can both
+measure the direction of a radio signal, then there is enough information to
+calculate the range and bearing of the signal. This calculation is called
+Triangulation.</p>
+<p>By analogy when we triangulate, we only generalize code when we have two
+examples or more... When the second example demands a more general solution,
+then and only then do we generalize (p.16).</p>
+<p>I only use Triangulation when I'm really, really unsure about the correct
+abstraction for the calculation. Otherwise I rely on either Obvious
+Implementation or Fake It. (p.154)</p>
+</blockquote>
+</div>
+</div>
+<div class="section" id="moving-at-different-speeds">
+<h2 id="moving-at-different-speeds_1">Moving at different speeds</h2>
+<blockquote>
+<p>You want to maintain that red/green/refactor rhythm. Obvious Implementation
+is second gear. Be prepared to downshift if your brain starts writing checks
+your fingers can't cash. (p.155)</p>
+<p>If you don't know what to type, type the Obvious Implementation. If you
+don't know what to type, then Fake It. If the right design still isn't
+clear, then Triangulate. If you still don't know what to type, then you can
+take that shower. (p.138)</p>
+</blockquote>
+</div>
+<div class="section" id="duplication">
+<h2 id="duplication">Duplication</h2>
+<p>"Removing duplication as a way to drive design" - this is one of the key topics
+in the book but I am still not sure if that is (or should be) the only way to
+drive design. Though definitely removing duplication is very strong source of
+design changes. I'll make sure to keep an eye on this idea.</p>
+</div>
+<div class="section" id="test-is-an-object">
+<h2 id="test-is-an-object">Test is an Object</h2>
+<p>Very interesting side-effect Kent's book produced was that I finally noticed and
+recognized incorrectness of semantics that is suggested by default Xcode
+templates and that I have been following blindly all those years.</p>
+<p>When you create fresh Xcode project with "Include Unit Tests" mark enabled you
+end up with dummy unit test class generated automatically by Xcode:</p>
+<div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">TriangleTests</span><span class="p">:</span> <span class="n">XCTestCase</span> <span class="p">{</span>
+    <span class="kd">func</span> <span class="nf">testExample</span><span class="p">()</span>
+<span class="p">}</span>
+</pre></div>
+<p>There is one very bad semantic error that happens here: the class name for test
+case generated for project Triangle is in plural: <strong>TriangleTests</strong>: if my name
+of my test class has "Tests" postfix then I no longer treat it as an object,
+i.e. small machine that performs testing according to its well-defined scope,
+instead I have umbrella or bag with a bunch of tests most likely without a good
+cohesion between them.</p>
+<p>Some years ago when I switched from Ruby on Rails with RSpec as BDD-style
+testing framework that I mostly used to iOS development and Xcode with their
+default xUnit-style: OCUnit and then XCTest &ndash; I couldn't get how to live without
+nested <tt class="docutils literal">describe</tt> blocks inside those <tt class="docutils literal">MyTests: XCTestCase</tt> classes. Now
+having deeper insight into difference between two approaches: xUnit style and
+BDD style I now prefer xUnit style. What <tt class="docutils literal">describe</tt> is in Cedar/Kiwi becomes
+one class in xUnit given that most often I can flatten too nested structure of
+my tests. This insight has very positive effect on how I organize integration
+and especially functional tests (test for UI components and groups of them taken
+in isolation from the whole iOS application as I have described in <a class="reference external" href="/2015-12-14-test-automation-for-ios-written-for-blacklane-tech-blog.html">Test
+Automation for iOS</a>.</p>
+<p>In my example this test class should have singular name: <tt class="docutils literal">TriangleTest</tt>. If
+there will be a large number aspects we can start creating classes one for each
+aspect: <tt class="docutils literal">TriangleAspectTest</tt> or <tt class="docutils literal">Triangle_Aspect_Test</tt>. That's what I
+started doing on daily basis with functional tests: good example is mobile app's
+screen with number of different success / failure user paths - in this case test
+class corresponds to one aspect of a feature that screen represents.</p>
+<p>This topic is not covered in this book but still I have found indirect examples
+of Kent's reasoning about fixtures which makes me think I am on the right track:</p>
+<blockquote>
+<p>"In general if I find myself wanting a slightly different fixture then I
+start new subclass of Test Case." (p.160)</p>
+<p>"All of the tests that share a single fixture will be methods in the same
+class. Test that requires a different fixture will be in a different class."
+(p.162)</p>
+</blockquote>
+<p>Below see also "Self Shunt": this technique makes sense only if classes have
+focus i.e. they are not the "lists of tests" but something more object- or
+better subject-oriented.</p>
+</div>
+<div class="section" id="self-shunt">
+<h2 id="self-shunt">Self Shunt</h2>
+<blockquote>
+<p>How do you test that one object communicates correctly with another? Have
+the object under test communicate with the test case instead of with the
+object it expects.</p>
+<p>...Why do we need a separate object for the listener? We can just use the
+test case itself. The TestCase itself becomes a kind of Mock Object (p.145)</p>
+</blockquote>
+</div>
+<div class="section" id="broken-test-and-clean-check-in">
+<h2 id="broken-test-and-clean-check-in">Broken Test and Clean Check-in</h2>
+<p>Broken Test is for solo programming:</p>
+<blockquote>
+How do you leave a programming session when you're programming alone? Leave
+the last test broken... When you come back to the code, you then have an
+obvious place to start. (p.149)</blockquote>
+<p>Clean Check-in is for team programming:</p>
+<blockquote>
+How do you lave a programming session when you're programming in a team?
+Leave all of the tests running.</blockquote>
+</div>
+<div class="section" id="how-much-feedback-do-you-need">
+<h2 id="how-much-feedback-do-you-need">How much feedback do you need?</h2>
+<p>Kent gives an example:</p>
+<blockquote>
+<p>Given three integers representing the length of the sides of a triangle,
+return:</p>
+<ol class="arabic simple">
+<li>if the triangle is equilateral</li>
+<li>if the triangle is isosceles</li>
+<li>if the triangle is scalene</li>
+</ol>
+<p>and throw an exception if the triangle is not well formed.</p>
+</blockquote>
+<p>He shows his implementation and 6 tests he wrote for this problem. He says that
+some tester wrote 65 tests for the same problem.</p>
+<p>I have <a class="reference external" href="https://gist.github.com/stanislaw/9407f178a525a2cc4901">tried mine</a>
+using Swift and I got 11 tests given I wanted to test incorrect input for all 3
+sides: negative and zero-cases.</p>
+<p>To summarize:</p>
+<blockquote>
+TDD's view of testing is pragmatic. In TDD, the tests are means to an
+end&ndash;the end being code in which we have great confidence. If our knowledge
+of implementation gives us confidence even without test, then we will not
+write that test. Black box testing, where we deliberately choose to ignore
+the implementation, has some advantages. By ignoring the code, it
+demonstrates a different value system - the tests are valuable alone. It's
+an appropriate attitude to take in some circumstances but that is different
+from TDD. (p.197)</blockquote>
+</div>
+<div class="section" id="xunit">
+<h2 id="xunit">xUnit</h2>
+<blockquote>
+<p>There are two reasons for implementing xUnit yourself, even if there is a
+version already available:</p>
+<ul class="simple">
+<li>Mastery - The spirit of xUnit is simplicity. Martin Fowler said, "Never in
+the annals of software engineering was so much owned by so many to so few
+lines of code"... Rolling your own will give you a tool over which you
+have a feeling of mastery.</li>
+<li>Exploration - When I'm faced with a new programming language, I implement
+xUnit. By the time I have the first eight to ten tests running, I have
+explored many of the facilities I will be using in daily programming.</li>
+</ul>
+</blockquote>
+</div>
+<div class="section" id="influence-diagrams">
+<h2 id="influence-diagrams">Influence diagrams</h2>
+<p>Kent uses influence diagrams inspired by Gerry Weinberg's Quality Software
+Management:</p>
+<div class="section" id="the-no-time-for-testing-death-spiral">
+<h3 id="the-no-time-for-testing-death-spiral">The "no time for testing" death spiral</h3>
+<blockquote>
+<p>An arrow between nodes means that an increase in the first node implies an
+increase in the second node. An arrow with a circle means that an increase
+in the first node implies a decrease in the second node. What happens when
+the stress level rises?</p>
+<p>The "no time for testing" death spiral:</p>
+</blockquote>
+<div class="figure">
+<img alt='Figure 25.1 "No time for testing" death spiral' src="./images/2016-01-25-notes-on-test-driven-development-by-example-by-kent-beck/Figure-25.1.JPG"/>
+<p class="caption"><strong>Figure 25.1 "No time for testing" death spiral</strong></p>
+</div>
+<hr class="docutils"/>
+<blockquote>
+<p>This is a positive feedback loop. The more stress you feel, the less testing
+you will do. The less testing you do, the more errors you will make. The
+more errors you make, the more streess you feel. Rinse and repeat.</p>
+<p>How do you get out of such a loop? Either introduce a new element, replace
+one of the elements, or change the arrows. In this case we'll replace
+Testing with Automated Testing.</p>
+<p>Did I just break something else with that change?" Figure 25.1 shows the
+dynamic at work. With automated tests, when I start to feel stress, I run
+the tests. Tests are the Programmer's Stone, transmuting fear into boredom.
+"No, I didn't break anything. The tests are all still green." The more
+stress I feel, the more I run the tests. Running the tests immediately gives
+me a good feeling and reduces the number of errors I make, which further
+reduces the stress I feel."</p>
+<p>"We don't have time to run the tests. Just release it!" The second picture
+isn't guaranteed. If the stress level rises high enough, it breaks down.
+However, with the automated tests you have a chance to choose your level of
+fear. (p.124)</p>
+</blockquote>
+</div>
+<div class="section" id="not-enough-time-to-test-reduces-the-available-time">
+<h3 id="not-enough-time-to-test-reduces-the-available-time">Not enough time to test reduces the available time</h3>
+<div class="figure">
+<img alt="Figure A.5 Not enough time to test reduces the available time" src="./images/2016-01-25-notes-on-test-driven-development-by-example-by-kent-beck/Figure-A.5.JPG"/>
+<p class="caption"><strong>Figure A.5 Not enough time to test reduces the available time</strong></p>
+</div>
+<hr class="docutils"/>
+<blockquote>
+<p>When you have a system that isn't behaving, you do have options.</p>
+<ul class="simple">
+<li>Drive a positive feedback loop the other direction. If you have a loop
+between tests and confidence, and tests have been failing thus reducing
+confidence, then you can make more tests work to increase confidence in
+your ability to get more tests working.</li>
+<li>Introduce a negative feedback loop to control an activity that has grown
+too large.</li>
+<li>Create or break connections to eliminate loops that are not helping.
+(p.210)</li>
+</ul>
+</blockquote>
+</div>
+</div>
+<div class="section" id="when-should-you-delete-tests">
+<h2 id="when-should-you-delete-tests_1">When should you delete tests?</h2>
+<blockquote>
+<p>More tests are better, but if two tests are redundant with respect to each
+other, should you keep them both around? That depends on two criteria.</p>
+<ul class="simple">
+<li>The first criterion for your tests is confidence. Never delete a test if
+it reduces your confidence in the behavior of the system.</li>
+<li>The second criterion is communication. If you have two tessts that
+exercise the same path through the code, but they speak to different
+scenarios for a reader, leave them alone.</li>
+</ul>
+<p>That said, if you have two tests that are redundant with respect to
+confidence and communication, delete the least useful of the two.</p>
+</blockquote>
+</div>
+<div class="section" id="fear-vs-confidence">
+<h2 id="fear-vs-confidence">Fear vs Confidence</h2>
+<blockquote>
+Tests are programmer's Stone transforming fear into boredom...</blockquote>
+<p>And another variation:</p>
+<blockquote>
+Write tests until fear is transformed into boredom...</blockquote>
+</div>
+<div class="section" id="lesson-learned-move-slowly">
+<h2 id="lesson-learned-move-slowly">Lesson learned: move slowly</h2>
+<blockquote>
+<p>@sbpankevich: Reading TDDbE and hear Kent's voice in my head: start with
+failing test, move slowly. Now I move as slowly as never did. Thanks
+@KentBeck !</p>
+<p>@KentBeck: @sbpankevich the trick is to move slowly very very frequently</p>
+</blockquote>
+<p>taken from <a class="reference external" href="https://twitter.com/KentBeck/status/685494067120099328">https://twitter.com/KentBeck/status/685494067120099328</a>.</p>
+</div>
+<div class="section" id="lesson-learned-don-t-stay-red-longer-than-1-minute">
+<h2 id="lesson-learned-dont-stay-red-longer-than-1-minute">Lesson learned: don't stay red longer than 1 minute</h2>
+<p>This is the rule that I introduced for myself while reading this book. I started
+following it and it helped me to be more careful and conscious when I was doing
+some refactorings of critical parts of code at my work. Given infrastructure
+details of UI testing or Functional Testing in iOS, "1 minute" for me resorts to
+smallest possible step that I can make when starting from green state.</p>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion">Conclusion</h2>
+<p>By taking and then publishing these notes I wanted to achieve two goals:</p>
+<ul class="simple">
+<li>Internalize better the knowledge that I got from reading this great book of
+Kent Beck.</li>
+<li>Expose some of ideas and insights that I found interesting in this book to
+inspire others to read it as well.</li>
+</ul>
+<p>I have definitely managed to accomplish the first of the above goals but am not
+sure if I did succeed in the second: from my experience, notes like these can at
+best expose no more than 10% of the overall information from subject, so if
+you're reading this and still didn't read this book, make sure to read it - for
+me it is one of the best on my book shelf.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

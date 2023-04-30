@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>How to build a static iOS framework and distribute it as a Component using Make</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="This post is a complement to introductory post about Components: bare-bones dependency management system." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2015-11-23-how-to-build-static-framework-using-make.html"
+    rel="bookmark"
+    title="Permalink to How to build a static iOS framework and distribute it as a Component using Make">
+    How to build a static iOS framework and distribute it as a Component using Make
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#why-make" title="Why Make?">Why Make?</a></li><li><a class="toc-href" href="#building-a-static-ios-framework" title="Building a static iOS framework">Building a static iOS framework</a></li><li><a class="toc-href" href="#creating-a-component" title="Creating a Component">Creating a Component</a></li><li><a class="toc-href" href="#conclusion" title="Conclusion">Conclusion</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>How to build a static iOS framework and distribute it as a Component using Make</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2015-11-23T10:53:34+01:00">
+                2015-11-23
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/ios.html">iOS</a> <a class="tag" href="./tag/make.html">Make</a> </div>
+</aside>
+    <p>This post is a complement to introductory post <a class="reference external" href="http://lowlevelbits.org/components-management">Components: taking a step back
+from Dependency Management</a>
+about the <a class="reference external" href="https://github.com/AlexDenisov/Components">Components</a>: bare-bones
+dependency management system that was recently introduced to our iOS community
+by <a class="reference external" href="https://github.com/AlexDenisov">AlexDenisov</a>. Components go even further
+than Carthage by providing you with a complete control over how you manage your
+dependencies.</p>
+<p>It is strongly recommended to read that introductory post first as this post
+targets Components and shows how a maintainer of a static iOS framework can
+easily build his Framework and distribute it as a Component using Make.</p>
+<div class="section" id="why-make">
+<h2 id="why-make">Why Make?</h2>
+<p><a class="reference external" href="https://twitter.com/fogus/status/526740537823735808">@fogus on Twitter</a>:</p>
+<blockquote>
+Make is the worst build system ever created except for every other build
+system created after Make.</blockquote>
+<p><a class="reference external" href="https://twitter.com/natpryce/status/556381696174874624">@natpryce on Twitter</a>:</p>
+<blockquote>
+Those who don't know Make are doomed to repeat it.</blockquote>
+<p><a class="reference external" href="https://twitter.com/natpryce/status/526755049155088384">Another twit by @natpryce</a>:</p>
+<blockquote>
+@fogus treat make as a parallel, pure-functional dataflow programming
+language and it remains pretty manageable in my experience.</blockquote>
+<p>According to Wikipedia initial release of Make was made in "1977, 38 years ago".
+Without a doubt it is the most widespread, stable and still very simple system
+so actually it is not really that many of choices that we have for our
+bare-bones style of dependency management with Components.</p>
+<p>I personally have been using Bash scripts to manage my build scripts but thanks
+to Alex Denisov, I learned about caching capabilities of Make which shine when
+used inside Components infrastructure: if you already downloaded the zip file of
+third-party library you do not download it again as longer it is cached, if you
+already unzipped that file you will not unzip it again, because Make knows that
+it is there, if you copied that library's final artefacts to your project you
+will not be copying them over and over again and all that results, to say it
+using marketing words, in blazing fast performance of your build scripts given
+Components were cached once. Aside from this caching feature, Make itself is
+very fast &ndash; even if you run <tt class="docutils literal">./components.sh install</tt> the first time, it works
+much faster than for example <tt class="docutils literal">pod install</tt> as those all .make files are just
+direct bare-bone instructions on how to fetch, compile and copy your third-party
+libraries in a way that those library require. This becomes especially
+impressive when you run your project on CI where cached Components are installed
+just immediately.</p>
+<p>Instead of crafting artifical example I have rather decided to show how I use
+Make to maintain my own library: <a class="reference external" href="https://github.com/stanislaw/CompositeOperations">CompositeOperations</a>.</p>
+<p>CompositeOperations is distributed as static framework so I also recommend
+reading the following topic on StackOverflow where <a class="reference external" href="https://github.com/skywinder">Petr Korolev</a> and I explain how to create an iOS Static
+Framework: <a class="reference external" href="http://stackoverflow.com/questions/29634466/how-to-export-fat-cocoa-touch-framework-for-simulator-and-device/31270427#31270427">How to export &ldquo;fat&rdquo; Cocoa Touch Framework (for Simulator and
+Device)?</a>.</p>
+</div>
+<div class="section" id="building-a-static-ios-framework">
+<h2 id="building-a-static-ios-framework">Building a static iOS framework</h2>
+<p>Here is working version of Makefile that I currently use to create iOS Static
+Framework from CompositeOperations. As it is always with build scripts they are
+subject to change but still this version is stable enough and works for us
+during latest releases of CompositeOperations: <a class="reference external" href="https://github.com/stanislaw/CompositeOperations/blob/2fdbbbd6216d8838092de085608f1e0a2f257f52/Makefile.iOS">CompositeOperations/Makefile.iOS</a>.</p>
+<div class="highlight"><pre><span></span><span class="c"># Makefile.iOS</span>
+<span class="nv">NAME</span><span class="o">=</span>CompositeOperations
+<span class="nv">XCODEPROJ</span><span class="o">=</span>DevelopmentApp/DevelopmentApp.xcodeproj
+<span class="nv">CONFIGURATION</span><span class="o">=</span>Release
+<span class="nv">SCHEME</span><span class="o">=</span>CompositeOperations-iOS
+<span class="nv">SIMULATOR</span><span class="o">=</span><span class="s1">'platform=iOS Simulator,name=iPhone 6s Plus'</span>
+
+<span class="nv">FRAMEWORK_FOLDER</span><span class="o">=</span><span class="k">$(</span>NAME<span class="k">)</span>.framework
+
+<span class="c">### Paths</span>
+
+<span class="nv">BUILD_PATH</span><span class="o">=</span><span class="k">$(</span>PWD<span class="k">)</span>/Build
+<span class="nv">BUILD_PATH_SIMULATOR</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH<span class="k">)</span>/<span class="k">$(</span>CONFIGURATION<span class="k">)</span>-iphonesimulator
+<span class="nv">BUILD_PATH_IPHONE</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH<span class="k">)</span>/<span class="k">$(</span>CONFIGURATION<span class="k">)</span>-iphoneos
+<span class="nv">BUILD_PATH_UNIVERSAL</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH<span class="k">)</span>/<span class="k">$(</span>CONFIGURATION<span class="k">)</span>-universal
+<span class="nv">BUILD_PATH_UNIVERSAL_FRAMEWORK_FOLDER</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH_UNIVERSAL<span class="k">)</span>/<span class="k">$(</span>FRAMEWORK_FOLDER<span class="k">)</span>
+<span class="nv">BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH_UNIVERSAL_FRAMEWORK_FOLDER<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>
+
+<span class="nv">DISTRIBUTION_PATH</span><span class="o">=</span><span class="k">$(</span>PWD<span class="k">)</span>/Distribution
+<span class="nv">ZIPBALL_NAME</span><span class="o">=</span><span class="k">$(</span>NAME<span class="k">)</span>-iOS.zip
+<span class="nv">ZIPBALL_PATH</span><span class="o">=</span><span class="k">$(</span>DISTRIBUTION_PATH<span class="k">)</span>/<span class="k">$(</span>ZIPBALL_NAME<span class="k">)</span>
+
+<span class="c">### Colors</span>
+
+<span class="nv">RESET</span><span class="o">=</span><span class="se">\0</span><span class="m">33</span><span class="o">[</span><span class="m">0</span><span class="p">;</span>39m
+<span class="nv">RED</span><span class="o">=</span><span class="se">\0</span><span class="m">33</span><span class="o">[</span><span class="m">0</span><span class="p">;</span>31m
+<span class="nv">GREEN</span><span class="o">=</span><span class="se">\0</span><span class="m">33</span><span class="o">[</span><span class="m">0</span><span class="p">;</span>32m
+
+<span class="c">### Actions</span>
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">all</span> <span class="n">archive</span> <span class="n">clean</span> <span class="n">test</span> <span class="n">build</span> <span class="n">validate</span> <span class="n">zip</span>
+
+<span class="nf">default</span><span class="o">:</span><span class="w"> </span><span class="n">test</span>
+
+<span class="nf">archive</span><span class="o">:</span><span class="w"> </span><span class="n">test</span> <span class="n">build</span> <span class="n">validate</span> <span class="n">zip</span>
+
+<span class="nf">test</span><span class="o">:</span>
+<span class="w">    </span>xcodebuild<span class="w"> </span>-project<span class="w"> </span><span class="k">$(</span>XCODEPROJ<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-scheme<span class="w"> </span><span class="k">$(</span>SCHEME<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-sdk<span class="w"> </span>iphonesimulator<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-destination<span class="w"> </span><span class="k">$(</span>SIMULATOR<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>clean<span class="w"> </span><span class="nb">test</span>
+
+<span class="nf">build</span><span class="o">:</span>
+<span class="w">    </span>xcodebuild<span class="w"> </span>-project<span class="w"> </span><span class="k">$(</span>XCODEPROJ<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-scheme<span class="w"> </span><span class="k">$(</span>SCHEME<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-sdk<span class="w"> </span>iphonesimulator<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-destination<span class="w"> </span><span class="k">$(</span>SIMULATOR<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-configuration<span class="w"> </span><span class="k">$(</span>CONFIGURATION<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span><span class="nv">CONFIGURATION_BUILD_DIR</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH_SIMULATOR<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>clean<span class="w"> </span>build
+
+<span class="w">    </span>xcodebuild<span class="w"> </span>-project<span class="w"> </span><span class="k">$(</span>XCODEPROJ<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-scheme<span class="w"> </span><span class="k">$(</span>SCHEME<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-sdk<span class="w"> </span>iphoneos<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-configuration<span class="w"> </span><span class="k">$(</span>CONFIGURATION<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span><span class="nv">CONFIGURATION_BUILD_DIR</span><span class="o">=</span><span class="k">$(</span>BUILD_PATH_IPHONE<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>clean<span class="w"> </span>build
+
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL<span class="k">)</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL<span class="k">)</span>
+
+<span class="w">    </span>cp<span class="w"> </span>-Rv<span class="w"> </span><span class="k">$(</span>BUILD_PATH_IPHONE<span class="k">)</span>/<span class="k">$(</span>FRAMEWORK_FOLDER<span class="k">)</span><span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL<span class="k">)</span>
+<span class="w">    </span>lipo<span class="w"> </span><span class="k">$(</span>BUILD_PATH_SIMULATOR<span class="k">)</span>/<span class="k">$(</span>FRAMEWORK_FOLDER<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span><span class="w"> </span><span class="k">$(</span>BUILD_PATH_IPHONE<span class="k">)</span>/<span class="k">$(</span>FRAMEWORK_FOLDER<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span><span class="w"> </span>-create<span class="w"> </span>-output<span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY<span class="k">)</span>
+
+<span class="nf">validate</span><span class="o">:</span><span class="w"> </span><span class="n">validate</span>.<span class="n">i</span>386 <span class="n">validate</span>.<span class="n">x</span>86<span class="n">_</span>64 <span class="n">validate</span>.<span class="n">armv</span>7 <span class="n">validate</span>.<span class="n">arm</span>64
+
+<span class="nf">validate.%</span><span class="o">:</span>
+<span class="w">    </span>@printf<span class="w"> </span><span class="s2">"Validating </span><span class="nv">$*</span><span class="s2">... "</span>
+<span class="w">    </span>@lipo<span class="w"> </span>-info<span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL_FRAMEWORK_BINARY<span class="k">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">'$*'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>GREEN<span class="k">)</span><span class="s2">Passed</span><span class="k">$(</span>RESET<span class="k">)</span><span class="s2">"</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">(</span><span class="nb">echo</span><span class="w"> </span><span class="s2">"</span><span class="k">$(</span>RED<span class="k">)</span><span class="s2">Failed</span><span class="k">$(</span>RESET<span class="k">)</span><span class="s2">"</span><span class="p">;</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span><span class="o">)</span>
+
+<span class="nf">zip</span><span class="o">:</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>DISTRIBUTION_PATH<span class="k">)</span>
+<span class="w">    </span><span class="nb">cd</span><span class="w"> </span><span class="k">$(</span>BUILD_PATH_UNIVERSAL<span class="k">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>zip<span class="w"> </span>-r<span class="w"> </span>-FS<span class="w"> </span><span class="k">$(</span>DISTRIBUTION_PATH<span class="k">)</span>/<span class="k">$(</span>ZIPBALL_NAME<span class="k">)</span><span class="w"> </span><span class="k">$(</span>FRAMEWORK_FOLDER<span class="k">)</span>
+
+<span class="nf">clean</span><span class="o">:</span>
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>BUILD_PATH<span class="k">)</span>
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>DISTRIBUTION_PATH<span class="k">)</span>
+</pre></div>
+</div>
+<div class="section" id="creating-a-component">
+<h2 id="creating-a-component">Creating a Component</h2>
+<p>Here is corresponding <tt class="docutils literal">.make</tt> file that is intended to be used by a consumer
+of ComponentOperations as a Component:
+<a class="reference external" href="https://github.com/stanislaw/CompositeOperations/blob/2fdbbbd6216d8838092de085608f1e0a2f257f52/Components.make/CompositeOperations.make">CompositeOperations/Components.make/CompositeOperations.make</a>.
+Give it a look before reading further.</p>
+<p>If convention: <tt class="docutils literal">Components.make/CompositeOperations.make</tt> is not clear I
+recommend re-reading introductory post about Components one more time:
+<a class="reference external" href="http://lowlevelbits.org/components-management">Components: taking a step back from Dependency Management</a>.</p>
+<p>Most of the following should be self explanatory, I will just comment on things
+that are relevant to Components infrastructure:</p>
+<div class="highlight"><pre><span></span><span class="c"># Components.make/CompositeOperations.make</span>
+<span class="nv">NAME</span><span class="o">=</span>CompositeOperations
+<span class="nv">VERSION</span><span class="o">=</span><span class="m">0</span>.8.5
+
+<span class="nv">GH_REPO</span><span class="o">=</span>stanislaw/CompositeOperations
+<span class="nv">ZIPBALL_URL</span><span class="o">=</span>https://github.com/<span class="k">$(</span>GH_REPO<span class="k">)</span>/releases/download/<span class="k">$(</span>VERSION<span class="k">)</span>/CompositeOperations-iOS.zip
+
+<span class="c">### Paths</span>
+
+<span class="nv">COMPONENTS_BUILD_CACHE_PATH</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span><span class="k">$(</span>HOME<span class="k">)</span>/Library/Caches/Components
+<span class="nv">COMPONENTS_INSTALL_PATH</span><span class="w"> </span><span class="o">?=</span><span class="w"> </span>./Components
+</pre></div>
+<p>These two "global" variables <tt class="docutils literal">COMPONENTS_BUILD_CACHE_PATH</tt> and
+<tt class="docutils literal">COMPONENTS_INSTALL_PATH</tt> are to be inherited from parent <tt class="docutils literal">components.sh</tt>
+script who exports them, but "?=" is used to still allow running this <tt class="docutils literal">.make</tt>
+file in isolation from parent Components infrastructure.</p>
+<div class="highlight"><pre><span></span><span class="nv">COMPONENT_BUILD_PATH</span><span class="o">=</span><span class="k">$(</span>COMPONENTS_BUILD_CACHE_PATH<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>
+<span class="nv">COMPONENT_SOURCE_PATH</span><span class="o">=</span><span class="k">$(</span>COMPONENT_BUILD_PATH<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>-<span class="k">$(</span>VERSION<span class="k">)</span>
+<span class="nv">COMPONENT_FRAMEWORK_PATH</span><span class="o">=</span><span class="k">$(</span>COMPONENT_SOURCE_PATH<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>.framework
+
+<span class="nv">COMPONENT_INSTALL_PATH</span><span class="o">=</span><span class="k">$(</span>COMPONENTS_INSTALL_PATH<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>
+
+<span class="nv">ZIPBALL_PATH</span><span class="o">=</span><span class="k">$(</span>COMPONENT_BUILD_PATH<span class="k">)</span>/<span class="k">$(</span>NAME<span class="k">)</span>-<span class="k">$(</span>VERSION<span class="k">)</span>.zip
+
+<span class="c">### Targets</span>
+
+<span class="nf">.PHONY</span><span class="o">:</span><span class="w"> </span><span class="n">install</span> <span class="n">update</span> <span class="n">uninstall</span> <span class="n">clean</span> <span class="n">prepare</span> <span class="n">purge</span>
+
+<span class="nf">install</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">COMPONENT_INSTALL_PATH</span><span class="k">)</span>
+
+<span class="nf">uninstall</span><span class="o">:</span>
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>COMPONENT_INSTALL_PATH<span class="k">)</span>
+
+<span class="nf">update</span><span class="o">:</span><span class="w"> </span><span class="n">uninstall</span> <span class="n">install</span>
+
+<span class="nf">clean</span><span class="o">:</span>
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>COMPONENT_SOURCE_PATH<span class="k">)</span>
+<span class="w">    </span>rm<span class="w"> </span>-rf<span class="w"> </span><span class="k">$(</span>ZIPBALL_PATH<span class="k">)</span>
+
+<span class="nf">purge</span><span class="o">:</span><span class="w"> </span><span class="n">uninstall</span> <span class="n">clean</span>
+
+<span class="c">### Artefacts</span>
+
+<span class="nf">$(COMPONENT_INSTALL_PATH)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">COMPONENT_SOURCE_PATH</span><span class="k">)</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>COMPONENT_INSTALL_PATH<span class="k">)</span>
+<span class="w">    </span>cp<span class="w"> </span>-Rv<span class="w"> </span><span class="k">$(</span>COMPONENT_FRAMEWORK_PATH<span class="k">)</span><span class="w"> </span><span class="k">$(</span>COMPONENT_INSTALL_PATH<span class="k">)</span>
+
+<span class="nf">$(COMPONENT_SOURCE_PATH)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">ZIPBALL_PATH</span><span class="k">)</span>
+<span class="w">    </span>unzip<span class="w"> </span><span class="k">$(</span>ZIPBALL_PATH<span class="k">)</span><span class="w"> </span>-d<span class="w"> </span><span class="k">$(</span>COMPONENT_SOURCE_PATH<span class="k">)</span>
+
+<span class="nf">$(ZIPBALL_PATH)</span><span class="o">:</span><span class="w"> </span><span class="k">$(</span><span class="nv">COMPONENT_BUILD_PATH</span><span class="k">)</span>
+<span class="w">    </span>wget<span class="w"> </span>--no-use-server-timestamps<span class="w"> </span><span class="k">$(</span>ZIPBALL_URL<span class="k">)</span><span class="w"> </span>-O<span class="w"> </span><span class="k">$(</span>ZIPBALL_PATH<span class="k">)</span>
+
+<span class="nf">$(COMPONENT_BUILD_PATH)</span><span class="o">:</span>
+<span class="w">    </span>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>COMPONENT_BUILD_PATH<span class="k">)</span>
+</pre></div>
+<p>In the lines that follow the <tt class="docutils literal">### Targets</tt> comment all targets rely on
+"caching capability" of Make - when we run <tt class="docutils literal">make install</tt> targets are
+evaluated in reverse order like:</p>
+<p><tt class="docutils literal">COMPONENT_INSTALL_PATH (depends on) <span class="pre">-&gt;</span> COMPONENT_SOURCE_PATH (depends on) <span class="pre">-&gt;</span>
+ZIPBALL_PATH (depends on) <span class="pre">-&gt;</span> COMPONENT_BUILD_PATH</tt>.</p>
+<p>When Make finds that a particular target's dependency's target's path exists and
+its modification time is not greater than that target's path modification time,
+it does skip that step by not performing any real action. So for example if we
+already downloaded CompositeOperations-iOS.zip file which corresponds to
+<tt class="docutils literal">ZIPBALL_PATH</tt>, Make will not try to download it again. This is why we use
+<tt class="docutils literal">wget <span class="pre">--no-use-server-timestamps</span></tt> to make sure that <tt class="docutils literal">ZIPBALL_PATH</tt> will
+always be newer than modification date of its dependency:
+<tt class="docutils literal">COMPONENT_BUILD_PATH</tt> target which is created on preceding step. Or another
+example: if <tt class="docutils literal">$(COMPONENT_INSTALL_PATH)</tt> folder already exists, then Make will
+not perform any action at all. This caching capability of Make allows
+Components.sh script from introductory article to work <strong>very fast</strong> given we
+have all our Components build cache in place in the
+<tt class="docutils literal">~/Library/Caches/Components</tt> folder.</p>
+</div>
+<div class="section" id="conclusion">
+<h2 id="conclusion">Conclusion</h2>
+<p>This post is one of the very first examples of how Make can be used inside
+Components infrastructure. Now we are looking forward to hear back from the
+community if Make will work for all of us at massive scale. Try creating your
+own Component.make and see it in action.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

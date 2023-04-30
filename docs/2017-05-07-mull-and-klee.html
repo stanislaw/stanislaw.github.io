@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>Mull and Klee: Mutation testing analysis for Klee's Tutorial Two</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="A short post comparing Mull and Klee using basic examples." />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2017-05-07-mull-and-klee.html"
+    rel="bookmark"
+    title="Permalink to Mull and Klee: Mutation testing analysis for Klee's Tutorial Two">
+    Mull and Klee: Mutation testing analysis for Klee's Tutorial Two
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a a="" class="toc-href" for="" href="#step-1-generating-klees-test-for-a-simple-regex-library" library'="" regex="" s="" simple="" test="" title="Step 1: Generating Klee">Step 1: Generating Klee's test for a simple regex library</a></li><li><a auto-generated="" class="toc-href" href="#step-2-manually-creating-a-test-suite-from-klees-auto-generated-tests" s="" tests'="" title="Step 2: Manually creating a test suite from Klee">Step 2: Manually creating a test suite from Klee's auto-generated tests</a></li><li><a class="toc-href" href="#step-3-running-mull-on-a-manually-created-test-suite" title="Step 3: Running Mull on a manually-created test suite">Step 3: Running Mull on a manually-created test suite</a></li><li><a class="toc-href" href="#step-4a-initial-analysis" title="Step 4a: Initial analysis">Step 4a: Initial analysis</a></li><li><a class="toc-href" href="#step-4b-adding-more-test-scenarios-with-klee-h-instead-of-hello" title='Step 4b: Adding more test scenarios with Klee ("h" instead of "hello")'>Step 4b: Adding more test scenarios with Klee ("h" instead of "hello")</a></li><li><a class="toc-href" href="#step-4c-adding-more-test-scenarios-with-klee-instead-of-hello" title='Step 4c: Adding more test scenarios with Klee ("" instead of "hello")'>Step 4c: Adding more test scenarios with Klee ("" instead of "hello")</a></li><li><a class="toc-href" href="#step-4d-writing-missing-tests-manually-using-human-brain-power" title="Step 4d: Writing missing tests manually using human brain power">Step 4d: Writing missing tests manually using human brain power</a></li><li><a class="toc-href" href="#step-5a-observations-about-redundancy" title="Step 5a: Observations about redundancy">Step 5a: Observations about redundancy</a></li><li><a class="toc-href" href="#step-5b-observation-about-weird-matches" title="Step 5b: Observation about weird matches">Step 5b: Observation about weird matches</a></li><li><a class="toc-href" href="#conslusion" title="Conslusion">Conslusion</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>Mull and Klee: Mutation testing analysis for Klee's Tutorial Two</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2017-05-07T13:20:00+02:00">
+                2017-05-07
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/mull.html">Mull</a> </div>
+</aside>
+    <p>Comparison between Mull and Klee and finding possible ways of collaboration
+between these two tools has been one of our goals: <a class="reference external" href="https://github.com/mull-project/mull/issues/121">Mull#121: Research is
+needed: compare Mull with Klee</a>. This post is a report about
+the first experiment that we did with Mull and Klee:</p>
+<ol class="arabic simple">
+<li>Follow through Klee's Tutorial Two: generate Klee's tests for simple regular
+expression matching function (this function is a system under test in that
+tutorial).</li>
+<li>Using <tt class="docutils literal"><span class="pre">ktest-tool</span></tt>, manually create a test suite based on Google Test out
+of Klee's binary test files generated at step 1.</li>
+<li>Run Mull against a manually created test suite and observe the results.</li>
+<li>Analyze the results, do fixes and write more tests if necessary to achieve
+100% mutation testing coverage.</li>
+<li>Make observations.</li>
+<li>Conclusion.</li>
+</ol>
+<p><strong>TL;DR</strong> This is a long post which requires following the code examples and the
+screenshots. Here are the results if you want to skip the content:</p>
+<ul class="simple">
+<li>For tutorial Two we were only able to achieve mutation score of 87% having
+only the tests generated by Klee. Adding redundancy of more inputs and
+generating more tests with Klee didn't improve the result over this limit of
+87%.</li>
+<li>Along the process, these tests were converted by us manually and resulting
+test suite showed significant redundancy. The same mutation score of 87% and
+finally a mutation score of 100% could be achieved by a smaller number of
+tests.</li>
+<li>Our knowledge of Klee is very limited. We only followed tutorials One and Two
+and we are not aware of various configuration options that Klee allows to
+experiment with. We do understand that we could get different results if we
+would know Klee better.</li>
+<li>This simple regex matching function as a system under test is not the best
+option for a Klee tutorial. As we looked at the tests generated by Klee we saw
+that positive or negative matches for some of the inputs were not consistent
+with each other. The function is a simple function taken from a book so it is
+fine that it does not produce what we would expect from a real production
+regex library, however, this complicated our analysis a bit because we didn't
+have a clear mental model but only a combination of the tests that we treated
+as a spec that we should have followed.</li>
+</ul>
+<p>Now please get ready for a long reading.</p>
+<div class="section" id="step-1-generating-klee-s-test-for-a-simple-regex-library">
+<h2 id="step-1-generating-klees-test-for-a-simple-regex-library">Step 1: Generating Klee's test for a simple regex library</h2>
+<p>Here is a source code which is a system under test of Tutorial Two. To make the
+code more readable for a further analysis, the braces are added so that:</p>
+<div class="highlight"><pre><span></span>if (condition)
+  return value;
+</pre></div>
+<p>becomes:</p>
+<div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">condition</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>The code:</p>
+<div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * Simple regular expression matching.</span>
+<span class="cm"> *</span>
+<span class="cm"> * From:</span>
+<span class="cm"> *   The Practice of Programming</span>
+<span class="cm"> *   Brian W. Kernighan, Rob Pike</span>
+<span class="cm"> *</span>
+<span class="cm"> */</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">matchhere</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">,</span><span class="kt">char</span><span class="o">*</span><span class="p">);</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">matchstar</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">matchhere</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">text</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">text</span><span class="o">++</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="o">==</span><span class="w"> </span><span class="sc">'.'</span><span class="p">));</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">matchhere</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'*'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">matchstar</span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">re</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'$'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">re</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="sc">'\0'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">*</span><span class="n">text</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">text</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="sc">'.'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==*</span><span class="n">text</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">matchhere</span><span class="p">(</span><span class="n">re</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">match</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'^'</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">matchhere</span><span class="p">(</span><span class="n">re</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">do</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">matchhere</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">text</span><span class="o">++</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>We follow the advice from the tutorial to use <tt class="docutils literal">klee_assume</tt> to teach Klee that
+we only want to work with zero-terminated strings otherwise Klee produces the
+test cases with errors that we don't want to deal with within a scope of this
+post:</p>
+<div class="highlight"><pre><span></span><span class="c1">// The size of the buffer to test with.</span>
+<span class="cp">#define SIZE 7</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// The input regular expression.</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[</span><span class="n">SIZE</span><span class="p">];</span>
+
+<span class="w">  </span><span class="c1">// Make the input symbolic.</span>
+<span class="w">  </span><span class="n">klee_make_symbolic</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="s">"re"</span><span class="p">);</span>
+<span class="w">  </span><span class="n">klee_assume</span><span class="p">(</span><span class="n">re</span><span class="p">[</span><span class="n">SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">'\0'</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Try to match against a constant string "hello".</span>
+<span class="w">  </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+<p>When we run Klee against this code, we get the following result:</p>
+<div class="highlight"><pre><span></span>klee@0265a1bae7c7:~/klee_src/examples/regexp$ clang -I ../../include -emit-llvm -c -g Regexp.c
+klee@0265a1bae7c7:~/klee_src/examples/regexp$ klee --only-output-states-covering-new Regexp.bc
+KLEE: output directory is "/home/klee/klee_src/examples/regexp/klee-out-3"
+KLEE: Using STP solver backend
+
+KLEE: done: total instructions = 4016685
+KLEE: done: completed paths = 5895
+KLEE: done: generated tests = 14
+</pre></div>
+</div>
+<div class="section" id="step-2-manually-creating-a-test-suite-from-klee-s-auto-generated-tests">
+<h2 id="step-2-manually-creating-a-test-suite-from-klees-auto-generated-tests">Step 2: Manually creating a test suite from Klee's auto-generated tests</h2>
+<p>This is an example of the first auto-generated test:</p>
+<div class="highlight"><pre><span></span>$ ktest-tool test000001.ktest
+ktest file : 'test000001.ktest'
+args       : ['Regexp.bc']
+num objects: 1
+object    0: name: b're'
+object    0: size: 7
+object    0: data: b'^\x00\x00\x00\x00\x00\x00'
+</pre></div>
+<p>This is what we create manually out of this auto-generated test:</p>
+<div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">hello_test000001</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"^"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>We follow this procedure for all of the 14 tests and get the following test
+suite:</p>
+<details>
+<summary>Manually-created test suite</summary>
+<pre>
+TEST(KleeTest, hello_test000001) {
+  char re[] = "^";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000002) {
+  char re[] = "^$";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000003) {
+  char re[] = "^$\x01";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000004) {
+  char re[] = "^\x01";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000005) {
+  char re[] = "^.";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000006) {
+  char re[] = "^\x01*";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000007) {
+  char re[] = "^h";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000008) {
+  char re[] = "";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000009) {
+  char re[] = "^.*";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000010) {
+  char re[] = "$";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 1);
+}
+
+TEST(KleeTest, hello_test000011) {
+  char re[] = "$\x01";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000012) {
+  char re[] = "^.*$";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 1);
+}
+
+TEST(KleeTest, hello_test000013) {
+  char re[] = "e";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, hello_test000014) {
+  char re[] = ".*";
+
+  int res = match(re, (char *)"hello");
+
+  ASSERT_EQ(res, 0);
+}
+</pre>
+</details>
+<br/></div>
+<div class="section" id="step-3-running-mull-on-a-manually-created-test-suite">
+<h2 id="step-3-running-mull-on-a-manually-created-test-suite">Step 3: Running Mull on a manually-created test suite</h2>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_1.png"/><p>The legend below helps to interpret the numbers of this report.</p>
+<details>
+<summary>Mull: legend</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Legend.png"/>
+</details>
+<br/></div>
+<div class="section" id="step-4a-initial-analysis">
+<h2 id="step-4a-initial-analysis">Step 4a: Initial analysis</h2>
+<p>When we ran Mull on these 14 tests generated by Klee we expected to have 100%
+mutation score for this test suite because we thought that Klee would have all
+possible inputs created for the function <tt class="docutils literal">match</tt> so that all mutants would be
+killed by those 14 tests.</p>
+<p>Instead, we see that mutation score is 74%: we see that 4 mutants survived which
+means that these 4 mutations "did not cause any tests to fail" according to the
+legend above.</p>
+<details>
+<summary>Mutation #1</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_1.png"/>
+</details>
+<details>
+<summary>Mutation #2</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_2.png"/>
+</details>
+<details>
+<summary>Mutation #3</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_3.png"/>
+</details>
+<details>
+<summary>Mutation #4</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_1_Mutation_4.png"/>
+</details>
+<br/><p>Let's consider mutation #1. Indeed if we manually replace <tt class="docutils literal">*text != '\0'</tt> with
+<tt class="docutils literal">*text == '\0'</tt> and run the test suite manually, we see that no tests fail. If
+we spend a bit more time analyzing this code and especially step through it with
+a debugger we can quickly come to a hypothesis that we are just missing some
+tests: Klee only generated those 14 tests for the string <tt class="docutils literal">"hello"</tt> while
+mutation #1 seems to be lacking a test which involves an input of one-symbol
+string <tt class="docutils literal">"h"</tt>.</p>
+<p>Let's run Klee again on the same code but with input "h" instead of "hello":</p>
+</div>
+<div class="section" id="step-4b-adding-more-test-scenarios-with-klee-h-instead-of-hello">
+<h2 id="step-4b-adding-more-test-scenarios-with-klee-h-instead-of-hello">Step 4b: Adding more test scenarios with Klee ("h" instead of "hello")</h2>
+<details>
+<summary>Tests for "h" input</summary>
+<pre>
+// The size of the buffer to test with.
+#define SIZE 7
+
+int main() {
+  // The input regular expression.
+  char re[SIZE];
+
+  // Make the input symbolic.
+  klee_make_symbolic(re, sizeof re, "re");
+  klee_assume(re[SIZE - 1] == '\0');
+
+  match(re, "h");
+
+  return 0;
+}
+
+$ klee --only-output-states-covering-new Regexp.bc
+KLEE: output directory is "/home/klee/klee_src/examples/regexp/klee-out-5"
+KLEE: Using STP solver backend
+
+KLEE: done: total instructions = 20417
+KLEE: done: completed paths = 166
+KLEE: done: generated tests = 13
+
+#pragma mark - Tests: "h" group
+
+TEST(KleeTest, h_test000001) {
+  char re[] = "^";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000002) {
+  char re[] = "";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000003) {
+  char re[] = "^$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000004) {
+  char re[] = "^\x01";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000005) {
+  char re[] = "^$\x01";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000006) {
+  char re[] = "^.";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000007) {
+  char re[] = "^\x01*";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000008) {
+  char re[] = "^h";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000009) {
+  char re[] = "^.\x01";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000010) {
+  char re[] = "^.*";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, h_test000011) {
+  char re[] = "$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 1);
+}
+
+TEST(KleeTest, h_test000012) {
+  char re[] = "^.\x01*$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 1);
+}
+
+TEST(KleeTest, h_test000013) {
+  char re[] = ".*";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 0);
+}
+</pre>
+</details>
+<br/><p>When we add these tests to the test suite and run Mull again, we get a different
+report:</p>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_2.png"/>
+<details>
+<summary>Mutation #1</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_1.png"/>
+</details>
+<details>
+<summary>Mutation #2</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_2_Mutation_2.png"/>
+</details>
+<br/><p>We see that newly generated test cases killed 2 of 4 mutations that we had at
+the step 4a. At this point, we have the tests that Klee generated for "hello"
+and "h" inputs. Let's consider the third obvious case: empty string <tt class="docutils literal">""</tt>,
+maybe it will kill either or both of these remaining 2 mutants.</p>
+</div>
+<div class="section" id="step-4c-adding-more-test-scenarios-with-klee-instead-of-hello">
+<h2 id="step-4c-adding-more-test-scenarios-with-klee-instead-of-hello">Step 4c: Adding more test scenarios with Klee ("" instead of "hello")</h2>
+<details>
+<summary>Tests for "" input</summary>
+<pre>
+// The size of the buffer to test with.
+#define SIZE 7
+
+int main() {
+  // The input regular expression.
+  char re[SIZE];
+
+  // Make the input symbolic.
+  klee_make_symbolic(re, sizeof re, "re");
+  klee_assume(re[SIZE - 1] == '\0');
+
+  match(re, "");
+
+  return 0;
+}
+
+$ klee --only-output-states-covering-new Regexp.bc
+KLEE: output directory is "/home/klee/klee_src/examples/regexp/klee-out-4"
+KLEE: Using STP solver backend
+
+KLEE: done: total instructions = 1034
+KLEE: done: completed paths = 24
+KLEE: done: generated tests = 9
+
+#pragma mark - Tests: "" group
+
+TEST(KleeTest, empty_test000001) {
+  char re[] = "^";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000002) {
+  char re[] = "";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000003) {
+  char re[] = "^\x01";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000004) {
+  char re[] = "\x01";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000005) {
+  char re[] = "$";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 1);
+}
+
+TEST(KleeTest, empty_test000006) {
+  char re[] = "$\x01";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000007) {
+  char re[] = "^\x01*";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000008) {
+  char re[] = "\x01*";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 0);
+}
+
+TEST(KleeTest, empty_test000009) {
+  char re[] = "\x01*$";
+
+  int res = match(re, (char *)"");
+
+  ASSERT_EQ(res, 1);
+}
+</pre>
+</details>
+<br/>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_3.png"/>
+<details>
+<summary>Mutation #1</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_1.png"/>
+</details>
+<details>
+<summary>Mutation #2</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_3_Mutation_2.png"/>
+</details>
+<br/><p>We see that tests generated for "" input didn't change the mutation score and we
+still have the same 2 mutations from step 4b - they are still not killed by any
+of 36 tests.</p>
+<p>At this point we are running out of options: it is not clear what input we can
+give Klee to generate tests so that we could have 100% mutation score. With a
+great redundancy of 36 tests we still have 2 mutants that survive.</p>
+</div>
+<div class="section" id="step-4d-writing-missing-tests-manually-using-human-brain-power">
+<h2 id="step-4d-writing-missing-tests-manually-using-human-brain-power">Step 4d: Writing missing tests manually using human brain power</h2>
+<p>After doing a simple research on mutation #1 and mutation #2 and using debugger
+to step through their sections of code, the following tests are enough to kill
+both mutations.</p>
+<details>
+<summary>Test that kills Mutation #1</summary>
+<pre>
+TEST(KleeTest, kill_Mutation1) {
+  char re[] = "^1*$";
+
+  int res = match(re, (char *)"1111");
+
+  ASSERT_EQ(res, 1);
+}
+</pre>
+</details>
+<details>
+<summary>Test that kills Mutation #2</summary>
+<pre>
+TEST(KleeTest, killMutation2) {
+  char re[] = "^h$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 1);
+}
+</pre>
+</details>
+<br/><p>A careful reader may ask: why didn't we use Klee to generate the inputs for a
+string that has repeating symbols to kill the mutation #1? Indeed, we used Klee
+to generate another 10 tests for the input "hhh" but none of those tests killed
+this mutation.</p>
+</div>
+<div class="section" id="step-5a-observations-about-redundancy">
+<h2 id="step-5a-observations-about-redundancy">Step 5a: Observations about redundancy</h2>
+<p><strong>Observation 1.</strong> After step 4a with 4 mutations we went with step 4b where
+Klee generated 13 tests for input <tt class="docutils literal">"h"</tt> which killed 2 mutations of 4.
+Instead, only one test can be written which kills those 2 mutations. This test
+can be derived from looking at those mutations and stepping through their
+critical code with a debugger.</p>
+<pre>
+TEST(KleeTest, killFirstTwoOfFourMutations) {
+  char re[] = "^.$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 1);
+}
+</pre><p><strong>Observation 2.</strong> Step 4b killed 2 mutations. Out of all 13 generated tests for
+<cite>"h"</cite> input, only this test actually killed both mutations:</p>
+<pre>
+if (*text != '\0' &amp;&amp; (re[0]=='.' || re[0]==*text))
+          ^
+</pre>
+
+and
+
+<pre>
+if (*text != '\0' &amp;&amp; (re[0]=='.' || re[0]==*text))
+                           ^
+</pre><p>The test:</p>
+<pre>
+TEST(KleeTest, h_test000012) {
+  char re[] = "^.\x01*$";
+
+  int res = match(re, (char *)"h");
+
+  ASSERT_EQ(res, 1);
+}
+</pre></div>
+<div class="section" id="step-5b-observation-about-weird-matches">
+<h2 id="step-5b-observation-about-weird-matches">Step 5b: Observation about weird matches</h2>
+<p><strong>Example 1.</strong></p>
+<p>The function does not match "^" symbol on all inputs:</p>
+<div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">empty_test000001</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"^"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">""</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">hello_test000001</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"^"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>but it does match "$" symbol:</p>
+<div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">hello_test000010</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"$"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">h_test000011</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"$"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">"h"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p><strong>Example 2.</strong></p>
+<p>For the same reason as in Example 1, the function does match this line:</p>
+<div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">empty_test000009</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"</span><span class="se">\x01</span><span class="s">*$"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">""</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+<p>But does not match on this line:</p>
+<div class="highlight"><pre><span></span><span class="n">TEST</span><span class="p">(</span><span class="n">KleeTest</span><span class="p">,</span><span class="w"> </span><span class="n">hello_test000006</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kt">char</span><span class="w"> </span><span class="n">re</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"^</span><span class="se">\x01</span><span class="s">*"</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">match</span><span class="p">(</span><span class="n">re</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">ASSERT_EQ</span><span class="p">(</span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="section" id="conslusion">
+<h2 id="conslusion">Conslusion</h2>
+<p>The major results and conclusions can be found in TL;DR at the beginning of this
+post. Here are a few more:</p>
+<p>1. We are wondering why Klee didn't generate the test cases to kill the last two
+mutations. We assume that probably this goes about some details of Klee
+configuration that we are not aware of. Maybe using some other solver backend
+instead of <tt class="docutils literal">KLEE: Using STP solver backend</tt> we could have these needed tests
+generated.</p>
+<p>2. One thing we are definitely missing in Klee's toolchain is an option to
+auto-generate human-readable tests so that a human could inspect Klee's products
+much easier. For this post we had to use <tt class="docutils literal"><span class="pre">ktest-tool</span></tt> manually for about 50
+times and do this job of a test case generation manually which was tedious and
+of course error-prone. We think that for C and C++ languages Google Test would
+be a great default option for this feature. Of course, we also mean a bulk
+generation of a whole test suite for a whole <tt class="docutils literal"><span class="pre">klee-out</span></tt> folder as well as one
+test case generation for a one <tt class="docutils literal">.ktest</tt> file.</p>
+<p>3. We are not aware if Klee would allow us to make both inputs symbolic so that
+it executed both <tt class="docutils literal">re</tt> and input string parameters so that we did not have to
+substitute "hello" -&gt; "h" -&gt; "" -&gt; "hhh" inputs manually by hands. However, this
+goes beyond a scope of this post and a content of Tutorial Two.</p>
+<p>This is a final report with redundancy of the tests auto-generated for
+<tt class="docutils literal">"hello"</tt>, <tt class="docutils literal">"h"</tt> and <tt class="docutils literal">""</tt> strings and two tests that we wrote to kill the
+last two mutations.</p>
+<details>
+<summary>Final report</summary>
+<img src="./images/2017-05-07-mull-and-klee-part1/Report_4_Final.png"/>
+</details><p>The complete four reports can be downloaded here: <a class="reference external" href="./files/2017-05-07-mull-and-klee-part1/Klee-Tutorial-Two.zip">Klee-Tutorial-Two.zip</a>.</p>
+<p>This post is only a beginning of our research on possible collaboration between
+these two tools: Mull and Klee with their two quite different approaches to a
+software as a matter: mutation analysis and symbolic execution.</p>
+<p>We would be happy to learn about your experience with mutation testing or Klee
+and symbolic execution. Feel free to <a class="reference external" href="mailto:s.pankevich@gmail.com">drop me a line</a>.</p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>

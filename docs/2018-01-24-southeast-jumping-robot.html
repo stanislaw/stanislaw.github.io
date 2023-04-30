@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BR8N0J5807"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BR8N0J5807');
+    </script>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="generator" content="Pelican" />
+        <title>A Southeast Jumping Robot: Notes on one proof from a textbook</title>
+        <link rel="stylesheet" href="./theme/css/main.css" />
+        <meta name="description" content="Short summary" />
+        <script src="https://kit.fontawesome.com/430941314f.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="index">
+<mottto-container class="color:base">
+        <mottto-aside>
+                <mottto-header class="color:aside">
+                        <div class="site_name">TECH NOTES</div><div class="site_subname"> by Stanislav Pankevich</div></mottto-header>
+                <mottto-nav class="color:aside">
+                        <nav class="site_nav">
+                        <!-- a href="./">Home</!-->
+                                <a  href="./pages/about.html">About</a>
+                                <a  class="active" href="./category/posts.html">Posts</a>
+                        </nav>
+                </mottto-nav>
+                <mottto-toc class="color:aside">
+  <a class="article_url"
+    href="./2018-01-24-southeast-jumping-robot.html"
+    rel="bookmark"
+    title="Permalink to A Southeast Jumping Robot: Notes on one proof from a textbook">
+    A Southeast Jumping Robot: Notes on one proof from a textbook
+  </a>
+    <div class="article_toc"><div id="toc"><ul><li><a class="toc-href" href="#introduction" title="Introduction">Introduction</a></li><li><a class="toc-href" href="#a-southeast-jumping-robot" title="A Southeast Jumping Robot">A Southeast Jumping Robot</a></li><li><a class="toc-href" href="#understanding-the-problem" title="Understanding the problem">Understanding the problem</a></li><li><a class="toc-href" href="#proof" title="Proof">Proof</a><ul><li><a class="toc-href" href="#1-proof-of-the-lemma-246" title="1. Proof of the lemma 2.4.6">1. Proof of the lemma 2.4.6</a></li><li><a a="" class="toc-href" decreasing="" derived="" href="#2-proof-that-v-is-a-strictly-decreasing-derived-variable" is="" strictly="" title="2. Proof that " variable'="" 𝑣'="">2. Proof that '𝑣' is a strictly decreasing derived variable</a></li><li><a class="toc-href" href="#3-implication-of-theorem-633-robot-always-gets-stuck" title="3. Implication of Theorem 6.3.3: Robot always gets stuck">3. Implication of Theorem 6.3.3: Robot always gets stuck</a></li></ul></li><li><a class="toc-href" href="#geometric-interpretation_1" title="Geometric interpretation">Geometric interpretation</a></li><li><a class="toc-href" href="#plots" title="Plots">Plots</a></li><li><a class="toc-href" href="#credits" title="Credits">Credits</a></li><li><a class="toc-href" href="#links" title="Links">Links</a></li></ul></div></div>
+                </mottto-toc>
+                <mottto-footer></mottto-footer>
+        </mottto-aside>
+        <mottto-main class="color:main">
+                <main>
+
+  <article data-display="article">
+    <header>
+      <h1>A Southeast Jumping Robot: Notes on one proof from a textbook</h1>
+    </header>
+
+    <div class="widget-twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="sbpankevich">Tweet</a><script type="text/javascript" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<aside>
+        <time class="published" title="2018-01-28T17:20:00+01:00">
+                2018-01-28
+        </time>
+
+
+<div class="taglist"><a class="tag" href="./tag/math.html">Math</a> </div>
+</aside>
+    <div class="section" id="introduction">
+<h2 id="introduction">Introduction</h2>
+<p>This ad-hoc post is dedicated to one small proof from a textbook "Mathematics
+for Computer Science" <a class="reference internal" href="#anchor-01-mathematics">[1]</a> which is recommended
+reading in the course "Formal Software Verification" <a class="reference internal" href="#anchor-02-course">[2]</a>.
+It took a while for me to understand the reasoning behind this proof so I
+decided to share my experience in a blog post because I did not find any
+information about it on the internet. Hopefully it will help someone who is
+working with this textbook to understand the material better.</p>
+<p>My goal is to fill in the details I missed in the textbook, not to give a
+complete explanation of a problem so it is most likely that this post will only
+make sense to those who are familiar with the context of this proof: the chapter
+called "6.3 Partial Correctness &amp; Termination".</p>
+</div>
+<div class="section" id="a-southeast-jumping-robot">
+<h2 id="a-southeast-jumping-robot">A Southeast Jumping Robot</h2>
+<p>This proof is located in section "6.3.4 A Southeast Jumping Robot (Optional)",
+page 180 of the book and page 188 of a textbook. It proves the following claim:</p>
+<blockquote>
+Claim 6.3.4. The robot will always get stuck at the origin.</blockquote>
+<p>The following is a direct quote from a textbook:</p>
+<div class="figure">
+<img alt="6.3.4 A Southeast Jumping Robot (Optional)" src="./images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotIntro.png"/>
+</div>
+</div>
+<div class="section" id="understanding-the-problem">
+<h2 id="understanding-the-problem">Understanding the problem</h2>
+<blockquote>
+Claim 6.3.4. The robot will always get stuck at the origin.</blockquote>
+<p>The key observation about the behaviour of the robot is that even though the
+robot can jump East quicker than West, sooner or later it will not be able to
+jump East when it reaches the bottom of the quadrant due to the <span class="formula"><i>y</i>&thinsp;&minus;&thinsp;1</span>
+component of the Southeast move. After the robot has reached the bottom of the
+quadrant it can only move West so finally it will get stuck in <span class="formula">(0,&thinsp;0)</span>
+because the West move will also become impossible.</p>
+</div>
+<div class="section" id="proof">
+<h2 id="proof">Proof</h2>
+<p>This is the proof that the textbook suggests:</p>
+<div class="figure">
+<img alt="Proof" src="./images/2018-01-24-southeast-jumping-robot/ASouthEastJumpingRobotProof.png"/>
+</div>
+<p>Let's consider three building blocks of this proof:</p>
+<ol class="arabic simple">
+<li>Lemma 2.4.6</li>
+<li>Show that <span class="formula"><i>&upsilon;</i></span> is strictly decreasing i.e. show the implication:</li>
+</ol>
+<div class="formula">
+(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&xrarr;&thinsp;(<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;)&thinsp;&xrArr;&thinsp;<i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))&thinsp;&lt;&thinsp;<i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))
+</div>
+<ol class="arabic simple" start="3">
+<li>Show the implication from Theorem 6.3.3 that Robot always get stuck.</li>
+</ol>
+<div class="section" id="proof-of-the-lemma-2-4-6">
+<h3 id="1-proof-of-the-lemma-246">1. Proof of the lemma 2.4.6</h3>
+<p>Let's look the lemma up in the textbook:</p>
+<div class="figure">
+<img alt="Lemma 2.4.6" src="./images/2018-01-24-southeast-jumping-robot/Lemma-2.4.6-Proof.png"/>
+</div>
+<div class="highlight"><pre><span></span>Lemma 2.4.6. &naturals; + &Fopf; is well ordered.
+</pre></div>
+<p>The definition of <span class="formula">&naturals;&thinsp;+&thinsp;&Fopf;</span> requires us to understand what is <span class="formula">&Fopf;</span> first:</p>
+<div class="figure">
+<img alt="Definition-Set-F" src="./images/2018-01-24-southeast-jumping-robot/Definition-Set-F.png"/>
+</div>
+<p>This is the definition of <strong>well-ordered</strong> by Wikipedia:</p>
+<blockquote>
+In mathematics, a well-order (or well-ordering or well-order relation) on a
+set S is a total order on S with the property that every non-empty subset of
+S has a least element in this ordering. The set S together with the
+well-order relation is then called a well-ordered set.</blockquote>
+<p><strong>The Well Ordering Principle</strong> is defined at the start of chapter 2: "Well
+Ordering Principle" as</p>
+<blockquote>
+<p>Every nonempty set of nonnegative integers has a smallest element.</p>
+<p>While the Well Ordering Principle may seem obvious, it's hard to see offhand
+why it is useful. But in fact, it provides one of the most important proof
+rules in discrete mathematics...</p>
+<p>Well ordering commonly comes up in computer science as a method for proving
+that computations won't run forever. The idea is to assign a value to each
+successive step of a computation so that the values get smaller at every
+step. If the values are all from a well ordered set, then the computation
+can't run forever, because if it did, the values assigned to its successive
+steps would define a subset with no minimum element. You'll see several
+examples of this technique applied in Chapter 6 to prove that various state
+machines will eventually terminate.</p>
+</blockquote>
+<p>Given we understand the definitions of <strong>well-ordered</strong> and <strong>Well Ordering
+Principle</strong> we only need to prove what is left as the exercise in the textbook
+(Problem 2.20):</p>
+<blockquote>
+Now it is easy to verify that <span class="formula"><i>n</i><sub><i>s</i></sub>&thinsp;+&thinsp;<i>f</i><sub><i>s</i></sub></span> is the minimum
+element of <span class="formula"><i>S</i></span> (Problem 2.20).</blockquote>
+<p>To prove this statement, let's assume the opposite:</p>
+<p>There are <span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;</span> and <span class="formula"><i>f</i><sub><i>s</i></sub>&rsquo;</span> so that
+<span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;+&thinsp;<i>f</i><sub><i>s</i></sub>&rsquo;</span> is the minimum element of <span class="formula"><i>S</i></span>, which means that</p>
+<div class="formula">
+<i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;+&thinsp;<i>f</i><sub><i>s</i></sub>&rsquo;&thinsp;&lt;&thinsp;<i>n</i><sub><i>s</i></sub>&thinsp;+&thinsp;<i>f</i><sub><i>s</i></sub> <span class="text">(1A)</span>
+</div>
+<p>Let's consider two cases:</p>
+<ol class="arabic simple">
+<li><span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;=&thinsp;<i>n</i><sub><i>s</i></sub></span>, which reduces the equation 1A to just:</li>
+</ol>
+<div class="formula">
+<i>f</i><sub><i>s</i></sub>&rsquo;&thinsp;&lt;&thinsp;<i>f</i><sub><i>s</i></sub>
+</div>
+<p>which is a contradiction to the definition of <span class="formula"><i>f</i><sub><i>s</i></sub></span>
+which is the smallest element of <span class="formula">{<i>f</i>&thinsp;&isin;&thinsp;&Fopf; | <i>n</i><sub><i>s</i></sub>&thinsp;+&thinsp;<i>f</i>&thinsp;&isin;&thinsp;<i>S</i>}</span>.</p>
+<ol class="arabic simple" start="2">
+<li><span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;&ne;&thinsp;<i>n</i><sub><i>s</i></sub></span></li>
+</ol>
+<p>Let's group members of the equation 1A:
+<span class="formula"><i>n</i><sub><i>s</i></sub></span> with <span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;</span> to the left side of the equation and
+<span class="formula"><i>f</i><sub><i>s</i></sub></span> with <span class="formula"><i>f</i><sub><i>s</i></sub>&rsquo;</span> to the right side:</p>
+<div class="formula">
+<i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;&minus;&thinsp;<i>n</i><sub><i>s</i></sub>&thinsp;&lt;&thinsp;<i>f</i><sub><i>s</i></sub>&thinsp;&minus;&thinsp;<i>f</i><sub><i>s</i></sub>&rsquo; <span class="text">(2A)</span>
+</div>
+<p>By definition of <span class="formula"><i>n</i><sub><i>s</i></sub></span>, it is the smallest of <span class="formula">{<i>n</i>&thinsp;&isin;&thinsp;&naturals; | <i>n</i>&thinsp;+&thinsp;<i>f</i>&thinsp;&isin;&thinsp;<i>S</i>,&thinsp;<i>for</i> <i>f</i>&thinsp;&isin;&thinsp;&Fopf;}</span>
+which means that <span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;</span> is greater than <span class="formula"><i>n</i><sub><i>s</i></sub></span>
+i.e. <span class="formula"><i>n</i><sub><i>s</i></sub>&rsquo;&thinsp;&minus;&thinsp;<i>n</i><sub><i>s</i></sub>&thinsp;&ge;&thinsp;1</span>.</p>
+<p>Let's obtain the contradiction by proving that the right side of the equation 2A
+is always less than <span class="formula">1</span>:</p>
+<p><span class="formula"><i>f</i><sub><i>s</i></sub>&thinsp;&isin;&thinsp;&Fopf;</span> and <span class="formula"><i>f</i><sub><i>s</i></sub>&rsquo;&thinsp;&isin;&thinsp;&Fopf;</span> so by definition of <span class="formula">&Fopf;</span>:</p>
+<div class="formula">
+<i>s</i>&thinsp;&frasl;&thinsp;(<i>s</i>&thinsp;+&thinsp;1)&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&thinsp;&frasl;&thinsp;(<i>s</i>&rsquo;&thinsp;+&thinsp;1)&thinsp;&lt;&thinsp;1,&thinsp; <span class="text">&thinsp;where</span> <i>s</i>&thinsp;&isin;&thinsp;&naturals; <span class="text">and</span> <i>s</i>&rsquo;&thinsp;&isin;&thinsp;&naturals;
+</div>
+<p>Let's multiply both parts by <span class="formula">(<i>s</i>&thinsp;+&thinsp;1)&times;(<i>s</i>&rsquo;&thinsp;+&thinsp;1)</span> to get rid of the fractions:</p>
+<div class="formula">
+<i>s</i>&times;(<i>s</i>&rsquo;&thinsp;+&thinsp;1)&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&times;(<i>s</i>&thinsp;+&thinsp;1)&thinsp;&lt;&thinsp;(<i>s</i>&thinsp;+&thinsp;1)&times;(<i>s</i>&rsquo;&thinsp;+&thinsp;1)<br/><i>s</i>&times;<i>s</i>&rsquo;&thinsp;+&thinsp;<i>s</i>&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&times;<i>s</i>&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&thinsp;&lt;&thinsp;<i>s</i>&times;<i>s</i>&rsquo;&thinsp;+&thinsp;<i>s</i>&thinsp;+&thinsp;<i>s</i>&rsquo;&thinsp;+&thinsp;1
+</div>
+<p>Reduction gives us:</p>
+<div class="formula">
+&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&times;<i>s</i>&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&thinsp;&lt;&thinsp;<i>s</i>&rsquo;&thinsp;+&thinsp;1<br/>&thinsp;&minus;&thinsp;<i>s</i>&rsquo;&times;<i>s</i>&thinsp;&minus;&thinsp;2&times;<i>s</i>&rsquo;&thinsp;&lt;&thinsp;1<br/><i>s</i>&rsquo;&times;(<i>s</i>&thinsp;+&thinsp;2)&thinsp;&gt;&thinsp;&thinsp;&minus;&thinsp;1<br/>
+</div>
+<p>This equation always holds since both <span class="formula"><i>s</i></span> and <span class="formula"><i>s</i>&rsquo;</span> are nonnegative integers,
+which proves that the right side of the equation 1A is always less than 1.</p>
+<p>At the same time we have showed already that the left side of the equation 1A is
+greater or equal to 1 which means that we arrived to the contradiction in the
+equation 1A.</p>
+<p>We have just proved the homework exercise <span class="formula"><i>Problem</i>&nbsp;2.20</span>, the final building
+block for proof of Lemma 2.4.6.</p>
+</div>
+<div class="section" id="proof-that-v-is-a-strictly-decreasing-derived-variable">
+<h3 id="2-proof-that-v-is-a-strictly-decreasing-derived-variable">2. Proof that '𝑣' is a strictly decreasing derived variable</h3>
+<p>Let's actually check the following statement:</p>
+<blockquote>
+Now it is easy to check that if <span class="formula">(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&rarr;&thinsp;(<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;)</span> is a legitimate robot
+move, then <span class="formula"><i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))&thinsp;&lt;&thinsp;<i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))</span>. In particular, v is a strictly
+decreasing derived variable...</blockquote>
+<p>We need to check if <span class="formula"><i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))&thinsp;&lt;&thinsp;<i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))</span> holds for both types of moves
+that a robot can do:</p>
+<ol class="arabic simple">
+<li><strong>a unit distance West move</strong> &mdash; that is, <span class="formula">(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&rarr;&thinsp;(<i>x</i>&thinsp;&minus;&thinsp;1,&thinsp;<i>y</i>)</span> for <span class="formula"><i>x</i>&thinsp;&gt;&thinsp;0</span></li>
+</ol>
+<p>By definition <span class="formula"><i>&upsilon;</i>(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&coloneq;&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)</span>, so for <span class="formula">(<i>x</i>,&thinsp;<i>y</i>)</span> and <span class="formula">(<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;)</span>
+coordinates we have:</p>
+<div class="formula">
+<i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))&thinsp;&gt;&thinsp;<i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))
+</div>
+<p>Expand by definition of <span class="formula"><i>&upsilon;</i></span>:</p>
+<div class="formula">
+<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;<i>y</i>&rsquo;&thinsp;+&thinsp;<i>x</i>&rsquo;&thinsp;&frasl;&thinsp;(<i>x</i>&rsquo;&thinsp;+&thinsp;1)
+</div>
+<p>Replace <span class="formula"><i>x</i>&rsquo;</span> with <span class="formula">(<i>x</i>&thinsp;&minus;&thinsp;1)</span> , <span class="formula"><i>y</i>&rsquo;</span> with <span class="formula"><i>y</i></span> :</p>
+<div class="formula">
+<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;<i>y</i>&thinsp;+&thinsp;(<i>x</i>&thinsp;&minus;&thinsp;1)&thinsp;&frasl;&thinsp;((<i>x</i>&thinsp;&minus;&thinsp;1)&thinsp;+&thinsp;1)
+</div>
+<p>Reduce <span class="formula"><i>y</i></span> and <span class="formula">1</span>'s:</p>
+<div class="formula">
+<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;(<i>x</i>&thinsp;&minus;&thinsp;1)&thinsp;&frasl;&thinsp;<i>x</i>
+</div>
+<p>Multiply both parts by <span class="formula"><i>x</i>&times;(<i>x</i>&thinsp;+&thinsp;1)</span> to get rid of fractions</p>
+<div class="formula">
+<i>x</i><sub>2</sub>&thinsp;&gt;&thinsp;(<i>x</i>&thinsp;&minus;&thinsp;1)(<i>x</i>&thinsp;+&thinsp;1)
+</div>
+<p>This equation always holds, so <span class="formula"><i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))&thinsp;&gt;&thinsp;<i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))</span> holds:</p>
+<div class="formula">
+<i>x</i><sub>2</sub>&thinsp;&gt;&thinsp;(<i>x</i><sub>2</sub>&thinsp;&minus;&thinsp;1)
+</div>
+<ol class="arabic simple" start="2">
+<li><strong>a unit distance South combined with an arbitrary jump</strong> East&mdash;that is, <span class="formula">(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&rarr;&thinsp;(<i>z</i>,&thinsp;<i>y</i>&thinsp;&minus;&thinsp;1)</span> for <span class="formula"><i>z</i>&thinsp;&ge;&thinsp;<i>x</i></span>.</li>
+</ol>
+<div class="formula">
+<i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))&thinsp;&gt;&thinsp;<i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))
+</div>
+<p>Expand by definition of <span class="formula"><i>&upsilon;</i></span> :</p>
+<div class="formula">
+<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;<i>y</i>&rsquo;&thinsp;+&thinsp;<i>x</i>&rsquo;&thinsp;&frasl;&thinsp;(<i>x</i>&rsquo;&thinsp;+&thinsp;1)
+</div>
+<p>Replace <span class="formula"><i>x</i>&rsquo;</span> with <span class="formula"><i>z</i></span> , <span class="formula"><i>y</i>&rsquo;</span> with <span class="formula"><i>y</i>&thinsp;&minus;&thinsp;1</span> :</p>
+<div class="formula">
+<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;<i>y</i>&thinsp;&minus;&thinsp;1&thinsp;+&thinsp;<i>z</i>&thinsp;&frasl;&thinsp;(<i>z</i>&thinsp;+&thinsp;1)
+</div>
+<p>Reduce y:</p>
+<div class="formula">
+<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;&thinsp;&minus;&thinsp;1&thinsp;+&thinsp;<i>z</i>&thinsp;&frasl;&thinsp;(<i>z</i>&thinsp;+&thinsp;1)
+</div>
+<p>Due to <span class="formula">(<i>x</i>&thinsp;&frasl;&thinsp;<i>x</i>&thinsp;+&thinsp;1)&thinsp;&lt;&thinsp;1</span> for any <span class="formula"><i>x</i>&thinsp;&ge;&thinsp;0</span> and <span class="formula">(<i>z</i>&thinsp;&frasl;&thinsp;<i>z</i>&thinsp;+&thinsp;1)&thinsp;&lt;&thinsp;1</span> for any <span class="formula"><i>z</i>&thinsp;&ge;&thinsp;<i>x</i></span>
+we have that <span class="formula"><i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&minus;&thinsp;<i>z</i>&thinsp;&frasl;&thinsp;(<i>z</i>&thinsp;+&thinsp;1)</span> is always greater than <span class="formula">&thinsp;&minus;&thinsp;1</span></p>
+<p>So <span class="formula"><i>&upsilon;</i>((<i>x</i>,&thinsp;<i>y</i>))&thinsp;&gt;&thinsp;<i>&upsilon;</i>((<i>x</i>&rsquo;,&thinsp;<i>y</i>&rsquo;))</span> holds:</p>
+<div class="formula">
+<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&minus;&thinsp;<i>z</i>&thinsp;&frasl;&thinsp;(<i>z</i>&thinsp;+&thinsp;1)&thinsp;&gt;&thinsp;&thinsp;&minus;&thinsp;1
+</div>
+</div>
+<div class="section" id="implication-of-theorem-6-3-3-robot-always-gets-stuck">
+<h3 id="3-implication-of-theorem-633-robot-always-gets-stuck">3. Implication of Theorem 6.3.3: Robot always gets stuck</h3>
+<div class="figure">
+<img alt="Theorem 6.3.3" src="./images/2018-01-24-southeast-jumping-robot/Theorem-6.3.3.png"/>
+</div>
+<p>This last section concludes the proof: in the step 2 we showed that a derived
+variable <span class="formula"><i>&upsilon;</i></span> is a strictly decreasing derived variable whose range is
+a well ordered set <span class="formula">&naturals;&thinsp;+&thinsp;&Fopf;</span> so we conclude that for any sequence of steps that
+robot can do it will eventually end up being in (0,&nbsp;0).</p>
+</div>
+</div>
+<div class="section" id="geometric-interpretation">
+<h2 id="geometric-interpretation_1">Geometric interpretation</h2>
+<p>Let's consider that the robot is moving on 10 x 10 quadrant.</p>
+<p>By definition of <span class="formula"><i>&upsilon;</i></span> we have:</p>
+<div class="formula">
+<i>&upsilon;</i>(<i>x</i>,&thinsp;<i>y</i>)&thinsp;&coloneq;&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)
+</div>
+<p>therefore we get the following table of values:</p>
+<div class="highlight"><pre><span></span>(9 + 0/1)    (9 + 1/2)    (9 + 2/3)   ... (9 + 9/10)  # 9 &le; y + x / (x + 1) &le; 10
+...                     ...                      ...
+(2 + 0/1)    (2 + 1/2)    (2 + 2/3)   ... (2 + 9/10)  # 2 &le; y + x / (x + 1) &le; 3
+(1 + 0/1)    (1 + 1/2)    (1 + 2/3)   ... (1 + 9/10)  # 1 &le; y + x / (x + 1) &le; 2
+(0 + 0/1)    (0 + 1/2)    (0 + 2/3)   ... (0 + 9/10)  # 0 &le; y + x / (x + 1) &le; 1
+</pre></div>
+<p>We see that the rows form buckets of values constrained within the range
+of <span class="formula">[<i>y</i>,&thinsp;<i>y</i>&thinsp;+&thinsp;1]</span>, for each <span class="formula">{<i>y</i>&thinsp;&isin;&thinsp;&naturals; | 0&thinsp;&le;&thinsp;<i>y</i>&thinsp;&le;&thinsp;10}</span>:</p>
+<div class="formula">
+<i>y</i>&thinsp;&le;&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)&thinsp;&lt;&thinsp;<i>y</i>&thinsp;+&thinsp;1 <span class="text">&thinsp;(Observation 1)</span>
+</div>
+<p>for example</p>
+<div class="formula">
+2&thinsp;&le;&thinsp;(2&thinsp;+&thinsp;0&thinsp;&frasl;&thinsp;1)&thinsp;&lt;&thinsp;(2&thinsp;+&thinsp;1&thinsp;&frasl;&thinsp;2)&thinsp;&lt;&thinsp;(2&thinsp;+&thinsp;2&thinsp;&frasl;&thinsp;3)&thinsp;&lt;&thinsp;...&thinsp;&lt;&thinsp;(2&thinsp;+&thinsp;9&thinsp;&frasl;&thinsp;10)&thinsp;&lt;&thinsp;3.
+</div>
+<p>Also, we see that columns form buckets of points so that the difference between
+the values of any two adjacent points equals to 1, for example:</p>
+<div class="formula">
+(2&thinsp;+&thinsp;2&thinsp;&frasl;&thinsp;3)&thinsp;&minus;&thinsp;(1&thinsp;+&thinsp;2&thinsp;&frasl;&thinsp;3)&thinsp;=&thinsp;1 <span class="text">&thinsp;(Observation 2)</span>
+</div>
+<p><strong>Observation 3. Sequences from the vertical buckets decrease with a rate of
+1&nbsp;per row and the sequences from the horizontal buckets decrease with a rate
+strictly less than 1&nbsp;per column so vertical sequences decrease faster</strong>.</p>
+<p>When robot jumps to the West it changes the column bucket which means that
+the <span class="formula"><i>y</i></span> stays the same, but <span class="formula"><i>x</i></span> changes to <span class="formula"><i>x</i>&thinsp;&minus;&thinsp;1</span> , for example:</p>
+<div class="formula">
+(5,&thinsp;5,&thinsp;5&thinsp;+&thinsp;5&thinsp;&frasl;&thinsp;6)&thinsp;&xrarr;&thinsp;(4,&thinsp;5,&thinsp;5&thinsp;+&thinsp;4&thinsp;&frasl;&thinsp;5) <span class="text">&thinsp;# 5 + 5 / 6 &gt; 5 + 4/5</span>
+</div>
+<p>When robot jumps to the South East it changes the column and row buckets which
+means that</p>
+<div class="formula">
+(5,&thinsp;5,&thinsp;5&thinsp;+&thinsp;5&thinsp;&frasl;&thinsp;6)&thinsp;&xrarr;&thinsp;(<i>k</i>,&thinsp;4,&thinsp;4&thinsp;+&thinsp;(<i>k</i>)&thinsp;&frasl;&thinsp;(<i>k</i>&thinsp;+&thinsp;1)),&thinsp;5&thinsp;&le;&thinsp;<i>k</i>&thinsp;&le;&thinsp;10
+</div>
+<p>Along 𝑥-axis, Robot can jump to a 𝑘 coordinate as far as the right boundary
+of a quadrant, however its jump also changes the horizontal bucket <span class="formula"><i>y</i>&nbsp;&thinsp;&minus;&thinsp;&nbsp;1</span>
+which means that this jump to South is always a stronger contributor to the
+value <span class="formula"><i>&upsilon;</i></span> than an arbitrary jump to the East (this is obvious from the
+observations 1, 2 and&nbsp;3).</p>
+<p>Now is clear that after each of these two moves derived value <span class="formula"><i>&upsilon;</i></span> becomes
+smaller than (5,&nbsp;5).</p>
+</div>
+<div class="section" id="plots">
+<h2 id="plots">Plots</h2>
+<p>Let's look at the geometric interpretation of this function:</p>
+<div class="formula">
+<i>f</i>(<i>x</i>,&thinsp;<i>y</i>)&thinsp;=&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)
+</div>
+<p>This is a three-dimensional function <span class="formula"><i>z</i>&thinsp;=&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)</span>
+so we will need a 3D plot to visualize this function:</p>
+<div class="figure">
+<img alt="Plot (Academo)" src="./images/2018-01-24-southeast-jumping-robot/Academo-Annotated.jpg"/>
+</div>
+<p>Let's assume that the robot is jumping from (5,&nbsp;5) coordinate to either (4,&nbsp;5)
+with its "unit distance West move" or (8,&nbsp;4) with its "unit distance South
+combined with an arbitrary jump".</p>
+<p>When I look at the annotated plot above, I see a good analogy: the plot
+represents a fragment of a mountain which the robot is trying climb up:
+values of <span class="formula"><i>z</i></span> like <span class="formula">(5&nbsp;&thinsp;+&thinsp;&nbsp;5&thinsp;&frasl;&thinsp;6)</span> or <span class="formula">(4&nbsp;&thinsp;+&thinsp;&nbsp;8&thinsp;&frasl;&thinsp;9)</span> represent the altitudes corresponding
+to the coordinates <span class="formula">(<i>x</i>,&thinsp;&nbsp;<i>y</i>)</span> of robot's positions.</p>
+<p>The drama of this robot, however, is that it can only move down the hill so it
+can never climb up. The altitude of its position is always decreasing and since
+it jumps on a limited 10 x 10 quadrant and the points are nonnegative integer
+numbers, the termination claim that we proved asserts that sooner or later robot
+will reach coordinate <span class="formula">(0,&thinsp;0)</span> and get stuck.</p>
+<p>The following plots demonstrate how the function <span class="formula"><i>f</i>(<i>x</i>,&thinsp;<i>y</i>)&thinsp;=&thinsp;<i>y</i>&thinsp;+&thinsp;<i>x</i>&thinsp;&frasl;&thinsp;(<i>x</i>&thinsp;+&thinsp;1)</span>
+looks like when it is not discrete but more continuous. These plots demonstrate
+it even better that the function is decreasing to 0 both along <span class="formula"><i>x</i></span> and <span class="formula"><i>y</i></span> axes.</p>
+<details>
+<summary>3D Plot by Wolfram</summary><div class="figure">
+<img alt="Plot (Wolfram)" src="./images/2018-01-24-southeast-jumping-robot/Wolfram.jpg"/>
+</div>
+</details>
+<details>
+<summary>3D Plot by Academo (Front)</summary><div class="figure">
+<img alt="Plot &ndash; Front (Academo)" src="./images/2018-01-24-southeast-jumping-robot/AcademoFront.jpg"/>
+</div>
+</details>
+<details>
+<summary>3D Plot by Academo (Back)</summary><div class="figure">
+<img alt="Plot &ndash; Back (Academo)" src="./images/2018-01-24-southeast-jumping-robot/AcademoBack.jpg"/>
+</div>
+</details></div>
+<div class="section" id="credits">
+<h2 id="credits">Credits</h2>
+<p>I am working with this proof because it is the material for the Week 2 of the
+course: "Formal Software Verification" <a class="reference internal" href="#anchor-02-course">[2]</a>. It is
+unlikely that I would have encountered this problem otherwise.</p>
+<p>I used two online services: Wolfram|Alpha <a class="reference internal" href="#anchor-03-wolframalpha">[3]</a> and
+Academo.org <a class="reference internal" href="#anchor-04-academo">[4]</a> to draw the plots. I used the amazing
+Academo service to create the annotated plot which helped me to visualize and
+understand the geometric interpretation of the proof.</p>
+</div>
+<div class="section" id="links">
+<h2 id="links">Links</h2>
+<p id="anchor-01-mathematics">[1] <a class="reference external" href="https://courses.csail.mit.edu/6.042/spring17/mcs.pdf">Eric Lehman, F Thomson Leighton, Albert R Meyer, "Mathematics for Computer
+Science", revised Monday 5th June, 2017, 19:42.</a></p>
+<p id="anchor-02-course">[2] <a class="reference external" href="#">edx - Formal Software Verification</a>. <strong>Update from 2023.03:</strong> It turns
+out that the course no longer exist.</p>
+<p id="anchor-03-wolframalpha">[3] <a class="reference external" href="http://www.wolframalpha.com/input/?i=plot">Wolfram|Alpha</a></p>
+<p id="anchor-04-academo">[4] <a class="reference external" href="https://academo.org/demos/3d-surface-plotter/?expression=y%2Bx%2F(x%2B1)&amp;xRange=0%2C+10&amp;yRange=0%2C+10&amp;resolution=100">Academo</a></p>
+</div>
+
+
+  </article>
+
+                        <footer class="color:footer">
+                                <section class="social">
+                                        <h4>Social</h4>
+                                        <ul>
+
+                                                <li><a href="https://github.com/stanislaw">stanislaw</a></li>
+                                                <li><a href="https://stackoverflow.com/users/598057/stanislav-pankevich">stanislav-pankevich</a></li>
+                                                <li><a href="https://www.linkedin.com/in/stanislavpankevich">stanislavpankevich</a></li>
+                                        </ul>
+                                </section><!-- /.social -->
+                                <section class="blogroll">
+                                        <h4>Links</h4>
+                                        <ul>
+                                                <li><a href="https://github.com/strictdoc-project/strictdoc">StrictDoc project (requirements management)</a></li>
+                                                <li><a href="https://github.com/mull-project/mull">Mull project (mutation testing)</a></li>
+                                                <li><a href="https://github.com/stanislaw/awesome-safety-critical">awesome-safety-critical (reading list)</a></li>
+                                        </ul>
+                                </section><!-- /.blogroll -->
+                                <address>
+                                Built with <a href="https://getpelican.com/">Pelican</a>.
+                                </address>
+                        </footer>
+
+                </main><!-- /main -->
+        </mottto-main>
+</mottto-container>
+
+</body>
+</html>
