@@ -46,7 +46,9 @@ The code of the extension is as follows.
     from strictdoc import environment
 
 
-    # https://stackoverflow.com/questions/21778252/how-to-raise-an-exception-in-a-jinja2-macro  # noqa: E501
+    # The solution was inspired by the StackOverflow question:
+    # How to raise an exception in a Jinja2 macro?
+    # https://stackoverflow.com/questions/21778252
     class AssertExtension(Extension):
         # This is our keyword(s):
         tags = {"assert"}
@@ -102,7 +104,7 @@ The code of the extension is as follows.
 Note that in this code, ``StrictUndefined`` is also used to make Jinja raise
 exceptions when an undefined variable is referenced from a Jinja template. The
 assertions build the next level of more precise checks on top of
-StrictUndefined.
+``StrictUndefined``.
 
 I have come to the idea of writing this extension because of several visual
 regressions that I found in `my project

@@ -17,9 +17,9 @@ AUTHOR_FEED_ATOM = None
 AUTHOR_FEED_RSS = None
 
 # Blogroll
-LINKS = (('Pelican', 'https://getpelican.com/'),
-         ('Python.org', 'https://www.python.org/'),
-         ('Jinja2', 'https://palletsprojects.com/p/jinja/'),
+LINKS = (('StrictDoc project (requirements management)', 'https://github.com/strictdoc-project/strictdoc'),
+         ('Mull project (mutation testing)', 'https://github.com/mull-project/mull'),
+         ('awesome-safety-critical (reading list)', 'https://github.com/stanislaw/awesome-safety-critical'),
         )
 
 # Social widget

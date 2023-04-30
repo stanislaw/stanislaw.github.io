@@ -184,7 +184,7 @@ article[data-display="index"] a::after {
 }
 
 article[data-display="index"]::before {
-	line-height: 36px;
+	line-height: 48px;
 }
 
 /* tag */

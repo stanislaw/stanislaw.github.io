@@ -15,10 +15,9 @@ While both tools are mainly used by the LLVM compiler infrastructure developers,
 they can be also used for testing any kinds of programs, not necessarily the
 compiler tools.
 
-This post is not a tutorial about using LIT/FileCheck. I will show only few
-examples of what both tools can do and instead, I will focus on what are the use
-cases for these tools, and in which situations both tools can be exceptionally
-useful.
+This post is not a tutorial on how to use LIT/FileCheck. Instead, I will provide
+a few examples of what both tools can do and focus on their use cases and
+situations where they can be exceptionally useful.
 
 At the bottom of this post, I provide several helpful links about LIT/FileCheck,
 some of which point to the practical step-by-step tutorials.
@@ -71,14 +70,12 @@ Example of a FileCheck check text file that matches against the output of ``git
 Use case 3: Test input, run commands and checks in a single file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-From the test maintainability perspective, it can be very convenient to contain
-a whole command-line program test in one file which includes:
+From the test maintainability perspective, it can be very convenient to
+combine test runner commands, check commands, and test input in one file.
 
-- Combining test runner commands, check commands, and test input in one file
-
-. An example is better than a long explanation. Let's assume we want to test
-that our C program, when compiled and run, produces a given output. Here's how a
-FileCheck/LIT test could look like:
+An example is better than a long explanation. Let's assume we want to test
+that our C program produces a given output. Here's how a
+LIT/FileCheck test could look like:
 
 .. code-block:: text
 
@@ -96,13 +93,13 @@ FileCheck/LIT test could look like:
 This file is a C program and a LIT/FileCheck test at the same time:
 
 - The C compiler ignores the // comments.
-- The LIT/FileCheck are only interested in RUN/CHECK statements.
+- LIT/FileCheck are only interested in RUN/CHECK statements.
 
 The RUN statements are run by LIT which interprets the ``%s`` as "this file".
 The RUN statements do the following:
 
 - Run the ``clang`` command
-- Execute the compiled ``hello_program`` program whose output is connected to
+- Execute the compiled ``hello_program`` program whose output is piped to
   the input of ``filecheck``.
 
 FileCheck receives the output from the ``hello_program`` and matches it against
@@ -167,7 +164,7 @@ The output produced by LIT should be as follows:
 
 An example of a LIT test that will always fail:
 
-.. code-block:: bash
+.. code-block:: text
 
     RUN: false
 
@@ -208,7 +205,7 @@ numbers, variables, or other types of data.
 Let's consider a LIT test that uses ``filecheck`` to assert that a program
 produces expected output.
 
-.. code-block:: bash
+.. code-block:: text
 
     RUN: command_line_program --say-hello-world | filecheck %s
     CHECK: Hello World
@@ -232,7 +229,7 @@ Otherwise, it exists with non-zero code and reports an error.
 Here's an example of how a LIT test can fail because of a failed check by
 FileCheck:
 
-.. code-block:: bash
+.. code-block:: text
 
     -- Testing: 1 tests, single process --
     FAIL: <unnamed> :: test.itest (1 of 1)
