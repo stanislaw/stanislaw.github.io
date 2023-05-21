@@ -54,3 +54,4 @@ TWITTER_USERNAME = 'sbpankevich'
 
 # Uncomment following line if you want to enable comments
 # DISQUS_SITENAME = ''
+GOOGLE_ANALYTICS = True
